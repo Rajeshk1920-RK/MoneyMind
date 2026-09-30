@@ -194,21 +194,21 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
       }}>
         {/* Left: Logo & Brand */}
         <div
-          style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '12px',
+            width: '44px',
+            height: '44px',
+            borderRadius: '14px',
             backgroundColor: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.06)',
-            border: '1px solid #e2ede8',
-            padding: '2px'
+            boxShadow: '0 4px 16px rgba(5, 150, 105, 0.2), 0 1px 3px rgba(0, 0, 0, 0.08)',
+            border: '2px solid #a7f3d0',
+            padding: '3px'
           }}>
             <img
               src={logoImg}
@@ -216,7 +216,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
           </div>
-          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
+          <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
             MoneyMind
           </span>
         </div>

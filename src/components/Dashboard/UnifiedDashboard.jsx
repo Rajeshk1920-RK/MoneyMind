@@ -140,40 +140,40 @@ export function UnifiedDashboard({
         marginBottom: '1.25rem'
       }}>
         {/* Left: Brand Logo & Title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '12px',
+            width: '46px',
+            height: '46px',
+            borderRadius: '14px',
             backgroundColor: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-            border: '1px solid #e2ede8',
-            padding: '2px',
+            boxShadow: '0 4px 16px rgba(5, 150, 105, 0.2), 0 1px 3px rgba(0,0,0,0.08)',
+            border: '2px solid #a7f3d0',
+            padding: '3px',
             flexShrink: 0
           }}>
             <img src={logoImg} alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <div>
             <h1 style={{
-              fontSize: '1.4rem',
+              fontSize: '1.45rem',
               fontWeight: 800,
               color: '#0f172a',
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.025em',
               lineHeight: 1.1
             }}>
               MoneyMind
             </h1>
             <p style={{
               fontSize: '0.74rem',
-              color: '#526b64',
+              color: '#059669',
               marginTop: '1px',
-              fontWeight: 600
+              fontWeight: 700
             }}>
-              Smart Banking SMS & Cashflow Manager
+              Smart Banking SMS & Cashflow
             </p>
           </div>
         </div>
