@@ -101,6 +101,9 @@
 }
 
 .message-animated {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   animation: messageSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
