@@ -327,29 +327,40 @@ select.form-control {
    ============================================================ */
 
 /* Global Touch & Mobile App Foundations */
-html {
-  scrollbar-gutter: stable;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #0b1120;
+  background-color: #ffffff;
   color: var(--text-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 button, a {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+/* Standalone Mobile App Desktop View Frame */
+.mobile-app-desktop-frame {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b1120;
 }
 
 .app-container {
@@ -369,7 +380,7 @@ button, a {
 }
 
 @media (max-width: 480px) {
-  body {
+  .mobile-app-desktop-frame {
     background-color: #f8fafc;
   }
   .app-container {

@@ -47,104 +47,106 @@ export function MobileFinanceApp() {
   }
 
   return (
-    <div className="app-container">
-      {/* Native Bottom Navigation Dock */}
-      <ModernSidebar
-        currentTab={currentTab}
-        onSelectTab={(tab) => setCurrentTab(tab)}
-        onOpenNotifications={() => setIsNotificationsOpen(true)}
-        onOpenProfile={() => setIsProfileOpen(true)}
-        onOpenAddTx={handleOpenAddTx}
-        onOpenSimulateUPI={handleOpenSimulateUPI}
-      />
+    <div className="mobile-app-desktop-frame">
+      <div className="app-container">
+        {/* Native Bottom Navigation Dock */}
+        <ModernSidebar
+          currentTab={currentTab}
+          onSelectTab={(tab) => setCurrentTab(tab)}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
+          onOpenProfile={() => setIsProfileOpen(true)}
+          onOpenAddTx={handleOpenAddTx}
+          onOpenSimulateUPI={handleOpenSimulateUPI}
+        />
 
-      {/* Main Screen Canvas */}
-      <div className="app-main-canvas">
-        <main style={{ width: '100%', minHeight: '100%' }}>
-          {currentTab === 'dashboard' && (
-            <UnifiedDashboard
-              onOpenAddTx={handleOpenAddTx}
-              onOpenSimulateUPI={handleOpenSimulateUPI}
-              onNavigateTab={(tab) => setCurrentTab(tab)}
-              onOpenNotifications={() => setIsNotificationsOpen(true)}
-              onOpenProfile={() => setIsProfileOpen(true)}
-            />
-          )}
-
-          {currentTab === 'transactions' && (
-            <div className="page-content-wrapper">
-              <TransactionList
+        {/* Main Screen Canvas */}
+        <div className="app-main-canvas">
+          <main style={{ width: '100%', minHeight: '100%' }}>
+            {currentTab === 'dashboard' && (
+              <UnifiedDashboard
                 onOpenAddTx={handleOpenAddTx}
                 onOpenSimulateUPI={handleOpenSimulateUPI}
+                onNavigateTab={(tab) => setCurrentTab(tab)}
+                onOpenNotifications={() => setIsNotificationsOpen(true)}
+                onOpenProfile={() => setIsProfileOpen(true)}
               />
-            </div>
-          )}
+            )}
 
-          {currentTab === 'budgets' && (
-            <div className="page-content-wrapper">
-              <BudgetManager />
-            </div>
-          )}
+            {currentTab === 'transactions' && (
+              <div className="page-content-wrapper">
+                <TransactionList
+                  onOpenAddTx={handleOpenAddTx}
+                  onOpenSimulateUPI={handleOpenSimulateUPI}
+                />
+              </div>
+            )}
 
-          {currentTab === 'goals' && (
-            <div className="page-content-wrapper">
-              <SavingsGoals />
-            </div>
-          )}
+            {currentTab === 'budgets' && (
+              <div className="page-content-wrapper">
+                <BudgetManager />
+              </div>
+            )}
 
-          {currentTab === 'ai-assistant' && (
-            <div className="page-content-wrapper page-content-wrapper-ai">
-              <AIChatBot />
-            </div>
-          )}
+            {currentTab === 'goals' && (
+              <div className="page-content-wrapper">
+                <SavingsGoals />
+              </div>
+            )}
 
-          {currentTab === 'reports' && (
-            <div className="page-content-wrapper">
-              <ReportsView />
-            </div>
-          )}
-        </main>
+            {currentTab === 'ai-assistant' && (
+              <div className="page-content-wrapper page-content-wrapper-ai">
+                <AIChatBot />
+              </div>
+            )}
+
+            {currentTab === 'reports' && (
+              <div className="page-content-wrapper">
+                <ReportsView />
+              </div>
+            )}
+          </main>
+        </div>
+
+        {/* Modals & Native Bottom Sheets */}
+        {isAddTxOpen && (
+          <AddTransactionModal
+            isOpen={isAddTxOpen}
+            initialType={txModalType}
+            onClose={() => setIsAddTxOpen(false)}
+          />
+        )}
+
+        {isSimulateUPIOpen && (
+          <BankSMSReader
+            isOpen={isSimulateUPIOpen}
+            onClose={() => setIsSimulateUPIOpen(false)}
+            onTransactionAdded={() => {}}
+          />
+        )}
+
+        {activeIntentTx && (
+          <PaymentIntentPopup
+            isOpen={Boolean(activeIntentTx)}
+            transaction={activeIntentTx}
+            onClose={() => setActiveIntentTx(null)}
+            onSaved={() => setActiveIntentTx(null)}
+          />
+        )}
+
+        {isNotificationsOpen && (
+          <NotificationsDrawer
+            isOpen={isNotificationsOpen}
+            onClose={() => setIsNotificationsOpen(false)}
+          />
+        )}
+
+        {isProfileOpen && (
+          <ProfileModal
+            isOpen={isProfileOpen}
+            onClose={() => setIsProfileOpen(false)}
+          />
+        )}
       </div>
-
-      {/* Modals & Native Bottom Sheets */}
-      {isAddTxOpen && (
-        <AddTransactionModal
-          isOpen={isAddTxOpen}
-          initialType={txModalType}
-          onClose={() => setIsAddTxOpen(false)}
-        />
-      )}
-
-      {isSimulateUPIOpen && (
-        <BankSMSReader
-          isOpen={isSimulateUPIOpen}
-          onClose={() => setIsSimulateUPIOpen(false)}
-          onTransactionAdded={() => {}}
-        />
-      )}
-
-      {activeIntentTx && (
-        <PaymentIntentPopup
-          isOpen={Boolean(activeIntentTx)}
-          transaction={activeIntentTx}
-          onClose={() => setActiveIntentTx(null)}
-          onSaved={() => setActiveIntentTx(null)}
-        />
-      )}
-
-      {isNotificationsOpen && (
-        <NotificationsDrawer
-          isOpen={isNotificationsOpen}
-          onClose={() => setIsNotificationsOpen(false)}
-        />
-      )}
-
-      {isProfileOpen && (
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={() => setIsProfileOpen(false)}
-        />
-      )}
     </div>
   );
 }
