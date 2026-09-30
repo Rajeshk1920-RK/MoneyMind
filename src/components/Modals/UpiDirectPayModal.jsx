@@ -24,65 +24,96 @@ import {
   Phone,
   Search,
   Upload,
-  AlertCircle
+  ArrowLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatCurrency } from '../../utils/formatters';
 import confetti from 'canvas-confetti';
 import './UpiDirectPayModal.css';
 
-// 4 Main Payment Options
-const PAYMENT_MODES = [
+// SVG Vector Logos for Indian Payment Platforms
+const PhonePeLogo = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="6" fill="#5F259F" />
+    <path d="M14.8 6.5H9.2C8.5 6.5 8 7 8 7.7V17.3C8 18 8.5 18.5 9.2 18.5H14.8C15.5 18.5 16 18 16 17.3V7.7C16 7 15.5 6.5 14.8 6.5ZM12 17.2C11.3 17.2 10.8 16.7 10.8 16C10.8 15.3 11.3 14.8 12 14.8C12.7 14.8 13.2 15.3 13.2 16C13.2 16.7 12.7 17.2 12 17.2ZM14.5 13.5H9.5V8.5H14.5V13.5Z" fill="#FFFFFF" />
+  </svg>
+);
+
+const GooglePayLogo = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="6" fill="#1A73E8" />
+    <path d="M12 5C8.13 5 5 8.13 5 12C5 15.87 8.13 19 12 19C15.87 19 19 15.87 19 12C19 11.38 18.92 10.79 18.78 10.22H12V13.5H15.91C15.34 14.84 13.82 15.8 12 15.8C9.9 15.8 8.2 14.1 8.2 12C8.2 9.9 9.9 8.2 12 8.2C12.98 8.2 13.87 8.58 14.55 9.2L16.82 6.93C15.54 5.73 13.86 5 12 5Z" fill="#FFFFFF" />
+  </svg>
+);
+
+const PaytmLogo = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="6" fill="#00BAF2" />
+    <path d="M6 9H8.5V15H6V9ZM10 9H12.5V15H10V9ZM14 9H18V11H16V15H14V9Z" fill="#002970" />
+    <path d="M7 10.5H7.8V13.5H7V10.5ZM11 10.5H11.8V13.5H11V10.5Z" fill="#FFFFFF" />
+  </svg>
+);
+
+const BhimUpiLogo = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="6" fill="#059669" />
+    <path d="M7 16L12 7L17 16H14L12 12L10 16H7Z" fill="#FFFFFF" />
+  </svg>
+);
+
+// The 4 Core Payment Options
+const PAYMENT_OPTIONS = [
   {
     id: 'bank_transfer',
-    label: 'Bank Transfer',
+    title: 'Bank Transfer',
+    subtitle: 'Direct Account Number & IFSC transfer',
     icon: Building2,
-    desc: 'Account & IFSC code transfer',
-    color: '#2563eb',
-    bgColor: '#eff6ff'
+    accentColor: '#2563eb',
+    badgeText: 'IMPS / NEFT'
   },
   {
     id: 'pay_by_upi_id',
-    label: 'Pay by UPI ID',
+    title: 'Pay by UPI ID',
+    subtitle: 'Instant transfer via VPA handle',
     icon: AtSign,
-    desc: 'VPA handle (PhonePe, GPay, Paytm)',
-    color: '#059669',
-    bgColor: '#ecfdf5'
+    accentColor: '#059669',
+    badgeText: 'UPI VPA'
   },
   {
     id: 'scan_and_pay',
-    label: 'Scan & Pay',
+    title: 'Scan & Pay',
+    subtitle: 'Dynamic QR code scanner & generator',
     icon: ScanLine,
-    desc: 'Scan or display dynamic QR code',
-    color: '#7c3aed',
-    bgColor: '#f5f3ff'
+    accentColor: '#7c3aed',
+    badgeText: 'QR Code'
   },
   {
     id: 'pay_anyone',
-    label: 'Pay Anyone',
+    title: 'Pay Anyone',
+    subtitle: 'Transfer directly to mobile number or contact',
     icon: Users,
-    desc: 'Pay to mobile number or contact',
-    color: '#d97706',
-    bgColor: '#fffbeb'
+    accentColor: '#0284c7',
+    badgeText: 'Mobile Pay'
   }
 ];
 
-// Popular merchant quick presets for UPI ID
+// Popular merchant quick presets
 const POPULAR_PAYEES = [
-  { name: 'Swiggy', vpa: 'swiggy@okhdfcbank', category: 'Food & Dining', color: '#f97316' },
-  { name: 'Zomato', vpa: 'zomato@icici', category: 'Food & Dining', color: '#ef4444' },
-  { name: 'Amazon Pay', vpa: 'amazonpay@apl', category: 'Shopping', color: '#f59e0b' },
-  { name: 'Uber Rides', vpa: 'uber@icici', category: 'Transportation', color: '#0f172a' },
-  { name: 'Airtel Bill', vpa: 'airtel@paytm', category: 'Bills & Utilities', color: '#dc2626' },
-  { name: 'Apollo Meds', vpa: 'apollo@axisbank', category: 'Health', color: '#059669' }
+  { name: 'Swiggy', vpa: 'swiggy@okhdfcbank', category: 'Food & Dining' },
+  { name: 'Zomato', vpa: 'zomato@icici', category: 'Food & Dining' },
+  { name: 'Amazon Pay', vpa: 'amazonpay@apl', category: 'Shopping' },
+  { name: 'Uber Rides', vpa: 'uber@icici', category: 'Transportation' },
+  { name: 'Airtel Bill', vpa: 'airtel@paytm', category: 'Bills & Utilities' },
+  { name: 'Apollo Pharmacy', vpa: 'apollo@axisbank', category: 'Health' }
 ];
 
-// Frequent Contacts for "Pay Anyone"
-const POPULAR_CONTACTS = [
-  { name: 'Aman Sharma', phone: '9876543210', vpa: '9876543210@paytm', avatar: 'AS', color: '#3b82f6', category: 'Personal' },
-  { name: 'Priya Patel', phone: '9845012345', vpa: 'priya@okhdfcbank', avatar: 'PP', color: '#ec4899', category: 'Personal' },
-  { name: 'Rohan Verma', phone: '9123456780', vpa: 'rohan@ybl', avatar: 'RV', color: '#10b981', category: 'Food & Dining' },
-  { name: 'Sarah Khan', phone: '9765432190', vpa: 'sarah@icici', avatar: 'SK', color: '#8b5cf6', category: 'Shopping' }
+// Frequent Contacts
+const FREQUENT_CONTACTS = [
+  { name: 'Aman Sharma', phone: '9876543210', vpa: '9876543210@paytm', initials: 'AS' },
+  { name: 'Priya Patel', phone: '9845012345', vpa: 'priya@okhdfcbank', initials: 'PP' },
+  { name: 'Rohan Verma', phone: '9123456780', vpa: 'rohan@ybl', initials: 'RV' },
+  { name: 'Sarah Khan', phone: '9765432190', vpa: 'sarah@icici', initials: 'SK' }
 ];
 
 const CATEGORIES = [
@@ -106,7 +137,7 @@ export function UpiDirectPayModal({
   const { addTransaction, addNotification } = useFinance();
 
   // Active Mode: 'bank_transfer' | 'pay_by_upi_id' | 'scan_and_pay' | 'pay_anyone'
-  const [activeMode, setActiveMode] = useState(initialMode);
+  const [selectedMode, setSelectedMode] = useState(initialMode);
   const [amount, setAmount] = useState(() => initialAmount.toString());
   const [category, setCategory] = useState('Food & Dining');
   const [note, setNote] = useState('Payment via MoneyMind');
@@ -115,10 +146,9 @@ export function UpiDirectPayModal({
 
   // 1. Bank Transfer States
   const [accountNumber, setAccountNumber] = useState('');
-  const [confirmAccountNumber, setConfirmAccountNumber] = useState('');
   const [ifscCode, setIfscCode] = useState('HDFC0001234');
   const [beneficiaryName, setBeneficiaryName] = useState('');
-  const [bankLookupName, setBankLookupName] = useState('HDFC Bank • Koramangala Branch');
+  const [bankLookupName, setBankLookupName] = useState('HDFC Bank - Main Branch');
 
   // 2. Pay by UPI ID States
   const [vpa, setVpa] = useState('swiggy@okhdfcbank');
@@ -133,8 +163,6 @@ export function UpiDirectPayModal({
   const [mobileNumber, setMobileNumber] = useState('');
   const [contactName, setContactName] = useState('Aman Sharma');
 
-  const fileInputRef = useRef(null);
-
   const numAmount = parseFloat(amount) || 0;
 
   // IFSC Auto-Lookup
@@ -142,13 +170,13 @@ export function UpiDirectPayModal({
     const clean = val.toUpperCase().trim();
     setIfscCode(clean);
     if (clean.startsWith('HDFC')) {
-      setBankLookupName('HDFC Bank • Main Branch');
+      setBankLookupName('HDFC Bank - Main Branch');
     } else if (clean.startsWith('SBIN')) {
-      setBankLookupName('State Bank of India • Branch');
+      setBankLookupName('State Bank of India - Branch');
     } else if (clean.startsWith('ICIC')) {
-      setBankLookupName('ICICI Bank • Commercial Branch');
+      setBankLookupName('ICICI Bank - Commercial Branch');
     } else if (clean.startsWith('UTIB') || clean.startsWith('AXIS')) {
-      setBankLookupName('Axis Bank • Cyber City Branch');
+      setBankLookupName('Axis Bank - Cyber City');
     } else if (clean.length >= 4) {
       setBankLookupName(`${clean.slice(0, 4)} Bank (Verified IFSC)`);
     } else {
@@ -161,13 +189,13 @@ export function UpiDirectPayModal({
     let targetVpa = vpa.trim() || 'merchant@upi';
     let targetName = upiPayeeName.trim() || 'Merchant';
 
-    if (activeMode === 'bank_transfer') {
+    if (selectedMode === 'bank_transfer') {
       targetVpa = `${accountNumber.trim()}@${ifscCode.trim()}.ifsc.npci`;
       targetName = beneficiaryName.trim() || 'Account Holder';
-    } else if (activeMode === 'pay_anyone') {
+    } else if (selectedMode === 'pay_anyone') {
       targetVpa = mobileNumber.trim() ? `${mobileNumber.trim()}@upi` : 'contact@upi';
       targetName = contactName.trim() || 'Contact';
-    } else if (activeMode === 'scan_and_pay' && scannedData) {
+    } else if (selectedMode === 'scan_and_pay' && scannedData) {
       return scannedData;
     }
 
@@ -175,25 +203,17 @@ export function UpiDirectPayModal({
     const cleanName = encodeURIComponent(targetName);
     const cleanNote = encodeURIComponent(note.trim() || 'Payment');
     return `upi://pay?pa=${cleanVpa}&pn=${cleanName}&am=${numAmount}&cu=INR&tn=${cleanNote}`;
-  }, [activeMode, vpa, upiPayeeName, accountNumber, ifscCode, beneficiaryName, mobileNumber, contactName, scannedData, numAmount, note]);
+  }, [selectedMode, vpa, upiPayeeName, accountNumber, ifscCode, beneficiaryName, mobileNumber, contactName, scannedData, numAmount, note]);
 
   // Deep links for Indian UPI apps
-  const phonePeUrl = useMemo(() => {
-    return effectiveUpiUrl.replace('upi://pay', 'phonepe://pay');
-  }, [effectiveUpiUrl]);
-
-  const gPayUrl = useMemo(() => {
-    return effectiveUpiUrl.replace('upi://pay', 'gpay://upi/pay');
-  }, [effectiveUpiUrl]);
-
-  const paytmUrl = useMemo(() => {
-    return effectiveUpiUrl.replace('upi://pay', 'paytmmp://pay');
-  }, [effectiveUpiUrl]);
+  const phonePeUrl = useMemo(() => effectiveUpiUrl.replace('upi://pay', 'phonepe://pay'), [effectiveUpiUrl]);
+  const gPayUrl = useMemo(() => effectiveUpiUrl.replace('upi://pay', 'gpay://upi/pay'), [effectiveUpiUrl]);
+  const paytmUrl = useMemo(() => effectiveUpiUrl.replace('upi://pay', 'paytmmp://pay'), [effectiveUpiUrl]);
 
   // QR Code Image URL
   const qrImageUrl = useMemo(() => {
     const encodedUpi = encodeURIComponent(effectiveUpiUrl);
-    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUpi}&margin=10`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUpi}&margin=8`;
   }, [effectiveUpiUrl]);
 
   if (!isOpen) return null;
@@ -212,7 +232,6 @@ export function UpiDirectPayModal({
   const handleSelectContact = (contact) => {
     setContactName(contact.name);
     setMobileNumber(contact.phone);
-    setCategory(contact.category);
   };
 
   const handleLaunchApp = (url, platformName) => {
@@ -223,7 +242,7 @@ export function UpiDirectPayModal({
       addNotification({
         id: `upi-init-${Date.now()}`,
         title: `Redirecting to ${platformName}`,
-        message: `Completing ₹${numAmount} payment. Confirm to auto-calculate into MoneyMind!`,
+        message: `Completing payment of ₹${numAmount}. Confirm to auto-calculate into MoneyMind!`,
         time: 'Just now',
         type: 'info',
         unread: true
@@ -238,16 +257,16 @@ export function UpiDirectPayModal({
     let finalMerchant = 'UPI Payment';
     let paymentDetails = 'UPI';
 
-    if (activeMode === 'bank_transfer') {
+    if (selectedMode === 'bank_transfer') {
       finalMerchant = beneficiaryName.trim() || 'Bank Transfer';
       paymentDetails = `Bank Transfer (A/c ••${accountNumber.slice(-4) || '****'}, ${ifscCode})`;
-    } else if (activeMode === 'pay_by_upi_id') {
+    } else if (selectedMode === 'pay_by_upi_id') {
       finalMerchant = upiPayeeName.trim() || 'UPI Merchant';
       paymentDetails = `UPI ID (${vpa})`;
-    } else if (activeMode === 'scan_and_pay') {
+    } else if (selectedMode === 'scan_and_pay') {
       finalMerchant = 'QR Scan Merchant';
       paymentDetails = 'QR Scan & Pay';
-    } else if (activeMode === 'pay_anyone') {
+    } else if (selectedMode === 'pay_anyone') {
       finalMerchant = contactName.trim() || 'Mobile Contact';
       paymentDetails = `Mobile Pay (+91 ${mobileNumber || 'Contact'})`;
     }
@@ -261,7 +280,7 @@ export function UpiDirectPayModal({
       category: category,
       paymentMethod: 'UPI',
       date: new Date().toISOString().split('T')[0],
-      tags: [PAYMENT_MODES.find(m => m.id === activeMode)?.label || 'Direct Pay', paymentDetails],
+      tags: [PAYMENT_OPTIONS.find(m => m.id === selectedMode)?.title || 'Direct Pay', paymentDetails],
       note: note.trim() || paymentDetails
     };
 
@@ -273,7 +292,7 @@ export function UpiDirectPayModal({
     // 2. Trigger Confetti
     try {
       confetti({
-        particleCount: 80,
+        particleCount: 75,
         spread: 70,
         origin: { y: 0.6 }
       });
@@ -284,7 +303,7 @@ export function UpiDirectPayModal({
       addNotification({
         id: `upi-done-${Date.now()}`,
         title: `₹${numAmount} Deducted & Calculated`,
-        message: `Paid to ${finalMerchant} via ${PAYMENT_MODES.find(m => m.id === activeMode)?.label}. Balance & budget updated!`,
+        message: `Paid to ${finalMerchant}. Balance and category budget updated!`,
         time: 'Just now',
         type: 'expense',
         unread: true
@@ -311,7 +330,7 @@ export function UpiDirectPayModal({
       setScannedData('upi://pay?pa=starbucks@hdfcbank&pn=Starbucks%20Coffee&am=350&cu=INR');
       setCategory('Food & Dining');
       setNote('Starbucks Store QR Scan');
-    }, 900);
+    }, 850);
   };
 
   return (
@@ -321,11 +340,11 @@ export function UpiDirectPayModal({
         <div className="upi-pay-header">
           <div className="upi-pay-header-left">
             <div className="upi-pay-icon-badge">
-              <Zap size={22} color="#ffffff" />
+              <Zap size={20} color="#ffffff" />
             </div>
             <div>
-              <h2 className="upi-pay-title">Direct UPI Pay & Auto-Log</h2>
-              <p className="upi-pay-subtitle">Bank Transfer • Pay by UPI ID • Scan & Pay • Pay Anyone</p>
+              <h2 className="upi-pay-title">Direct UPI Pay</h2>
+              <p className="upi-pay-subtitle">Select payment method & auto-log expense</p>
             </div>
           </div>
           <button
@@ -344,10 +363,10 @@ export function UpiDirectPayModal({
             /* --- SUCCESS CONFIRMATION RECEIPT SCREEN --- */
             <div className="upi-success-view">
               <div className="upi-success-checkmark">
-                <CheckCircle2 size={56} color="#059669" />
+                <CheckCircle2 size={54} color="#059669" />
               </div>
 
-              <h3 className="upi-success-title">Payment Recorded & Calculated!</h3>
+              <h3 className="upi-success-title">Payment Recorded & Calculated</h3>
               <p className="upi-success-desc">
                 MoneyMind has deducted <strong>{formatCurrency(recordedTx.amount, 'INR', 1)}</strong> from your balance, updated your category budget, and added a daily spend readout on your calendar.
               </p>
@@ -362,7 +381,7 @@ export function UpiDirectPayModal({
                 <div className="upi-receipt-row">
                   <span>Payment Mode</span>
                   <span className="bold" style={{ color: '#2563eb' }}>
-                    {PAYMENT_MODES.find(m => m.id === activeMode)?.label}
+                    {PAYMENT_OPTIONS.find(m => m.id === selectedMode)?.title}
                   </span>
                 </div>
                 <div className="upi-receipt-row">
@@ -375,7 +394,7 @@ export function UpiDirectPayModal({
                 </div>
                 <div className="upi-receipt-row">
                   <span>Ledger Status</span>
-                  <span style={{ color: '#059669', fontWeight: 700 }}>✓ Live Calculated</span>
+                  <span style={{ color: '#059669', fontWeight: 700 }}>Active & Synced</span>
                 </div>
               </div>
 
@@ -399,31 +418,34 @@ export function UpiDirectPayModal({
               </div>
             </div>
           ) : (
-            /* --- 4 PAYMENT OPTIONS & INPUT HUB --- */
+            /* --- 4 CLEAN PAYMENT OPTIONS & FOCUSED INPUT HUB --- */
             <>
-              {/* 4 OPTION SELECTION TABS */}
-              <div className="upi-modes-grid">
-                {PAYMENT_MODES.map(mode => {
-                  const IconComp = mode.icon;
-                  const isSelected = activeMode === mode.id;
+              {/* 4 CORE PAYMENT OPTION BUTTONS WITH VECTOR LOGOS */}
+              <div className="upi-options-four-grid">
+                {PAYMENT_OPTIONS.map(opt => {
+                  const IconComp = opt.icon;
+                  const isSelected = selectedMode === opt.id;
 
                   return (
                     <button
-                      key={mode.id}
+                      key={opt.id}
                       type="button"
-                      onClick={() => setActiveMode(mode.id)}
-                      className={`upi-mode-card ${isSelected ? 'active' : ''}`}
+                      onClick={() => setSelectedMode(opt.id)}
+                      className={`upi-option-card ${isSelected ? 'active' : ''}`}
                     >
                       <div
-                        className="upi-mode-icon-circle"
+                        className="upi-option-icon-box"
                         style={{
-                          backgroundColor: isSelected ? mode.color : mode.bgColor,
-                          color: isSelected ? '#ffffff' : mode.color
+                          backgroundColor: isSelected ? opt.accentColor : '#f1f5f9',
+                          color: isSelected ? '#ffffff' : opt.accentColor
                         }}
                       >
                         <IconComp size={18} />
                       </div>
-                      <span className="upi-mode-label">{mode.label}</span>
+                      <div className="upi-option-text-wrap">
+                        <span className="upi-option-title">{opt.title}</span>
+                        <span className="upi-option-badge">{opt.badgeText}</span>
+                      </div>
                     </button>
                   );
                 })}
@@ -460,18 +482,18 @@ export function UpiDirectPayModal({
                 </div>
               </div>
 
-              {/* OPTION 1: BANK TRANSFER */}
-              {activeMode === 'bank_transfer' && (
+              {/* ================= OPTION 1: BANK TRANSFER ================= */}
+              {selectedMode === 'bank_transfer' && (
                 <div className="upi-mode-content-block">
                   <div className="upi-field-group">
-                    <label className="upi-input-label">Account Holder / Beneficiary Name</label>
+                    <label className="upi-input-label">Beneficiary Name</label>
                     <div className="upi-input-box">
-                      <Store size={17} color="#64748b" />
+                      <Building2 size={17} color="#64748b" />
                       <input
                         type="text"
                         value={beneficiaryName}
                         onChange={(e) => setBeneficiaryName(e.target.value)}
-                        placeholder="e.g. Ramesh Kumar, Landlord"
+                        placeholder="Account Holder Name"
                         className="upi-text-input"
                       />
                     </div>
@@ -485,7 +507,7 @@ export function UpiDirectPayModal({
                         type="text"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
-                        placeholder="Enter full bank account number"
+                        placeholder="Enter Bank Account Number"
                         className="upi-text-input"
                       />
                     </div>
@@ -506,7 +528,7 @@ export function UpiDirectPayModal({
                     </div>
                     {bankLookupName && (
                       <span className="upi-bank-verified-tag">
-                        <CheckCircle2 size={12} color="#059669" />
+                        <CheckCircle2 size={13} color="#059669" />
                         <span>{bankLookupName}</span>
                       </span>
                     )}
@@ -514,19 +536,19 @@ export function UpiDirectPayModal({
                 </div>
               )}
 
-              {/* OPTION 2: PAY BY UPI ID */}
-              {activeMode === 'pay_by_upi_id' && (
+              {/* ================= OPTION 2: PAY BY UPI ID ================= */}
+              {selectedMode === 'pay_by_upi_id' && (
                 <div className="upi-mode-content-block">
                   <div className="upi-field-group">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <label className="upi-input-label">Payee UPI ID (VPA)</label>
+                      <label className="upi-input-label">UPI ID (VPA)</label>
                       <button
                         type="button"
                         onClick={() => handleCopyVpa(vpa)}
                         className="upi-copy-vpa-btn"
                       >
                         {copiedVpa ? <Check size={12} color="#059669" /> : <Copy size={12} />}
-                        <span>{copiedVpa ? 'Copied' : 'Copy VPA'}</span>
+                        <span>{copiedVpa ? 'Copied' : 'Copy'}</span>
                       </button>
                     </div>
                     <div className="upi-input-box">
@@ -542,7 +564,7 @@ export function UpiDirectPayModal({
                   </div>
 
                   <div className="upi-field-group">
-                    <label className="upi-input-label">Merchant / Recipient Name</label>
+                    <label className="upi-input-label">Merchant / Recipient</label>
                     <div className="upi-input-box">
                       <Store size={17} color="#64748b" />
                       <input
@@ -554,7 +576,7 @@ export function UpiDirectPayModal({
                       />
                     </div>
 
-                    {/* Quick Merchant Presets */}
+                    {/* Quick Merchant Chips */}
                     <div className="upi-presets-scroll">
                       {POPULAR_PAYEES.map(p => (
                         <button
@@ -563,7 +585,6 @@ export function UpiDirectPayModal({
                           onClick={() => handleSelectPayeePreset(p)}
                           className={`upi-preset-chip ${upiPayeeName === p.name ? 'active' : ''}`}
                         >
-                          <span className="upi-preset-dot" style={{ backgroundColor: p.color }} />
                           <span>{p.name}</span>
                         </button>
                       ))}
@@ -572,11 +593,11 @@ export function UpiDirectPayModal({
                 </div>
               )}
 
-              {/* OPTION 3: SCAN AND PAY */}
-              {activeMode === 'scan_and_pay' && (
+              {/* ================= OPTION 3: SCAN AND PAY ================= */}
+              {selectedMode === 'scan_and_pay' && (
                 <div className="upi-mode-content-block">
                   <div className="upi-scan-panel">
-                    <div className="upi-qr-card" style={{ width: '100%' }}>
+                    <div className="upi-qr-card">
                       <img
                         src={qrImageUrl}
                         alt="Dynamic UPI QR Code"
@@ -584,7 +605,7 @@ export function UpiDirectPayModal({
                       />
                       <div className="upi-qr-info">
                         <p className="upi-qr-text">
-                          Scan using <strong>PhonePe, Google Pay, or Paytm</strong> camera
+                          Scan with <strong>PhonePe, Google Pay, or Paytm</strong> camera
                         </p>
                         <span className="upi-qr-amount">
                           Paying ₹{numAmount}
@@ -614,11 +635,11 @@ export function UpiDirectPayModal({
                 </div>
               )}
 
-              {/* OPTION 4: PAY ANYONE */}
-              {activeMode === 'pay_anyone' && (
+              {/* ================= OPTION 4: PAY ANYONE ================= */}
+              {selectedMode === 'pay_anyone' && (
                 <div className="upi-mode-content-block">
                   <div className="upi-field-group">
-                    <label className="upi-input-label">Enter Mobile Number</label>
+                    <label className="upi-input-label">Mobile Number</label>
                     <div className="upi-input-box">
                       <Phone size={17} color="#64748b" />
                       <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#64748b' }}>+91</span>
@@ -626,7 +647,7 @@ export function UpiDirectPayModal({
                         type="tel"
                         value={mobileNumber}
                         onChange={(e) => setMobileNumber(e.target.value)}
-                        placeholder="10-digit mobile number"
+                        placeholder="Enter 10-digit mobile number"
                         className="upi-text-input"
                         maxLength={10}
                       />
@@ -636,18 +657,15 @@ export function UpiDirectPayModal({
                   <div className="upi-field-group">
                     <label className="upi-input-label">Frequent Contacts</label>
                     <div className="upi-contacts-grid">
-                      {POPULAR_CONTACTS.map(contact => (
+                      {FREQUENT_CONTACTS.map(contact => (
                         <button
                           key={contact.phone}
                           type="button"
                           onClick={() => handleSelectContact(contact)}
                           className={`upi-contact-card ${contactName === contact.name ? 'active' : ''}`}
                         >
-                          <div
-                            className="upi-contact-avatar"
-                            style={{ backgroundColor: contact.color }}
-                          >
-                            {contact.avatar}
+                          <div className="upi-contact-avatar">
+                            {contact.initials}
                           </div>
                           <div className="upi-contact-details">
                             <span className="upi-contact-name">{contact.name}</span>
@@ -660,7 +678,7 @@ export function UpiDirectPayModal({
                 </div>
               )}
 
-              {/* Category & Notes (Shared) */}
+              {/* Category & Purpose (Shared) */}
               <div className="upi-row-two-col">
                 <div className="upi-field-group">
                   <label className="upi-input-label">Category</label>
@@ -681,13 +699,13 @@ export function UpiDirectPayModal({
                     type="text"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="e.g. Rent, Grocery"
+                    placeholder="e.g. Dinner, Rent"
                     className="upi-text-input simple"
                   />
                 </div>
               </div>
 
-              {/* PLATFORM APP REDIRECT LAUNCHERS */}
+              {/* PLATFORM APP LAUNCHERS (OFFICIAL VECTOR LOGOS) */}
               <div className="upi-platforms-section">
                 <span className="upi-section-title">Launch Payment Platform</span>
                 <div className="upi-platform-grid">
@@ -695,13 +713,9 @@ export function UpiDirectPayModal({
                   <button
                     type="button"
                     onClick={() => handleLaunchApp(phonePeUrl, 'PhonePe')}
-                    className="upi-platform-btn phonepe"
+                    className="upi-platform-btn"
                   >
-                    <div className="upi-platform-icon-wrap phonepe-bg">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
-                      </svg>
-                    </div>
+                    <PhonePeLogo />
                     <div className="upi-platform-info">
                       <span className="upi-platform-name">PhonePe</span>
                       <span className="upi-platform-sub">Open App</span>
@@ -713,11 +727,9 @@ export function UpiDirectPayModal({
                   <button
                     type="button"
                     onClick={() => handleLaunchApp(gPayUrl, 'Google Pay')}
-                    className="upi-platform-btn gpay"
+                    className="upi-platform-btn"
                   >
-                    <div className="upi-platform-icon-wrap gpay-bg">
-                      <span style={{ fontWeight: 900, color: '#ffffff', fontSize: '13px' }}>G</span>
-                    </div>
+                    <GooglePayLogo />
                     <div className="upi-platform-info">
                       <span className="upi-platform-name">Google Pay</span>
                       <span className="upi-platform-sub">Open App</span>
@@ -729,30 +741,26 @@ export function UpiDirectPayModal({
                   <button
                     type="button"
                     onClick={() => handleLaunchApp(paytmUrl, 'Paytm')}
-                    className="upi-platform-btn paytm"
+                    className="upi-platform-btn"
                   >
-                    <div className="upi-platform-icon-wrap paytm-bg">
-                      <span style={{ fontWeight: 900, color: '#ffffff', fontSize: '10px' }}>paytm</span>
-                    </div>
+                    <PaytmLogo />
                     <div className="upi-platform-info">
-                      <span className="upi-platform-name">Paytm UPI</span>
+                      <span className="upi-platform-name">Paytm</span>
                       <span className="upi-platform-sub">Open App</span>
                     </div>
                     <ExternalLink size={13} className="upi-platform-arrow" />
                   </button>
 
-                  {/* Any Default UPI */}
+                  {/* BHIM / Default UPI */}
                   <button
                     type="button"
-                    onClick={() => handleLaunchApp(effectiveUpiUrl, 'Default UPI')}
-                    className="upi-platform-btn default-upi"
+                    onClick={() => handleLaunchApp(effectiveUpiUrl, 'BHIM UPI')}
+                    className="upi-platform-btn"
                   >
-                    <div className="upi-platform-icon-wrap default-bg">
-                      <Smartphone size={17} color="#ffffff" />
-                    </div>
+                    <BhimUpiLogo />
                     <div className="upi-platform-info">
-                      <span className="upi-platform-name">Any UPI App</span>
-                      <span className="upi-platform-sub">BHIM / CRED</span>
+                      <span className="upi-platform-name">BHIM UPI</span>
+                      <span className="upi-platform-sub">Any UPI App</span>
                     </div>
                     <ExternalLink size={13} className="upi-platform-arrow" />
                   </button>
@@ -762,9 +770,9 @@ export function UpiDirectPayModal({
               {/* POST-PAYMENT CONFIRMATION & AUTO CALCULATION */}
               <div className="upi-confirm-box">
                 <div className="upi-confirm-notice">
-                  <Sparkles size={16} color="#059669" />
+                  <ShieldCheck size={16} color="#059669" />
                   <span>
-                    Once paid on your app, tap below to <strong>auto-deduct & calculate</strong> the expense into MoneyMind!
+                    After completing the payment on your UPI app, tap below to <strong>auto-deduct & calculate</strong> the expense in MoneyMind!
                   </span>
                 </div>
 
@@ -775,7 +783,7 @@ export function UpiDirectPayModal({
                   className="upi-confirm-btn"
                 >
                   <CheckCircle2 size={18} />
-                  <span>Confirm ₹{numAmount} Payment & Calculate Expense</span>
+                  <span>Confirm ₹{numAmount} Payment & Calculate</span>
                 </button>
               </div>
             </>
