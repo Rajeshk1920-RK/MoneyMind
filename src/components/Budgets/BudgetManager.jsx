@@ -48,169 +48,209 @@ export function BudgetManager() {
   const totalSpentAcrossBudgets = budgetStats.reduce((s, b) => s + b.spent, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
         <div>
-          <h2 style={{ fontSize: '1.75rem', color: 'var(--text-primary)' }}>Monthly Budgets & Alerts</h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Set category limits and get proactive warning notifications before you overspend
-          </p>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            Budgets & Limits
+          </h2>
+          <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+            {budgets.length} active limits
+          </span>
         </div>
 
         <button
-          className="btn btn-primary"
           onClick={() => setIsAddBudgetOpen(true)}
+          style={{
+            padding: '0.45rem 0.85rem',
+            borderRadius: '9999px',
+            backgroundColor: '#059669',
+            color: '#ffffff',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)'
+          }}
         >
-          <Plus size={16} />
-          <span>Set Category Budget</span>
+          <Plus size={14} />
+          <span>New Budget</span>
         </button>
       </div>
 
       {/* Global Budget Overview Stat Bar */}
       <div
-        className="glass-panel"
         style={{
-          padding: '1.5rem',
+          backgroundColor: '#ffffff',
+          borderRadius: '18px',
+          padding: '1rem',
+          border: '1px solid #e2ede8',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1.5rem'
+          gridTemplateColumns: '1fr 1fr',
+          gap: '0.85rem',
+          boxSizing: 'border-box'
         }}
       >
         <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Total Allocated Budget</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Total Allocated</span>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-display)', marginTop: '2px' }}>
             {formatCurrency(totalBudgeted, activeCurrencyCode, activeCurrency.rate)}
           </div>
         </div>
 
         <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Total Spent So Far</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-expense)', fontFamily: 'var(--font-display)' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Total Spent</span>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ef4444', fontFamily: 'var(--font-display)', marginTop: '2px' }}>
             {formatCurrency(totalSpentAcrossBudgets, activeCurrencyCode, activeCurrency.rate)}
-          </div>
-        </div>
-
-        <div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Total Budget Utilization</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-primary)', fontFamily: 'var(--font-display)' }}>
-            {totalBudgeted > 0 ? Math.round((totalSpentAcrossBudgets / totalBudgeted) * 100) : 0}%
           </div>
         </div>
       </div>
 
       {/* Category Budget Cards */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '1.25rem'
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.75rem',
+        width: '100%'
       }}>
-        {budgetStats.map(budget => {
-          let statusColor = 'var(--accent-income)';
-          let statusText = 'On Track';
-          let statusBadgeClass = 'badge-income';
+        {budgetStats.length === 0 ? (
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '18px',
+            padding: '2.5rem 1rem',
+            textAlign: 'center',
+            border: '1px solid #e2ede8'
+          }}>
+            <span style={{ fontSize: '1.75rem', display: 'block', marginBottom: '0.5rem' }}>🎯</span>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+              No Budgets Configured
+            </h4>
+            <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+              Tap "+ New Budget" above to set category spending limits.
+            </p>
+          </div>
+        ) : (
+          budgetStats.map(budget => {
+            let statusColor = '#059669';
+            let statusText = 'On Track';
+            let statusBg = '#ecfdf5';
 
-          if (budget.isOverspent) {
-            statusColor = 'var(--accent-expense)';
-            statusText = 'Overspent';
-            statusBadgeClass = 'badge-expense';
-          } else if (budget.isWarning) {
-            statusColor = 'var(--accent-warning)';
-            statusText = 'Caution Zone';
-            statusBadgeClass = 'badge-warning';
-          }
+            if (budget.isOverspent) {
+              statusColor = '#ef4444';
+              statusText = 'Overspent';
+              statusBg = '#fef2f2';
+            } else if (budget.isWarning) {
+              statusColor = '#f59e0b';
+              statusText = 'Caution';
+              statusBg = '#fffbeb';
+            }
 
-          return (
-            <div
-              key={budget.id}
-              className="glass-panel"
-              style={{
-                padding: '1.4rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: '1.1rem',
-                border: budget.isOverspent ? '1px solid rgba(244, 63, 94, 0.4)' : '1px solid var(--border-subtle)'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <h4 style={{ fontSize: '1.05rem', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
-                    {budget.category}
-                  </h4>
-                  <span className={`badge ${statusBadgeClass}`} style={{ fontSize: '0.7rem' }}>
-                    {statusText}
-                  </span>
+            return (
+              <div
+                key={budget.id}
+                style={{
+                  backgroundColor: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '1rem',
+                  border: budget.isOverspent ? '1.5px solid #fecaca' : '1px solid #e2ede8',
+                  boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+                      {budget.category}
+                    </h4>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      backgroundColor: statusBg,
+                      color: statusColor,
+                      padding: '2px 8px',
+                      borderRadius: '6px'
+                    }}>
+                      {statusText} • {budget.percentage}%
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => deleteBudget(budget.id)}
+                    style={{
+                      color: '#cbd5e1',
+                      padding: '4px',
+                      cursor: 'pointer',
+                      borderRadius: '6px'
+                    }}
+                    title="Delete budget"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => deleteBudget(budget.id)}
-                  className="btn-icon"
-                  style={{ width: '32px', height: '32px', color: 'var(--text-tertiary)' }}
-                  title="Delete budget"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
+                {/* Progress bar */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '0.35rem', fontWeight: 600 }}>
+                    <span style={{ color: '#64748b' }}>
+                      Spent: <strong style={{ color: '#0f172a' }}>{formatCurrency(budget.spent, activeCurrencyCode, activeCurrency.rate)}</strong>
+                    </span>
+                    <span style={{ color: '#64748b' }}>
+                      Limit: <strong style={{ color: '#0f172a' }}>{formatCurrency(budget.monthlyLimit, activeCurrencyCode, activeCurrency.rate)}</strong>
+                    </span>
+                  </div>
 
-              {/* Progress bar */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '0.4rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>
-                    Spent: <strong>{formatCurrency(budget.spent, activeCurrencyCode, activeCurrency.rate)}</strong>
-                  </span>
-                  <span style={{ fontWeight: 700, color: statusColor }}>
-                    {budget.percentage}%
-                  </span>
+                  <div style={{
+                    width: '100%',
+                    height: '7px',
+                    backgroundColor: '#f1f5f9',
+                    borderRadius: '99px',
+                    overflow: 'hidden'
+                  }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        width: `${Math.min(100, budget.percentage)}%`,
+                        backgroundColor: statusColor,
+                        borderRadius: '99px',
+                        transition: 'width 0.3s ease'
+                      }}
+                    />
+                  </div>
                 </div>
 
                 <div style={{
-                  width: '100%',
-                  height: '10px',
-                  backgroundColor: 'var(--bg-input)',
-                  borderRadius: '99px',
-                  overflow: 'hidden'
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.72rem',
+                  paddingTop: '0.4rem',
+                  borderTop: '1px dashed #f1f5f9'
                 }}>
-                  <div style={{
-                    width: `${Math.min(100, budget.percentage)}%`,
-                    height: '100%',
-                    backgroundColor: statusColor,
-                    borderRadius: '99px',
-                    transition: 'width 0.4s ease'
-                  }} />
+                  <span style={{ color: '#64748b' }}>Remaining:</span>
+                  <span style={{ fontWeight: 800, color: budget.remaining === 0 ? '#ef4444' : '#059669' }}>
+                    {formatCurrency(budget.remaining, activeCurrencyCode, activeCurrency.rate)}
+                  </span>
                 </div>
               </div>
-
-              {/* Footer info */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: '0.76rem',
-                color: 'var(--text-tertiary)',
-                paddingTop: '0.65rem',
-                borderTop: '1px solid var(--border-subtle)'
-              }}>
-                <span>Limit: {formatCurrency(budget.monthlyLimit, activeCurrencyCode, activeCurrency.rate)}</span>
-                <span>
-                  {budget.isOverspent ? (
-                    <strong style={{ color: 'var(--accent-expense)' }}>
-                      Exceeded by {formatCurrency(budget.spent - budget.monthlyLimit, activeCurrencyCode, activeCurrency.rate)}
-                    </strong>
-                  ) : (
-                    <span>{formatCurrency(budget.remaining, activeCurrencyCode, activeCurrency.rate)} left</span>
-                  )}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
-      <AddBudgetModal
-        isOpen={isAddBudgetOpen}
-        onClose={() => setIsAddBudgetOpen(false)}
-      />
+      {/* Add Budget Modal */}
+      {isAddBudgetOpen && (
+        <AddBudgetModal
+          isOpen={isAddBudgetOpen}
+          onClose={() => setIsAddBudgetOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -13,15 +13,16 @@ import {
   Smartphone,
   Edit3,
   Tag,
-  MessageSquare
+  MessageSquare,
+  List,
+  Calendar as CalendarIcon,
+  X
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { exportTransactionsToCSV } from '../../utils/exportUtils';
 import { PaymentIntentPopup } from '../PaymentIntent/PaymentIntentPopup';
 import { Calendar as UICalendar } from '../ui/calendar';
-import { Button } from '../ui/button';
-import { List, Calendar as CalendarIcon } from 'lucide-react';
 
 export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
   const {
@@ -39,11 +40,13 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
   const [selectedPayment, setSelectedPayment] = useState('all');
   const [sortOrder, setSortOrder] = useState('date-desc');
   const [editingIntentTx, setEditingIntentTx] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Filter transactions
   const filtered = transactions.filter(t => {
     const matchesSearch =
       (t.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (t.merchant || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (t.note || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (t.tags || []).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -67,86 +70,140 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
   const totalFilteredExpense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Page Title & Top Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
         <div>
-          <h2 style={{ fontSize: '1.75rem', color: 'var(--text-primary)' }}>Transaction & Spending Intelligence</h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Search, filter, inspect daily calendar spend, and track your cashflow in Indian Rupees (₹)
-          </p>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            Activity & History
+          </h2>
+          <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+            {filtered.length} total transactions
+          </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          {/* View Mode Switcher */}
-          <div style={{ display: 'inline-flex', padding: '4px', backgroundColor: '#e2e8f0', borderRadius: '9999px', gap: '3px' }}>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              style={{
-                borderRadius: '9999px',
-                padding: '0.35rem 0.85rem',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                boxShadow: viewMode === 'list' ? '0 2px 8px rgba(37,99,235,0.25)' : 'none'
-              }}
-            >
-              <List size={14} style={{ marginRight: '4px' }} />
-              List View
-            </Button>
-            <Button
-              variant={viewMode === 'calendar' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('calendar')}
-              style={{
-                borderRadius: '9999px',
-                padding: '0.35rem 0.85rem',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                boxShadow: viewMode === 'calendar' ? '0 2px 8px rgba(37,99,235,0.25)' : 'none'
-              }}
-            >
-              <CalendarIcon size={14} style={{ marginRight: '4px' }} />
-              Calendar View
-            </Button>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => exportTransactionsToCSV(filtered, 'filtered_transactions.csv')}
+        {/* View Mode Pill */}
+        <div style={{
+          display: 'flex',
+          backgroundColor: '#f1f5f9',
+          borderRadius: '9999px',
+          padding: '3px',
+          gap: '2px'
+        }}>
+          <button
+            onClick={() => setViewMode('list')}
+            style={{
+              padding: '0.35rem 0.65rem',
+              borderRadius: '9999px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              backgroundColor: viewMode === 'list' ? '#ffffff' : 'transparent',
+              color: viewMode === 'list' ? '#0f172a' : '#64748b',
+              boxShadow: viewMode === 'list' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
           >
-            <Download size={14} style={{ marginRight: '5px' }} />
-            <span>Export CSV</span>
-          </Button>
-
-          {onOpenSimulateUPI && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onOpenSimulateUPI}
-              style={{ color: '#059669', borderColor: '#a7f3d0', backgroundColor: '#ecfdf5' }}
-            >
-              <MessageSquare size={14} style={{ marginRight: '5px' }} />
-              <span>Sync Bank SMS</span>
-            </Button>
-          )}
-
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => onOpenAddTx('expense')}
+            <List size={13} />
+            <span>List</span>
+          </button>
+          <button
+            onClick={() => setViewMode('calendar')}
+            style={{
+              padding: '0.35rem 0.65rem',
+              borderRadius: '9999px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              backgroundColor: viewMode === 'calendar' ? '#ffffff' : 'transparent',
+              color: viewMode === 'calendar' ? '#0f172a' : '#64748b',
+              boxShadow: viewMode === 'calendar' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
           >
-            <Plus size={14} style={{ marginRight: '5px' }} />
-            <span>Add Transaction</span>
-          </Button>
+            <CalendarIcon size={13} />
+            <span>Calendar</span>
+          </button>
         </div>
       </div>
 
-      {/* View Mode Content */}
+      {/* Horizontal Action Chips Bar */}
+      <div style={{
+        display: 'flex',
+        gap: '0.5rem',
+        overflowX: 'auto',
+        paddingBottom: '4px',
+        WebkitOverflowScrolling: 'touch'
+      }}>
+        {onOpenSimulateUPI && (
+          <button
+            onClick={onOpenSimulateUPI}
+            style={{
+              flexShrink: 0,
+              padding: '0.45rem 0.85rem',
+              borderRadius: '9999px',
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              color: '#059669',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              cursor: 'pointer'
+            }}
+          >
+            <MessageSquare size={14} />
+            <span>Sync SMS</span>
+          </button>
+        )}
+
+        <button
+          onClick={() => onOpenAddTx && onOpenAddTx('expense')}
+          style={{
+            flexShrink: 0,
+            padding: '0.45rem 0.85rem',
+            borderRadius: '9999px',
+            backgroundColor: '#0f172a',
+            color: '#ffffff',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            cursor: 'pointer'
+          }}
+        >
+          <Plus size={14} />
+          <span>Add Transaction</span>
+        </button>
+
+        <button
+          onClick={() => exportTransactionsToCSV(filtered, 'moneymind_transactions.csv')}
+          style={{
+            flexShrink: 0,
+            padding: '0.45rem 0.85rem',
+            borderRadius: '9999px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            color: '#475569',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            cursor: 'pointer'
+          }}
+        >
+          <Download size={14} />
+          <span>Export CSV</span>
+        </button>
+      </div>
+
       {viewMode === 'calendar' ? (
-        <div style={{ maxWidth: '900px', margin: '0 auto', width: '100%' }}>
+        <div style={{ width: '100%' }}>
           <UICalendar
             transactions={transactions}
             captionLayout="dropdown"
@@ -155,264 +212,311 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
         </div>
       ) : (
         <>
-          {/* Filter and Search Toolbar */}
-          <div className="glass-panel" style={{ padding: '1.25rem' }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '0.85rem',
-              alignItems: 'center'
-            }}>
-              {/* Search bar */}
-              <div style={{ position: 'relative', gridColumn: 'span 2' }}>
-                <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
-                <input
-                  type="text"
-                  placeholder="Search by title, tag, merchant, or note..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="form-control"
-                  style={{ paddingLeft: '2.4rem', fontSize: '0.86rem' }}
-                />
-              </div>
-
-              {/* Type Filter */}
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="form-control"
-                style={{ fontSize: '0.86rem' }}
-              >
-                <option value="all">All Types</option>
-                <option value="expense">Expenses Only</option>
-                <option value="income">Income Only</option>
-              </select>
-
-              {/* Category Filter */}
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="form-control"
-                style={{ fontSize: '0.86rem' }}
-              >
-                <option value="all">All Categories</option>
-                {categories.map(c => (
-                  <option key={c.id} value={c.name}>{c.name}</option>
-                ))}
-              </select>
-
-              {/* Payment Method Filter */}
-              <select
-                value={selectedPayment}
-                onChange={(e) => setSelectedPayment(e.target.value)}
-                className="form-control"
-                style={{ fontSize: '0.86rem' }}
-              >
-                <option value="all">All Payment Modes</option>
-                <option value="UPI">UPI</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Net Banking">Net Banking</option>
-                <option value="Cash">Cash</option>
-              </select>
-
-              {/* Sort selector */}
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="form-control"
-                style={{ fontSize: '0.86rem' }}
-              >
-                <option value="date-desc">Newest First</option>
-                <option value="date-asc">Oldest First</option>
-                <option value="amount-desc">Highest Amount</option>
-                <option value="amount-asc">Lowest Amount</option>
-              </select>
+          {/* Mobile Search & Filter Section */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '18px',
+            padding: '0.85rem',
+            border: '1px solid #e2ede8',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.65rem'
+          }}>
+            {/* Search Input */}
+            <div style={{ position: 'relative', width: '100%' }}>
+              <Search
+                size={16}
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#94a3b8'
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search activity, merchant, note..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 0.85rem 0.65rem 2.4rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  backgroundColor: '#f8fafc',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
             </div>
 
-            {/* Filter summary banner */}
+            {/* Quick Type Filter Chips */}
             <div style={{
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: '1rem',
-              paddingTop: '0.85rem',
-              borderTop: '1px solid var(--border-subtle)',
-              fontSize: '0.8rem',
-              color: 'var(--text-secondary)'
+              gap: '0.4rem',
+              overflowX: 'auto',
+              paddingBottom: '2px'
             }}>
-              <span>Showing <strong>{filtered.length}</strong> of {transactions.length} transactions</span>
-              <div style={{ display: 'flex', gap: '1.25rem' }}>
-                <span>Filtered Inflow: <strong style={{ color: 'var(--accent-income)' }}>+{formatCurrency(totalFilteredIncome, activeCurrencyCode, activeCurrency.rate)}</strong></span>
-                <span>Filtered Outflow: <strong style={{ color: 'var(--accent-expense)' }}>-{formatCurrency(totalFilteredExpense, activeCurrencyCode, activeCurrency.rate)}</strong></span>
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'expense', label: 'Expenses' },
+                { id: 'income', label: 'Income' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedType(tab.id)}
+                  style={{
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                    backgroundColor: selectedType === tab.id ? '#059669' : '#f1f5f9',
+                    color: selectedType === tab.id ? '#ffffff' : '#64748b',
+                    transition: 'all 0.14s ease'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                style={{
+                  padding: '0.35rem 0.65rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  flexShrink: 0,
+                  backgroundColor: showFilters ? '#e0e7ff' : '#f1f5f9',
+                  color: showFilters ? '#3730a3' : '#64748b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Filter size={11} />
+                <span>Filters</span>
+              </button>
+            </div>
+
+            {/* Extended Dropdowns (shown if filter toggle active) */}
+            {showFilters && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.5rem',
+                paddingTop: '0.5rem',
+                borderTop: '1px dashed #e2e8f0'
+              }}>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  style={{
+                    padding: '0.45rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    backgroundColor: '#ffffff'
+                  }}
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  style={{
+                    padding: '0.45rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    backgroundColor: '#ffffff'
+                  }}
+                >
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="amount-desc">Highest Amount</option>
+                  <option value="amount-asc">Lowest Amount</option>
+                </select>
               </div>
+            )}
+
+            {/* Inflow / Outflow Summary */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: '0.4rem',
+              borderTop: '1px solid #f1f5f9',
+              fontSize: '0.75rem',
+              fontWeight: 700
+            }}>
+              <span style={{ color: '#059669' }}>
+                Inflow: +{formatCurrency(totalFilteredIncome, activeCurrencyCode, activeCurrency.rate)}
+              </span>
+              <span style={{ color: '#ef4444' }}>
+                Outflow: -{formatCurrency(totalFilteredExpense, activeCurrencyCode, activeCurrency.rate)}
+              </span>
             </div>
           </div>
 
-          {/* Transactions Table/List */}
-          <div className="table-responsive-container glass-panel" style={{ padding: '0.5rem', overflowX: 'auto' }}>
-        <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              <th style={{ padding: '1rem' }}>Transaction</th>
-              <th style={{ padding: '1rem' }}>Category</th>
-              <th style={{ padding: '1rem' }}>Payment Mode & Intent</th>
-              <th style={{ padding: '1rem' }}>Date</th>
-              <th style={{ padding: '1rem', textAlign: 'right' }}>Amount</th>
-              <th style={{ padding: '1rem', textAlign: 'center' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
+          {/* Native Mobile Transaction Cards List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             {filtered.length === 0 ? (
-              <tr>
-                <td colSpan="6" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-tertiary)' }}>
-                  No transactions match your search or filters.
-                </td>
-              </tr>
+              <div style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '18px',
+                padding: '2.5rem 1rem',
+                textAlign: 'center',
+                border: '1px solid #e2ede8'
+              }}>
+                <span style={{ fontSize: '1.75rem', display: 'block', marginBottom: '0.5rem' }}>🍃</span>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+                  No Transactions Found
+                </h4>
+                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                  Tap the (+) button below or Sync SMS to log your expenses.
+                </p>
+              </div>
             ) : (
-              filtered.map(t => {
+              filtered.map((t) => {
                 const isIncome = t.type === 'income';
                 const isUPI = t.paymentMethod === 'UPI' || t.source === 'simulated_upi';
                 const hasIntent = Boolean(t.intentCaptured || t.intentCategory);
 
                 return (
-                  <tr
+                  <div
                     key={t.id}
                     style={{
-                      borderBottom: '1px solid var(--border-subtle)',
-                      transition: 'background-color 0.15s ease'
+                      backgroundColor: '#ffffff',
+                      borderRadius: '16px',
+                      padding: '0.85rem',
+                      border: '1px solid #e2ede8',
+                      boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '0.75rem',
+                      boxSizing: 'border-box'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '8px',
-                          backgroundColor: isIncome ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)',
-                          color: isIncome ? 'var(--accent-income)' : 'var(--accent-expense)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0
-                        }}>
-                          {isIncome ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.88rem' }}>
-                            {t.merchant || t.title}
-                          </div>
-                          {t.merchant && t.title && t.merchant !== t.title && (
-                            <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
-                              {t.title}
-                            </div>
-                          )}
-                          {t.note && (
-                            <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
-                              {t.note}
-                            </div>
-                          )}
-                        </div>
+                    {/* Left: Icon + Merchant & Category */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0, flex: 1 }}>
+                      <div style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '12px',
+                        backgroundColor: isIncome ? '#ecfdf5' : '#fef2f2',
+                        color: isIncome ? '#059669' : '#ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        {isIncome ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />}
                       </div>
-                    </td>
 
-                    <td style={{ padding: '0.9rem 1rem' }}>
-                      <span className={`badge ${isIncome ? 'badge-income' : 'badge-expense'}`} style={{ fontSize: '0.7rem' }}>
-                        {t.category}
-                      </span>
-                    </td>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{
+                          fontSize: '0.86rem',
+                          fontWeight: 700,
+                          color: '#0f172a',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }}>
+                          {t.merchant || t.title}
+                        </div>
 
-                    {/* Payment Mode & Intent Indicator */}
-                    <td style={{ padding: '0.9rem 1rem', fontSize: '0.82rem' }}>
-                      {isUPI ? (
-                        hasIntent ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-                              <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>UPI</span>
-                              <span style={{ color: 'var(--text-tertiary)' }}>•</span>
-                              <span style={{ color: '#2563eb', fontWeight: 700, fontSize: '0.78rem' }}>
-                                {t.intentCategory || t.category}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '2px', flexWrap: 'wrap' }}>
+                          <span style={{
+                            fontSize: '0.66rem',
+                            fontWeight: 700,
+                            padding: '1px 6px',
+                            borderRadius: '6px',
+                            backgroundColor: isIncome ? '#ecfdf5' : '#f8fafc',
+                            color: isIncome ? '#059669' : '#64748b',
+                            border: '1px solid #e2e8f0'
+                          }}>
+                            {t.category}
+                          </span>
+
+                          <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
+                            {formatDate(t.date)}
+                          </span>
+                        </div>
+
+                        {/* UPI Payment reason note */}
+                        {isUPI && (
+                          <div style={{ marginTop: '3px' }}>
+                            {hasIntent ? (
+                              <span style={{ fontSize: '0.68rem', color: '#2563eb', fontWeight: 600 }}>
+                                💡 {t.intentCategory || t.category}
                               </span>
+                            ) : (
                               <button
                                 onClick={() => setEditingIntentTx(t)}
                                 style={{
-                                  color: '#64748b',
-                                  cursor: 'pointer',
-                                  padding: '2px',
-                                  display: 'inline-flex',
-                                  borderRadius: '4px'
+                                  fontSize: '0.66rem',
+                                  color: '#2563eb',
+                                  fontWeight: 700,
+                                  backgroundColor: '#eff6ff',
+                                  border: '1px solid #bfdbfe',
+                                  borderRadius: '6px',
+                                  padding: '1px 6px',
+                                  cursor: 'pointer'
                                 }}
-                                title="Edit payment reason"
                               >
-                                <Edit3 size={12} />
+                                + Add reason
                               </button>
-                            </div>
-                            {t.intentNote && (
-                              <span style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic' }}>
-                                "{t.intentNote}"
-                              </span>
                             )}
                           </div>
-                        ) : (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                            <div style={{ color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
-                              <span>UPI • </span>
-                              <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Intent not captured</span>
-                            </div>
-                            <button
-                              onClick={() => setEditingIntentTx(t)}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '3px',
-                                fontSize: '0.7rem',
-                                fontWeight: 700,
-                                color: '#2563eb',
-                                backgroundColor: '#eff6ff',
-                                padding: '2px 8px',
-                                borderRadius: '9999px',
-                                border: '1px solid #bfdbfe',
-                                cursor: 'pointer',
-                                width: 'fit-content'
-                              }}
-                            >
-                              <Plus size={10} />
-                              <span>Add reason</span>
-                            </button>
-                          </div>
-                        )
-                      ) : (
-                        <span style={{ color: 'var(--text-secondary)' }}>{t.paymentMethod || '—'}</span>
-                      )}
-                    </td>
+                        )}
+                      </div>
+                    </div>
 
-                    <td style={{ padding: '0.9rem 1rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                      {formatDate(t.date)}
-                    </td>
+                    {/* Right: Amount & Delete Button */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, gap: '4px' }}>
+                      <span style={{
+                        fontSize: '0.98rem',
+                        fontWeight: 800,
+                        fontFamily: 'var(--font-display)',
+                        color: isIncome ? '#059669' : '#ef4444',
+                        letterSpacing: '-0.02em'
+                      }}>
+                        {isIncome ? '+' : '-'}{formatCurrency(t.amount, activeCurrencyCode, activeCurrency.rate)}
+                      </span>
 
-                    <td style={{ padding: '0.9rem 1rem', textAlign: 'right', fontWeight: 700, fontFamily: 'var(--font-display)', fontSize: '0.95rem', color: isIncome ? 'var(--accent-income)' : 'var(--accent-expense)' }}>
-                      {isIncome ? '+' : '-'}{formatCurrency(t.amount, activeCurrencyCode, activeCurrency.rate)}
-                    </td>
-
-                    <td style={{ padding: '0.9rem 1rem', textAlign: 'center' }}>
                       <button
                         onClick={() => deleteTransaction(t.id)}
-                        className="btn-icon"
-                        style={{ width: '30px', height: '30px', color: 'var(--text-tertiary)' }}
-                        title="Delete"
+                        style={{
+                          color: '#cbd5e1',
+                          padding: '2px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          borderRadius: '6px'
+                        }}
+                        title="Delete transaction"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={13} />
                       </button>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 );
               })
             )}
-          </tbody>
-        </table>
-      </div>
+          </div>
         </>
       )}
 
