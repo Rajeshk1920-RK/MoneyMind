@@ -460,18 +460,13 @@ function ChatBody({
 
 export function AIChatBot() {
   const { transactions, budgets, goals, activeCurrencyCode } = useFinance();
-  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'opportunities'
   const [hasStartedChat, setHasStartedChat] = useState(false);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState('');
   const [isBusy, setIsBusy] = useState(false);
 
-  const suggestions = generateAISavingSuggestions(transactions, budgets);
-  const totalPotentialSavings = suggestions.reduce((sum, s) => sum + (s.potentialSaving || 0), 0);
-
   const handleStartChat = (initialPrompt) => {
     setHasStartedChat(true);
-    setActiveTab('chat');
 
     if (initialPrompt && initialPrompt.trim()) {
       const userMsg = {
@@ -532,63 +527,22 @@ export function AIChatBot() {
     setIsBusy(false);
   };
 
-  const handleSuggestionAction = (sug) => {
-    setHasStartedChat(true);
-    setActiveTab('chat');
-    handleStartChat(`Tell me more about how to ${sug.title}`);
-  };
-
   return (
     <div className="ai-chatbot-wrapper">
-      {/* Top Segmented Tab Switcher */}
-      <div className="ai-tab-switcher">
-        <div className="ai-tab-pills">
-          <button
-            type="button"
-            className={`ai-tab-pill-btn ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chat')}
-          >
-            <MessageSquare size={14} />
-            <span>Chat Copilot</span>
-          </button>
-          <button
-            type="button"
-            className={`ai-tab-pill-btn ${activeTab === 'opportunities' ? 'active' : ''}`}
-            onClick={() => setActiveTab('opportunities')}
-          >
-            <Lightbulb size={14} />
-            <span>Opportunities</span>
-            {totalPotentialSavings > 0 && (
-              <span className="ai-tab-badge">+{suggestions.length}</span>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Tab 1: Chat Copilot (Welcome Hero if not started, or Active Chat) */}
-      {activeTab === 'chat' && (
-        !hasStartedChat ? (
-          <WelcomeScreen onStartChat={handleStartChat} />
-        ) : (
-          <MessageScrollerProvider>
-            <ChatBody
-              messages={messages}
-              setMessages={setMessages}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-              isBusy={isBusy}
-              setIsBusy={setIsBusy}
-              onReset={handleReset}
-            />
-          </MessageScrollerProvider>
-        )
-      )}
-
-      {/* Tab 2: Full Savings Opportunities Dashboard */}
-      {activeTab === 'opportunities' && (
-        <div className="ai-opportunities-scroll">
-          <AISuggestions onAction={handleSuggestionAction} />
-        </div>
+      {!hasStartedChat ? (
+        <WelcomeScreen onStartChat={handleStartChat} />
+      ) : (
+        <MessageScrollerProvider>
+          <ChatBody
+            messages={messages}
+            setMessages={setMessages}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            isBusy={isBusy}
+            setIsBusy={setIsBusy}
+            onReset={handleReset}
+          />
+        </MessageScrollerProvider>
       )}
     </div>
   );
