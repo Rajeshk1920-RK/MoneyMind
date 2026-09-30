@@ -478,6 +478,17 @@ export function FinanceProvider({ children }) {
   const netBalance = totalIncome - totalExpense;
   const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0;
 
+  const clearAllData = () => {
+    localStorage.removeItem('finai_transactions');
+    localStorage.removeItem('finai_budgets');
+    localStorage.removeItem('finai_goals');
+    localStorage.removeItem('finai_notifs');
+    setTransactions([]);
+    setBudgets([]);
+    setGoals([]);
+    setNotifications([]);
+  };
+
   return (
     <FinanceContext.Provider
       value={{
@@ -512,6 +523,7 @@ export function FinanceProvider({ children }) {
         addNotification,
         markAllNotificationsRead,
         clearNotification,
+        clearAllData,
         totalIncome,
         totalExpense,
         netBalance,

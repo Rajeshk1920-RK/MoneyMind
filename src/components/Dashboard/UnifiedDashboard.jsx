@@ -88,16 +88,29 @@ export function UnifiedDashboard({
   // Recent 6 transactions from real state
   const latestTransactions = transactions.slice(0, 6);
 
-  // Monthly breakdown calculation for interactive Expense Statistics bar graph
-  const monthlyBreakdown = [
-    { label: 'MAY', monthNum: 4, amount: 38400 },
-    { label: 'JUN', monthNum: 5, amount: 44250 },
-    { label: 'JUL', monthNum: 6, amount: 41800 },
-    { label: 'AUG', monthNum: 7, amount: 49100 },
-    { label: 'SEP', monthNum: 8, amount: totalExpense > 0 ? totalExpense : 56490 }
-  ];
-  const maxMonthExpense = Math.max(...monthlyBreakdown.map(m => m.amount), 60000);
-  const healthScore = Math.min(96, Math.max(55, savingsRate > 0 ? 60 + Math.round(savingsRate * 0.4) : 65));
+  // Dynamic Monthly breakdown calculation from real transactions
+  const monthLabels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const monthlyBreakdown = [4, 3, 2, 1, 0].map(offset => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - offset);
+    const mIdx = d.getMonth();
+    const yr = d.getFullYear();
+    const monthTx = transactions.filter(t => {
+      if (t.type !== 'expense') return false;
+      const tDate = new Date(t.date);
+      return !isNaN(tDate) && tDate.getMonth() === mIdx && tDate.getFullYear() === yr;
+    });
+    const total = monthTx.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    return {
+      label: monthLabels[mIdx],
+      monthNum: mIdx,
+      amount: total
+    };
+  });
+  const maxMonthExpense = Math.max(...monthlyBreakdown.map(m => m.amount), 1);
+  const healthScore = totalIncome > 0
+    ? Math.min(100, Math.max(0, Math.round(((totalIncome - totalExpense) / totalIncome) * 100)))
+    : (totalExpense > 0 ? 0 : 100);
 
   // Dynamic Upcoming/Active Budgets list from real state
   const activeBudgetsList = budgets.slice(0, 3).map((b, idx) => {

@@ -21,7 +21,8 @@ import {
   CheckCircle2,
   Sparkles,
   Zap,
-  Save
+  Save,
+  Trash2
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { useAuth } from '../../context/AuthContext';
@@ -37,7 +38,8 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
     currencies,
     transactions,
     budgets,
-    goals
+    goals,
+    clearAllData
   } = useFinance();
 
   const { user } = useAuth();
@@ -745,6 +747,33 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
                     style={{ display: 'none' }}
                   />
                 </label>
+
+                <button
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to clear all data from every section? This will reset all transactions, budgets, goals, and metrics to zero.')) {
+                      clearAllData();
+                      showToast('All data has been cleared.');
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem',
+                    backgroundColor: '#fef2f2',
+                    color: '#dc2626',
+                    border: '1px solid #fecaca',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    marginTop: '0.5rem'
+                  }}
+                >
+                  <Trash2 size={16} />
+                  <span>Clear All Data from Every Section</span>
+                </button>
               </div>
             </div>
           )}
