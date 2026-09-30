@@ -54,12 +54,27 @@ jobs:
           mkdir -p output
           cp android/app/build/outputs/apk/debug/app-debug.apk output/MoneyMind-v1.0.apk
 
-      - name: Upload Android APK
+      - name: Upload Android APK to Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: MoneyMind-v1.0-APK
           path: output/MoneyMind-v1.0.apk
           if-no-files-found: error
+
+      - name: Publish Direct APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0-latest
+          name: MoneyMind Android App v1.0
+          body: |
+            ### 🚀 MoneyMind Android App (v1.0)
+            - Direct `.apk` download for Android devices.
+            - Auto bank SMS parsing & private local cashflow tracking.
+            - Zero cloud lock-in.
+          files: output/MoneyMind-v1.0.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-pages:
     name: Deploy Web Showcase
