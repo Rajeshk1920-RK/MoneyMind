@@ -498,75 +498,6 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         </div>
       )}
 
-      {/* Social Proof Strip: Trusted by 150+ companies (Exact match with authentic colors) */}
-      <section style={{
-        backgroundColor: '#ffffff',
-        borderTop: '1px solid #e5ede7',
-        borderBottom: '1px solid #e5ede7',
-        padding: '3rem 2rem'
-      }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            color: '#657e70',
-            letterSpacing: '0.04em',
-            marginBottom: '2rem'
-          }}>
-            Trusted by 150+ companies
-          </p>
-
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '4.5rem',
-            flexWrap: 'wrap'
-          }}>
-            {/* INTERCOM */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 800, color: '#111827', letterSpacing: '0.04em' }}>
-              <div style={{ width: '26px', height: '26px', borderRadius: '6px', backgroundColor: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                <MessageSquare size={13} />
-              </div>
-              <span>INTERCOM</span>
-            </div>
-
-            {/* Notion */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '1.25rem', fontWeight: 800, color: '#111827' }}>
-              <div style={{ width: '26px', height: '26px', borderRadius: '6px', backgroundColor: '#111827', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 900 }}>
-                N
-              </div>
-              <span>Notion</span>
-            </div>
-
-            {/* Webflow - Signature Blue */}
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#146ef5', letterSpacing: '-0.04em' }}>
-              webflow
-            </div>
-
-            {/* HubSpot - Signature Orange */}
-            <div style={{ display: 'flex', alignItems: 'center', fontSize: '1.35rem', fontWeight: 800, color: '#ff7a59' }}>
-              HubSpot
-            </div>
-
-            {/* Zendesk - Signature Dark Teal */}
-            <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#03363d', letterSpacing: '-0.02em' }}>
-              zendesk
-            </div>
-
-            {/* Google - Iconic Multi-Color */}
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em' }}>
-              <span style={{ color: '#4285f4' }}>G</span>
-              <span style={{ color: '#ea4335' }}>o</span>
-              <span style={{ color: '#fbbc05' }}>o</span>
-              <span style={{ color: '#4285f4' }}>g</span>
-              <span style={{ color: '#34a853' }}>l</span>
-              <span style={{ color: '#ea4335' }}>e</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Feature Showcase: "Built for the way you spend" (Exact match with reference image) */}
       <section id="features" style={{
         maxWidth: '1360px',
@@ -608,323 +539,286 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </p>
         </div>
 
-        {/* Horizontal Multi-Phone Showcase Gallery */}
-        <div style={{
-          display: 'flex',
-          gap: '1.75rem',
-          overflowX: 'auto',
-          paddingBottom: '2.5rem',
-          paddingTop: '1rem',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-          justifyContent: 'center',
-          flexWrap: 'nowrap'
-        }}>
-          {/* Phone 1: Analytics & Spend Bar Chart */}
-          <div style={{
-            minWidth: '275px',
-            width: '275px',
-            backgroundColor: '#ffffff',
-            borderRadius: '40px',
-            padding: '10px',
-            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
-            position: 'relative',
-            flexShrink: 0,
-            transition: 'transform 0.25s ease'
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '32px',
-              padding: '1.2rem 1rem',
-              minHeight: '430px',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island */}
-              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+        {/* Infinite Rotating Multi-Phone Showcase Marquee */}
+        <div className="phone-showcase-marquee-wrapper">
+          <div className="phone-showcase-marquee-track">
+            {[0, 1].map((setIdx) => (
+              <React.Fragment key={setIdx}>
+                {/* Phone 1: Daily Expenses */}
+                <div className="phone-showcase-item">
+                  <div className="phone-showcase-card">
+                    {/* iPhone Top Notch */}
+                    <div className="phone-notch">
+                      <div className="phone-notch-speaker" />
+                      <div className="phone-notch-camera" />
+                    </div>
 
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Analytics</span>
-              
-              {/* Balance Card */}
-              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '1rem', margin: '0.85rem 0 1.25rem' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Net Spend This Month</span>
-                <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a', margin: '2px 0 0' }}>₹24,880</div>
-              </div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', marginBottom: '0.35rem' }}>
+                      Good Morning,
+                    </span>
+                    
+                    {/* Today's Expense Card */}
+                    <div style={{ backgroundColor: '#f5f2eb', borderRadius: '18px', padding: '0.85rem 1rem', marginBottom: '0.85rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Today's Expense</span>
+                      <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em', marginTop: '2px' }}>₹1,749.00</div>
+                    </div>
 
-              {/* 4-Bar Colorful Vertical Chart */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                height: '140px',
-                padding: '0 1rem 0.5rem',
-                backgroundColor: '#f8fafc',
-                borderRadius: '18px',
-                border: '1px solid #e2e8f0',
-                marginBottom: '1rem'
-              }}>
-                <div style={{ width: '28px', height: '65%', backgroundColor: '#10b981', borderRadius: '8px' }} />
-                <div style={{ width: '28px', height: '90%', backgroundColor: '#3b82f6', borderRadius: '8px' }} />
-                <div style={{ width: '28px', height: '45%', backgroundColor: '#f59e0b', borderRadius: '8px' }} />
-                <div style={{ width: '28px', height: '100%', backgroundColor: '#8b5cf6', borderRadius: '8px' }} />
-              </div>
+                    {/* Daily Expense List */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.6rem 0.75rem',
+                        borderRadius: '14px',
+                        border: '1px solid #f1f5f9',
+                        backgroundColor: '#ffffff'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 800, color: '#334155' }}>
+                            FB
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#0f172a' }}>Starbucks</div>
+                            <div style={{ fontSize: '0.66rem', color: '#94a3b8' }}>Food</div>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f172a' }}>-₹250</span>
+                      </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981' }}>↑ +12.4% vs last month</span>
-                <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Real-time</span>
-              </div>
-            </div>
-          </div>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.6rem 0.75rem',
+                        borderRadius: '14px',
+                        border: '1px solid #f1f5f9',
+                        backgroundColor: '#ffffff'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 800, color: '#334155' }}>
+                            TR
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#0f172a' }}>Uber Trip</div>
+                            <div style={{ fontSize: '0.66rem', color: '#94a3b8' }}>Transport</div>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0f172a' }}>-₹200</span>
+                      </div>
+                    </div>
 
-          {/* Phone 2: Budgets Progress Bars */}
-          <div style={{
-            minWidth: '275px',
-            width: '275px',
-            backgroundColor: '#ffffff',
-            borderRadius: '40px',
-            padding: '10px',
-            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
-            position: 'relative',
-            flexShrink: 0,
-            transition: 'transform 0.25s ease'
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '32px',
-              padding: '1.2rem 1rem',
-              minHeight: '430px',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island */}
-              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
-
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Budgets</span>
-
-              {/* Budget Limit Items */}
-              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '1rem', margin: '0.85rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
-                    <span>Food & Dining</span>
-                    <span>₹4,200 / ₹6,000</span>
+                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#059669' }}>✓ Offline Synced</span>
+                      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Real-time</span>
+                    </div>
                   </div>
-                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
-                    <div style={{ width: '70%', height: '100%', backgroundColor: '#10b981', borderRadius: '99px' }} />
-                  </div>
+                  <span className="phone-showcase-caption">Daily Expenses</span>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
-                    <span>Groceries</span>
-                    <span>₹3,100 / ₹4,000</span>
+                {/* Phone 2: Visual Analytics */}
+                <div className="phone-showcase-item">
+                  <div className="phone-showcase-card">
+                    {/* iPhone Top Notch */}
+                    <div className="phone-notch">
+                      <div className="phone-notch-speaker" />
+                      <div className="phone-notch-camera" />
+                    </div>
+
+                    <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.35rem' }}>
+                      Analytics
+                    </span>
+
+                    {/* Total Spent Box */}
+                    <div style={{ backgroundColor: '#f5f2eb', borderRadius: '18px', padding: '0.85rem 1rem', marginBottom: '0.85rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Total Spent this Month</span>
+                      <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em', marginTop: '2px' }}>₹24,850</div>
+                    </div>
+
+                    {/* 4-Bar Dynamic Graphic Chart */}
+                    <div style={{
+                      backgroundColor: '#f5f2eb',
+                      borderRadius: '18px',
+                      padding: '0.85rem',
+                      height: '130px',
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      justifyContent: 'space-around',
+                      gap: '0.4rem',
+                      marginBottom: '0.75rem'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', height: '100%', justifyContent: 'flex-end' }}>
+                        <div style={{ width: '22px', height: '55%', backgroundColor: '#10b981', borderRadius: '6px' }} />
+                        <span style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 700 }}>W1</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', height: '100%', justifyContent: 'flex-end' }}>
+                        <div style={{ width: '22px', height: '85%', backgroundColor: '#3b82f6', borderRadius: '6px' }} />
+                        <span style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 700 }}>W2</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', height: '100%', justifyContent: 'flex-end' }}>
+                        <div style={{ width: '22px', height: '40%', backgroundColor: '#f59e0b', borderRadius: '6px' }} />
+                        <span style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 700 }}>W3</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', height: '100%', justifyContent: 'flex-end' }}>
+                        <div style={{ width: '22px', height: '95%', backgroundColor: '#8b5cf6', borderRadius: '6px' }} />
+                        <span style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 700 }}>W4</span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#059669' }}>↑ +12.4% vs last mo</span>
+                      <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Live</span>
+                    </div>
                   </div>
-                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
-                    <div style={{ width: '77%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '99px' }} />
-                  </div>
+                  <span className="phone-showcase-caption">Visual Analytics</span>
                 </div>
 
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
-                    <span>Shopping</span>
-                    <span style={{ color: '#ef4444' }}>₹6,800 / ₹7,000</span>
+                {/* Phone 3: Smart Budgets */}
+                <div className="phone-showcase-item">
+                  <div className="phone-showcase-card">
+                    {/* iPhone Top Notch */}
+                    <div className="phone-notch">
+                      <div className="phone-notch-speaker" />
+                      <div className="phone-notch-camera" />
+                    </div>
+
+                    <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.35rem' }}>
+                      Budgets
+                    </span>
+
+                    {/* Food & Dining Progress */}
+                    <div style={{ backgroundColor: '#f5f2eb', borderRadius: '18px', padding: '0.85rem 1rem', marginBottom: '0.75rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>
+                        <span>Food & Dining</span>
+                        <span>₹4,200 / ₹6,000</span>
+                      </div>
+                      <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                        <div style={{ width: '70%', height: '100%', backgroundColor: '#10b981', borderRadius: '99px' }} />
+                      </div>
+                    </div>
+
+                    {/* Groceries & Shopping */}
+                    <div style={{ backgroundColor: '#ffffff', border: '1px solid #f1f5f9', borderRadius: '16px', padding: '0.75rem 0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                          <span>Groceries</span>
+                          <span>₹3,100 / ₹4,000</span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                          <div style={{ width: '77%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '99px' }} />
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                          <span>Shopping</span>
+                          <span style={{ color: '#ef4444' }}>₹6,800 / ₹7,000</span>
+                        </div>
+                        <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                          <div style={{ width: '97%', height: '100%', backgroundColor: '#ef4444', borderRadius: '99px' }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ backgroundColor: '#ecfdf5', borderRadius: '12px', padding: '0.65rem', border: '1px solid #a7f3d0', marginTop: 'auto' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#059669', display: 'block' }}>💡 AI Budget Alert</span>
+                      <span style={{ fontSize: '0.68rem', color: '#065f46', lineHeight: 1.3 }}>₹200 safe velocity left today.</span>
+                    </div>
                   </div>
-                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
-                    <div style={{ width: '97%', height: '100%', backgroundColor: '#ef4444', borderRadius: '99px' }} />
+                  <span className="phone-showcase-caption">Smart Budgets</span>
+                </div>
+
+                {/* Phone 4: Privacy & Isolation */}
+                <div className="phone-showcase-item">
+                  <div className="phone-showcase-card">
+                    {/* iPhone Top Notch */}
+                    <div className="phone-notch">
+                      <div className="phone-notch-speaker" />
+                      <div className="phone-notch-camera" />
+                    </div>
+
+                    {/* Shield Icon */}
+                    <div style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
+                      backgroundColor: '#ecfdf5',
+                      border: '2px solid #a7f3d0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#059669',
+                      margin: '0.25rem auto 0.5rem'
+                    }}>
+                      <ShieldCheck size={24} />
+                    </div>
+
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', textAlign: 'center', margin: '0 0 0.15rem' }}>Local Isolation</h4>
+                    <p style={{ fontSize: '0.7rem', color: '#64748b', textAlign: 'center', margin: '0 0 0.75rem' }}>Network Permissions: 0</p>
+
+                    {/* Security Rules */}
+                    <div style={{ backgroundColor: '#f5f2eb', borderRadius: '16px', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: 700 }}>✓ 100% Offline Database</div>
+                      <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: 700 }}>✓ Bank SMS Parser on Device</div>
+                      <div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: 700 }}>✓ Zero Telemetry / Tracking</div>
+                    </div>
+
+                    <div style={{ marginTop: 'auto', backgroundColor: '#ecfdf5', borderRadius: '12px', padding: '0.5rem', textAlign: 'center', border: '1px solid #a7f3d0' }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#059669' }}>🔒 Encrypted Local Vault</span>
+                    </div>
                   </div>
+                  <span className="phone-showcase-caption">Privacy & Vault</span>
                 </div>
-              </div>
 
-              <div style={{ backgroundColor: '#ecfdf5', borderRadius: '14px', padding: '0.85rem', border: '1px solid #a7f3d0', marginTop: 'auto' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#059669', display: 'block' }}>💡 AI Budget Alert</span>
-                <span style={{ fontSize: '0.72rem', color: '#065f46' }}>You have ₹200 left in Shopping. Cap safe velocity today.</span>
-              </div>
-            </div>
-          </div>
+                {/* Phone 5: Group Splits */}
+                <div className="phone-showcase-item">
+                  <div className="phone-showcase-card">
+                    {/* iPhone Top Notch */}
+                    <div className="phone-notch">
+                      <div className="phone-notch-speaker" />
+                      <div className="phone-notch-camera" />
+                    </div>
 
-          {/* Phone 3: Locked In To Save */}
-          <div style={{
-            minWidth: '275px',
-            width: '275px',
-            backgroundColor: '#ffffff',
-            borderRadius: '40px',
-            padding: '10px',
-            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
-            position: 'relative',
-            flexShrink: 0,
-            transition: 'transform 0.25s ease'
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '32px',
-              padding: '1.2rem 1rem',
-              minHeight: '430px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island */}
-              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+                    <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.35rem' }}>
+                      SplitSmart Group
+                    </span>
 
-              {/* Big Shield Badge */}
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
-                backgroundColor: '#ecfdf5',
-                border: '2px solid #a7f3d0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#059669',
-                margin: '0.5rem 0 0.85rem'
-              }}>
-                <ShieldCheck size={28} />
-              </div>
+                    <div style={{ backgroundColor: '#f5f2eb', borderRadius: '16px', padding: '0.75rem 0.9rem', marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>Goa Trip 2026</div>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '2px' }}>5 Members • ₹38,400 Total</div>
+                    </div>
 
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.2rem' }}>Locked in to save</h4>
-              <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 1.25rem' }}>Automated rule-based vault</p>
+                    <div style={{ backgroundColor: '#ffffff', border: '1.5px solid #f1f5f9', borderRadius: '14px', padding: '0.65rem 0.75rem', marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0f172a' }}>Rajesh owes Arun</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#059669', margin: '2px 0' }}>₹1,250.00</div>
+                      <div style={{ fontSize: '0.66rem', color: '#64748b' }}>Optimized minimal transaction</div>
+                    </div>
 
-              {/* Rules List */}
-              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.85rem', width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ Round up on UPI</div>
-                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ Auto-sweep ₹2,000 / mo</div>
-                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ 50/30/20 Smart Allocation</div>
-              </div>
-
-              <div style={{ marginTop: 'auto', width: '100%' }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#059669', marginBottom: '2px' }}>Emergency Fund: ₹1,50,000</div>
-                <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
-                  <div style={{ width: '82%', height: '100%', backgroundColor: '#059669', borderRadius: '99px' }} />
+                    <button
+                      onClick={onLaunchApp}
+                      style={{
+                        marginTop: 'auto',
+                        padding: '0.65rem',
+                        borderRadius: '12px',
+                        backgroundColor: '#0f172a',
+                        color: '#ffffff',
+                        fontSize: '0.76rem',
+                        fontWeight: 700,
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem'
+                      }}
+                    >
+                      <span>Settle via UPI</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+                  <span className="phone-showcase-caption">Group Settlement</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Phone 4: Last Transactions & Floating SMS */}
-          <div style={{
-            minWidth: '275px',
-            width: '275px',
-            backgroundColor: '#ffffff',
-            borderRadius: '40px',
-            padding: '10px',
-            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
-            position: 'relative',
-            flexShrink: 0,
-            transition: 'transform 0.25s ease'
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '32px',
-              padding: '1.2rem 1rem',
-              minHeight: '430px',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island */}
-              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
-
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Transactions</span>
-
-              {/* Transaction Highlight */}
-              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.9rem', margin: '0.85rem 0 1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a' }}>Zomato Dining</span>
-                  <span style={{ fontSize: '0.95rem', fontWeight: 900, color: '#ef4444' }}>-₹1,745.00</span>
-                </div>
-                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>HDFC Bank • UPI</span>
-              </div>
-
-              {/* Floating Banking SMS Notification Bubble (Exact match with reference) */}
-              <div style={{
-                backgroundColor: '#ffffff',
-                border: '1.5px solid #0f172a',
-                borderRadius: '14px 14px 4px 14px',
-                padding: '0.65rem 0.8rem',
-                boxShadow: '0 8px 20px rgba(15, 23, 42, 0.15)',
-                margin: '0 0 1rem',
-                fontSize: '0.72rem',
-                color: '#0f172a',
-                lineHeight: 1.35
-              }}>
-                <div style={{ fontWeight: 800, fontSize: '0.68rem', color: '#059669', marginBottom: '2px' }}>BANK SMS DETECTED</div>
-                Rs 1,745.00 debited from A/c XX4892 on 29-Sep-26 via UPI. Bal: Rs 1,42,850.00
-              </div>
-
-              <div style={{ marginTop: 'auto', backgroundColor: '#ecfdf5', borderRadius: '10px', padding: '0.5rem', border: '1px solid #a7f3d0', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#059669' }}>⚡ Auto-Categorized as Dining</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Phone 5: SplitSmart Debt Settlement */}
-          <div style={{
-            minWidth: '275px',
-            width: '275px',
-            backgroundColor: '#ffffff',
-            borderRadius: '40px',
-            padding: '10px',
-            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
-            position: 'relative',
-            flexShrink: 0,
-            transition: 'transform 0.25s ease'
-          }}>
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '32px',
-              padding: '1.2rem 1rem',
-              minHeight: '430px',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island */}
-              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
-
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SplitSmart Group</span>
-
-              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.9rem', margin: '0.85rem 0 1rem' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>Goa Trip 2026</div>
-                <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>5 Members • ₹38,400 Total</div>
-              </div>
-
-              <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '0.75rem', marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a' }}>Rajesh owes Arun</div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#059669', margin: '2px 0' }}>₹1,250.00</div>
-                <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Optimized minimal transaction</div>
-              </div>
-
-              <button
-                onClick={onLaunchApp}
-                style={{
-                  marginTop: 'auto',
-                  padding: '0.65rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#0f172a',
-                  color: '#ffffff',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.4rem'
-                }}
-              >
-                <span>Settle via UPI</span>
-                <ArrowRight size={13} />
-              </button>
-            </div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </section>
