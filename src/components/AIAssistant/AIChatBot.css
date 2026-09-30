@@ -526,101 +526,125 @@
 
 /* Input Form Footer */
 .ai-input-footer {
-  padding: 0.6rem 0.85rem;
+  padding: 0.65rem 0.85rem;
   background: #ffffff;
   border-top: 1px solid #f1f5f9;
   flex-shrink: 0;
 }
 
 .ai-input-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 28px;
-  padding: 0.35rem 0.5rem 0.35rem 0.55rem;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  background: #f8fafc !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 9999px !important;
+  padding: 0.35rem 0.5rem 0.35rem 0.55rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .ai-input-container:focus-within {
-  border-color: #059669;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+  border-color: #059669 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15), 0 4px 14px rgba(15, 23, 42, 0.06) !important;
 }
 
 .ai-input-textarea-wrap {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
 }
 
-.ai-input-textarea {
-  width: 100%;
-  border: none;
-  background: transparent;
-  box-shadow: none;
-  padding: 0.35rem 0.3rem;
-  min-height: 24px;
-  max-height: 90px;
-  font-size: 0.88rem;
-  line-height: 1.4;
-  color: #0f172a;
-  resize: none;
-  outline: none;
-  font-family: inherit;
-  box-sizing: border-box;
+.ai-input-textarea,
+.ai-input-textarea:focus,
+.ai-input-textarea:hover,
+.ai-input-textarea:active {
+  width: 100% !important;
+  border: none !important;
+  border-width: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+  padding: 0.35rem 0.3rem !important;
+  min-height: 24px !important;
+  max-height: 90px !important;
+  font-size: 0.88rem !important;
+  line-height: 1.4 !important;
+  color: #0f172a !important;
+  resize: none !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+}
+
+.ai-input-textarea::-webkit-scrollbar {
+  display: none !important;
 }
 
 .ai-input-textarea::placeholder {
-  color: #94a3b8;
-  font-size: 0.85rem;
+  color: #94a3b8 !important;
+  font-size: 0.85rem !important;
 }
 
 .ai-action-btn-circle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  flex-shrink: 0;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  flex-shrink: 0 !important;
 }
 
 .ai-action-btn-outline {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #475569;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
 }
 
 .ai-action-btn-outline:hover:not(:disabled) {
-  background: #f1f5f9;
-  color: #0f172a;
-  border-color: #94a3b8;
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border-color: #a7f3d0 !important;
 }
 
 .ai-action-btn-send {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35) !important;
+  border: none !important;
 }
 
 .ai-action-btn-send:hover:not(:disabled) {
-  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+  transform: translateY(-1px) scale(1.03) !important;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.45) !important;
 }
 
 .ai-action-btn-send:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* Typing / Shimmer Marker */
