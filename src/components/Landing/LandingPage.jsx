@@ -567,231 +567,364 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         </div>
       </section>
 
-      {/* Feature Grid: "Tools to Power Your Financial Journey" - Exact Headline */}
+      {/* Feature Showcase: "Built for the way you spend" (Exact match with reference image) */}
       <section id="features" style={{
-        maxWidth: '1280px',
+        maxWidth: '1360px',
         margin: '0 auto',
-        padding: '5.5rem 2rem 4rem'
+        padding: '5rem 1.5rem 4.5rem',
+        overflow: 'hidden'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <h2 style={{
-            fontSize: '2.85rem',
+          <span style={{
+            fontSize: '0.78rem',
             fontWeight: 800,
-            color: '#16382b',
+            color: '#059669',
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            marginBottom: '0.75rem',
+            display: 'inline-block'
+          }}>
+            FEATURES & APPS
+          </span>
+          <h2 style={{
+            fontSize: 'clamp(2.2rem, 5vw, 3.4rem)',
+            fontWeight: 800,
+            color: '#0f172a',
             fontFamily: 'var(--font-display)',
-            letterSpacing: '-0.025em',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
             marginBottom: '0.85rem'
           }}>
-            Tools to Power Your Financial Journey
+            Built for the way you spend
           </h2>
-          <p style={{ fontSize: '1.1rem', color: '#52695c' }}>
-            Simplify budgeting, planning, and investments with our smart features.
+          <p style={{
+            fontSize: 'clamp(0.95rem, 2vw, 1.12rem)',
+            color: '#52695c',
+            maxWidth: '620px',
+            margin: '0 auto',
+            lineHeight: 1.55
+          }}>
+            Experience personal finance reimagined with automated offline detection, intuitive category budgets, and real-time visual insights.
           </p>
         </div>
 
+        {/* Horizontal Multi-Phone Showcase Gallery */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.85rem'
+          display: 'flex',
+          gap: '1.75rem',
+          overflowX: 'auto',
+          paddingBottom: '2.5rem',
+          paddingTop: '1rem',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+          justifyContent: 'center',
+          flexWrap: 'nowrap'
         }}>
-          {/* Card 1 */}
+          {/* Phone 1: Analytics & Spend Bar Chart */}
           <div style={{
+            minWidth: '275px',
+            width: '275px',
             backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.25rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 10px 30px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '1.5rem'
+            borderRadius: '40px',
+            padding: '10px',
+            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'transform 0.25s ease'
           }}>
-            <div>
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '14px',
-                backgroundColor: '#eaf3ed',
-                color: '#16382b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.35rem'
-              }}>
-                <TrendingUp size={26} />
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '32px',
+              padding: '1.2rem 1rem',
+              minHeight: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Dynamic Island */}
+              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Analytics</span>
+              
+              {/* Balance Card */}
+              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '1rem', margin: '0.85rem 0 1.25rem' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Net Spend This Month</span>
+                <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#0f172a', margin: '2px 0 0' }}>₹24,880</div>
               </div>
-              <h3 style={{ fontSize: '1.3rem', color: '#16382b', marginBottom: '0.65rem', fontWeight: 700 }}>
-                AI Expense Forecasting
-              </h3>
-              <p style={{ fontSize: '0.92rem', color: '#52695c', lineHeight: 1.6 }}>
-                Predictive linear burn-rate model forecasts your month-end spend based on daily velocity before limits are breached.
-              </p>
-            </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
+
+              {/* 4-Bar Colorful Vertical Chart */}
+              <div style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
-                color: '#1b4332',
-                cursor: 'pointer'
-              }}
-            >
-              <span>Explore Analytics</span>
-              <ChevronRight size={16} />
-            </button>
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                height: '140px',
+                padding: '0 1rem 0.5rem',
+                backgroundColor: '#f8fafc',
+                borderRadius: '18px',
+                border: '1px solid #e2e8f0',
+                marginBottom: '1rem'
+              }}>
+                <div style={{ width: '28px', height: '65%', backgroundColor: '#10b981', borderRadius: '8px' }} />
+                <div style={{ width: '28px', height: '90%', backgroundColor: '#3b82f6', borderRadius: '8px' }} />
+                <div style={{ width: '28px', height: '45%', backgroundColor: '#f59e0b', borderRadius: '8px' }} />
+                <div style={{ width: '28px', height: '100%', backgroundColor: '#8b5cf6', borderRadius: '8px' }} />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981' }}>↑ +12.4% vs last month</span>
+                <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Real-time</span>
+              </div>
+            </div>
           </div>
 
-          {/* Card 2: SplitSmart Group Trips */}
+          {/* Phone 2: Budgets Progress Bars */}
           <div style={{
+            minWidth: '275px',
+            width: '275px',
             backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.25rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 10px 30px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '1.5rem'
+            borderRadius: '40px',
+            padding: '10px',
+            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'transform 0.25s ease'
           }}>
-            <div>
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '14px',
-                backgroundColor: '#eaf3ed',
-                color: '#16382b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.35rem'
-              }}>
-                <Users size={26} />
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '32px',
+              padding: '1.2rem 1rem',
+              minHeight: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Dynamic Island */}
+              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Budgets</span>
+
+              {/* Budget Limit Items */}
+              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '1rem', margin: '0.85rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                    <span>Food & Dining</span>
+                    <span>₹4,200 / ₹6,000</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: '70%', height: '100%', backgroundColor: '#10b981', borderRadius: '99px' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                    <span>Groceries</span>
+                    <span>₹3,100 / ₹4,000</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: '77%', height: '100%', backgroundColor: '#3b82f6', borderRadius: '99px' }} />
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
+                    <span>Shopping</span>
+                    <span style={{ color: '#ef4444' }}>₹6,800 / ₹7,000</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: '97%', height: '100%', backgroundColor: '#ef4444', borderRadius: '99px' }} />
+                  </div>
+                </div>
               </div>
-              <h3 style={{ fontSize: '1.3rem', color: '#16382b', marginBottom: '0.65rem', fontWeight: 700 }}>
-                SplitSmart Group Trips
-              </h3>
-              <p style={{ fontSize: '0.92rem', color: '#52695c', lineHeight: 1.6 }}>
-                Splitwise-style bipartite graph algorithm resolves multi-person bills into the absolute minimum required debt transactions.
-              </p>
+
+              <div style={{ backgroundColor: '#ecfdf5', borderRadius: '14px', padding: '0.85rem', border: '1px solid #a7f3d0', marginTop: 'auto' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#059669', display: 'block' }}>💡 AI Budget Alert</span>
+                <span style={{ fontSize: '0.72rem', color: '#065f46' }}>You have ₹200 left in Shopping. Cap safe velocity today.</span>
+              </div>
             </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
-                color: '#1b4332',
-                cursor: 'pointer'
-              }}
-            >
-              <span>View Group Trips</span>
-              <ChevronRight size={16} />
-            </button>
           </div>
 
-          {/* Card 3: Proactive Budget Alerts */}
+          {/* Phone 3: Locked In To Save */}
           <div style={{
+            minWidth: '275px',
+            width: '275px',
             backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.25rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 10px 30px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '1.5rem'
+            borderRadius: '40px',
+            padding: '10px',
+            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'transform 0.25s ease'
           }}>
-            <div>
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '32px',
+              padding: '1.2rem 1rem',
+              minHeight: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Dynamic Island */}
+              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+
+              {/* Big Shield Badge */}
               <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '14px',
-                backgroundColor: '#eaf3ed',
-                color: '#16382b',
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                backgroundColor: '#ecfdf5',
+                border: '2px solid #a7f3d0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '1.35rem'
+                color: '#059669',
+                margin: '0.5rem 0 0.85rem'
               }}>
-                <PieChart size={26} />
+                <ShieldCheck size={28} />
               </div>
-              <h3 style={{ fontSize: '1.3rem', color: '#16382b', marginBottom: '0.65rem', fontWeight: 700 }}>
-                Proactive Budget Alerts
-              </h3>
-              <p style={{ fontSize: '0.92rem', color: '#52695c', lineHeight: 1.6 }}>
-                Category caps with safety thresholds (Safe, Caution, or Overspent) keep your daily discretionary spending in check.
-              </p>
+
+              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.2rem' }}>Locked in to save</h4>
+              <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 1.25rem' }}>Automated rule-based vault</p>
+
+              {/* Rules List */}
+              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.85rem', width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ Round up on UPI</div>
+                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ Auto-sweep ₹2,000 / mo</div>
+                <div style={{ fontSize: '0.74rem', color: '#0f172a', fontWeight: 600 }}>✓ 50/30/20 Smart Allocation</div>
+              </div>
+
+              <div style={{ marginTop: 'auto', width: '100%' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#059669', marginBottom: '2px' }}>Emergency Fund: ₹1,50,000</div>
+                <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                  <div style={{ width: '82%', height: '100%', backgroundColor: '#059669', borderRadius: '99px' }} />
+                </div>
+              </div>
             </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
-                color: '#1b4332',
-                cursor: 'pointer'
-              }}
-            >
-              <span>Set Category Caps</span>
-              <ChevronRight size={16} />
-            </button>
           </div>
 
-          {/* Card 4: Savings Milestones */}
+          {/* Phone 4: Last Transactions & Floating SMS */}
           <div style={{
+            minWidth: '275px',
+            width: '275px',
             backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.25rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 10px 30px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            gap: '1.5rem'
+            borderRadius: '40px',
+            padding: '10px',
+            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'transform 0.25s ease'
           }}>
-            <div>
-              <div style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '14px',
-                backgroundColor: '#eaf3ed',
-                color: '#16382b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '1.35rem'
-              }}>
-                <Target size={26} />
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '32px',
+              padding: '1.2rem 1rem',
+              minHeight: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Dynamic Island */}
+              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Transactions</span>
+
+              {/* Transaction Highlight */}
+              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.9rem', margin: '0.85rem 0 1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a' }}>Zomato Dining</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 900, color: '#ef4444' }}>-₹1,745.00</span>
+                </div>
+                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>HDFC Bank • UPI</span>
               </div>
-              <h3 style={{ fontSize: '1.3rem', color: '#16382b', marginBottom: '0.65rem', fontWeight: 700 }}>
-                Savings Milestones
-              </h3>
-              <p style={{ fontSize: '0.92rem', color: '#52695c', lineHeight: 1.6 }}>
-                Target savings goals for emergency funds, travel, and investments with milestone tracking and celebration confetti.
-              </p>
+
+              {/* Floating Banking SMS Notification Bubble (Exact match with reference) */}
+              <div style={{
+                backgroundColor: '#ffffff',
+                border: '1.5px solid #0f172a',
+                borderRadius: '14px 14px 4px 14px',
+                padding: '0.65rem 0.8rem',
+                boxShadow: '0 8px 20px rgba(15, 23, 42, 0.15)',
+                margin: '0 0 1rem',
+                fontSize: '0.72rem',
+                color: '#0f172a',
+                lineHeight: 1.35
+              }}>
+                <div style={{ fontWeight: 800, fontSize: '0.68rem', color: '#059669', marginBottom: '2px' }}>BANK SMS DETECTED</div>
+                Rs 1,745.00 debited from A/c XX4892 on 29-Sep-26 via UPI. Bal: Rs 1,42,850.00
+              </div>
+
+              <div style={{ marginTop: 'auto', backgroundColor: '#ecfdf5', borderRadius: '10px', padding: '0.5rem', border: '1px solid #a7f3d0', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#059669' }}>⚡ Auto-Categorized as Dining</span>
+              </div>
             </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.88rem',
-                fontWeight: 700,
-                color: '#1b4332',
-                cursor: 'pointer'
-              }}
-            >
-              <span>Track Savings Goals</span>
-              <ChevronRight size={16} />
-            </button>
+          </div>
+
+          {/* Phone 5: SplitSmart Debt Settlement */}
+          <div style={{
+            minWidth: '275px',
+            width: '275px',
+            backgroundColor: '#ffffff',
+            borderRadius: '40px',
+            padding: '10px',
+            boxShadow: '0 20px 45px -10px rgba(15, 23, 42, 0.14), 0 0 0 6px #0f172a',
+            position: 'relative',
+            flexShrink: 0,
+            transition: 'transform 0.25s ease'
+          }}>
+            <div style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '32px',
+              padding: '1.2rem 1rem',
+              minHeight: '430px',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Dynamic Island */}
+              <div style={{ width: '70px', height: '18px', backgroundColor: '#0f172a', borderRadius: '99px', margin: '0 auto 1.25rem' }} />
+
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SplitSmart Group</span>
+
+              <div style={{ backgroundColor: '#f5f3ef', borderRadius: '16px', padding: '0.9rem', margin: '0.85rem 0 1rem' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>Goa Trip 2026</div>
+                <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px' }}>5 Members • ₹38,400 Total</div>
+              </div>
+
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a' }}>Rajesh owes Arun</div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#059669', margin: '2px 0' }}>₹1,250.00</div>
+                <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Optimized minimal transaction</div>
+              </div>
+
+              <button
+                onClick={onLaunchApp}
+                style={{
+                  marginTop: 'auto',
+                  padding: '0.65rem',
+                  borderRadius: '12px',
+                  backgroundColor: '#0f172a',
+                  color: '#ffffff',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <span>Settle via UPI</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
