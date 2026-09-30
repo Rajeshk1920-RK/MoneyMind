@@ -219,13 +219,13 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </span>
         </div>
 
-        {/* Right Actions: Download APK + Open Web App */}
+        {/* Right Actions: Download APK Only */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {/* Download APK Button */}
           <button
             onClick={handleDownloadApk}
             style={{
-              padding: '0.6rem 1.35rem',
+              padding: '0.65rem 1.45rem',
               borderRadius: '9999px',
               backgroundColor: '#0f172a',
               color: '#ffffff',
@@ -243,29 +243,6 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           >
             <Download size={16} />
             <span>Download APK</span>
-          </button>
-
-          {/* Open Web App Button */}
-          <button
-            onClick={() => onLaunchApp && onLaunchApp()}
-            style={{
-              padding: '0.6rem 1.25rem',
-              borderRadius: '9999px',
-              backgroundColor: '#ecfdf5',
-              color: '#059669',
-              border: '1px solid #a7f3d0',
-              fontSize: '0.88rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.16s ease'
-            }}
-            title="Open Interactive Web Application"
-          >
-            <Sparkles size={16} />
-            <span className="hide-on-mobile">Web App</span>
           </button>
         </div>
       </header>
@@ -323,7 +300,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           MoneyMind is a 100% private personal finance tracker for Android and Web with automated bank SMS detection, visual cashflow analytics, zero forced cloud lock-in, and radical privacy.
         </p>
 
-        {/* Hero CTA Action Buttons */}
+        {/* Hero CTA Action Buttons - Download APK Only */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -336,7 +313,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           <button
             onClick={handleDownloadApk}
             style={{
-              padding: '0.95rem 2.25rem',
+              padding: '0.95rem 2.5rem',
               borderRadius: '9999px',
               backgroundColor: '#0f172a',
               color: '#ffffff',
@@ -347,34 +324,12 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.65rem',
+              border: 'none',
               transition: 'all 0.18s ease'
             }}
           >
             <Download size={20} />
             <span>Download APK</span>
-          </button>
-
-          {/* Launch Web App Action */}
-          <button
-            onClick={() => onLaunchApp && onLaunchApp()}
-            style={{
-              padding: '0.95rem 2rem',
-              borderRadius: '9999px',
-              backgroundColor: '#ffffff',
-              border: '1.5px solid #a7f3d0',
-              color: '#059669',
-              fontSize: '1.05rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(5, 150, 105, 0.12)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.18s ease'
-            }}
-          >
-            <span>Launch Web App</span>
-            <ArrowRight size={18} />
           </button>
         </div>
       </section>
@@ -485,14 +440,11 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
-                onClick={() => {
-                  setShowApkModal(false);
-                  if (onLaunchApp) onLaunchApp();
-                }}
+                onClick={() => setShowApkModal(false)}
                 className="btn-brand-pill"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Open Web Version Instead
+                Got it
               </button>
             </div>
           </div>
@@ -795,7 +747,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                     </div>
 
                     <button
-                      onClick={onLaunchApp}
+                      onClick={handleDownloadApk}
                       style={{
                         marginTop: 'auto',
                         padding: '0.65rem',
