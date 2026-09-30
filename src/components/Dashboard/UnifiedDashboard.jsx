@@ -851,16 +851,18 @@ export function UnifiedDashboard({
                 }}>
                   <p>No explained UPI transactions yet.</p>
                   <button
-                    onClick={() => onOpenSimulateUPI ? onOpenSimulateUPI() : onOpenAddTx('expense')}
+                    onClick={() => onOpenAddTx && onOpenAddTx('expense')}
                     style={{
                       marginTop: '0.65rem',
                       color: '#059669',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      fontSize: '0.82rem'
+                      fontSize: '0.82rem',
+                      background: 'none',
+                      border: 'none'
                     }}
                   >
-                    + Sync Banking SMS now
+                    + Record Transaction
                   </button>
                 </div>
               ) : (

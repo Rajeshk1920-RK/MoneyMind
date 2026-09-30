@@ -16,6 +16,7 @@ import { ProfileModal } from '../components/Modals/ProfileModal';
 import { NotificationsDrawer } from '../components/Modals/NotificationsDrawer';
 import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPopup';
 import { UpiDirectPayModal } from '../components/Modals/UpiDirectPayModal';
+import { QuickActionMenuModal } from '../components/Modals/QuickActionMenuModal';
 
 /**
  * MobileFinanceApp
@@ -29,6 +30,7 @@ export function MobileFinanceApp() {
   const [isGuest, setIsGuest] = useState(false);
 
   // Modals state
+  const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
   const [txModalType, setTxModalType] = useState('expense');
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -90,6 +92,20 @@ export function MobileFinanceApp() {
     setIsAddTxOpen(true);
   };
 
+  const handleOpenQuickAction = () => {
+    setIsQuickActionOpen(true);
+  };
+
+  const handleSelectDirectUpiPay = () => {
+    setIsQuickActionOpen(false);
+    handleOpenUpiPay();
+  };
+
+  const handleSelectRecordTransfer = () => {
+    setIsQuickActionOpen(false);
+    handleOpenAddTx('expense');
+  };
+
   const handleOpenUpiPay = (initialData = {}) => {
     setUpiPayInitialData({
       amount: initialData.amount || '350',
@@ -114,6 +130,7 @@ export function MobileFinanceApp() {
           onOpenProfile={() => setIsProfileOpen(true)}
           onOpenAddTx={handleOpenAddTx}
           onOpenUpiPay={handleOpenUpiPay}
+          onOpenQuickAction={handleOpenQuickAction}
         />
 
         {/* Main Screen Canvas */}
@@ -165,6 +182,15 @@ export function MobileFinanceApp() {
         </div>
 
         {/* Modals & Native Bottom Sheets */}
+        {isQuickActionOpen && (
+          <QuickActionMenuModal
+            isOpen={isQuickActionOpen}
+            onClose={() => setIsQuickActionOpen(false)}
+            onSelectDirectUpiPay={handleSelectDirectUpiPay}
+            onSelectRecordTransfer={handleSelectRecordTransfer}
+          />
+        )}
+
         {isAddTxOpen && (
           <AddTransactionModal
             isOpen={isAddTxOpen}

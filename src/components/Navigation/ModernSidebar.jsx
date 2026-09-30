@@ -21,6 +21,7 @@ export function ModernSidebar({
   onOpenProfile,
   onOpenAddTx,
   onOpenUpiPay,
+  onOpenQuickAction,
   unreadCount = 0
 }) {
   return (
@@ -85,10 +86,18 @@ export function ModernSidebar({
           {/* 3. MOBILE CENTER ACTION FAB (+) */}
           <div className="mobile-center-fab-wrapper">
             <button
-              onClick={() => onOpenAddTx ? onOpenAddTx('expense') : onSelectTab('transactions')}
+              onClick={() => {
+                if (onOpenQuickAction) {
+                  onOpenQuickAction();
+                } else if (onOpenAddTx) {
+                  onOpenAddTx('expense');
+                } else {
+                  onSelectTab('transactions');
+                }
+              }}
               className="mobile-center-fab-btn"
-              title="Add Transaction"
-              aria-label="Add Transaction"
+              title="Add / Direct UPI Pay / Record Transfer"
+              aria-label="Quick Action Menu"
             >
               <Plus size={20} color="#ffffff" strokeWidth={2.8} />
             </button>
