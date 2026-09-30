@@ -1,4 +1,4 @@
-/* UPI Direct Pay & Auto-Log Modal Styling */
+/* UPI Direct Pay & Auto-Log Modal Styling with 4 Payment Modes */
 
 .upi-pay-overlay {
   position: fixed;
@@ -25,7 +25,7 @@
   background: #ffffff;
   border-radius: 28px;
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@
 
 /* Header */
 .upi-pay-header {
-  padding: 1.25rem 1.5rem;
+  padding: 1.15rem 1.5rem;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: #ffffff;
   display: flex;
@@ -67,7 +67,7 @@
 }
 
 .upi-pay-title {
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   font-weight: 800;
   margin: 0;
   color: #ffffff;
@@ -75,7 +75,7 @@
 }
 
 .upi-pay-subtitle {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: #94a3b8;
   margin: 2px 0 0 0;
   font-weight: 600;
@@ -102,30 +102,88 @@
 
 /* Modal Body */
 .upi-pay-body {
-  padding: 1.5rem;
+  padding: 1.35rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
+}
+
+/* 4 Payment Modes Selector Grid */
+.upi-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  background: #f8fafc;
+  padding: 0.5rem;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+}
+
+.upi-mode-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.65rem 0.35rem;
+  border-radius: 12px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.upi-mode-card:hover:not(.active) {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.upi-mode-card.active {
+  background: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+}
+
+.upi-mode-icon-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.upi-mode-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #334155;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.upi-mode-card.active .upi-mode-label {
+  color: #059669;
 }
 
 /* Amount Section */
 .upi-amount-section {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 20px;
-  padding: 1.25rem;
+  border-radius: 18px;
+  padding: 1.1rem;
   border: 1px solid #e2e8f0;
   text-align: center;
 }
 
 .upi-input-label {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   display: block;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.4rem;
 }
 
 .upi-amount-input-wrap {
@@ -133,23 +191,23 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.65rem;
 }
 
 .upi-amount-symbol {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 900;
   color: #dc2626;
 }
 
 .upi-amount-input {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 900;
   color: #dc2626;
   border: none;
   background: transparent;
   outline: none;
-  max-width: 220px;
+  max-width: 200px;
   text-align: center;
   font-family: inherit;
 }
@@ -158,17 +216,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
 
 .upi-quick-pill {
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.65rem;
   border-radius: 9999px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #1e293b;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -180,7 +238,14 @@
   color: #ffffff;
 }
 
-/* Field Groups */
+/* Mode Content Block */
+.upi-mode-content-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: upiFadeIn 0.2s ease;
+}
+
 .upi-field-group {
   display: flex;
   flex-direction: column;
@@ -209,7 +274,7 @@
   background: transparent;
   outline: none;
   width: 100%;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: #0f172a;
 }
@@ -226,26 +291,36 @@
   border: 1px solid #cbd5e1;
   border-radius: 14px;
   padding: 0.65rem 0.85rem;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: #0f172a;
   outline: none;
   cursor: pointer;
 }
 
+.upi-bank-verified-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #059669;
+  margin-top: 2px;
+}
+
 .upi-row-two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
-/* Presets */
+/* Presets & Contacts */
 .upi-presets-scroll {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   overflow-x: auto;
-  padding-top: 0.45rem;
+  padding-top: 0.4rem;
   padding-bottom: 0.2rem;
 }
 
@@ -253,16 +328,15 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.7rem;
+  padding: 0.35rem 0.65rem;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: #334155;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
 }
 
 .upi-preset-chip.active {
@@ -272,8 +346,8 @@
 }
 
 .upi-preset-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
 }
 
@@ -289,37 +363,68 @@
   cursor: pointer;
 }
 
-/* Platforms Section */
-.upi-platforms-section {
+.upi-contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.upi-contact-card {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.upi-contact-card.active {
+  border-color: #059669;
+  background: #ecfdf5;
+}
+
+.upi-contact-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upi-contact-details {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  min-width: 0;
 }
 
-.upi-platforms-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.upi-section-title {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.upi-toggle-qr-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.74rem;
+.upi-contact-name {
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #475569;
-  cursor: pointer;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upi-contact-phone {
+  font-size: 0.66rem;
+  color: #64748b;
+}
+
+/* Scan Panel */
+.upi-scan-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .upi-qr-card {
@@ -335,8 +440,8 @@
 }
 
 .upi-qr-image {
-  width: 160px;
-  height: 160px;
+  width: 150px;
+  height: 150px;
   border-radius: 12px;
   background: #ffffff;
   padding: 6px;
@@ -345,11 +450,11 @@
 }
 
 .upi-qr-info {
-  margin-top: 0.65rem;
+  margin-top: 0.55rem;
 }
 
 .upi-qr-text {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: #475569;
   margin: 0;
 }
@@ -362,25 +467,51 @@
   margin-top: 2px;
 }
 
+.upi-scanned-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #a7f3d0;
+  margin-top: 0.65rem;
+  width: 100%;
+}
+
 /* Platform Grid */
+.upi-platforms-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.upi-section-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
 .upi-platform-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
+  gap: 0.55rem;
 }
 
 .upi-platform-btn {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: 16px;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 14px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
-  position: relative;
 }
 
 .upi-platform-btn:hover {
@@ -390,30 +521,19 @@
 }
 
 .upi-platform-icon-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.phonepe-bg {
-  background: #5f259f;
-}
-
-.gpay-bg {
-  background: #1a73e8;
-}
-
-.paytm-bg {
-  background: #00baf2;
-}
-
-.default-bg {
-  background: #059669;
-}
+.phonepe-bg { background: #5f259f; }
+.gpay-bg { background: #1a73e8; }
+.paytm-bg { background: #00baf2; }
+.default-bg { background: #059669; }
 
 .upi-platform-info {
   display: flex;
@@ -423,18 +543,15 @@
 }
 
 .upi-platform-name {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: #0f172a;
 }
 
 .upi-platform-sub {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: #64748b;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .upi-platform-arrow {
@@ -446,19 +563,19 @@
   background: #f0fdf4;
   border-radius: 18px;
   border: 1px solid #bbf7d0;
-  padding: 1rem;
+  padding: 0.95rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .upi-confirm-notice {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: #166534;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .upi-confirm-btn {
@@ -466,12 +583,12 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.95rem;
+  padding: 0.88rem;
   border-radius: 14px;
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   color: #ffffff;
   border: none;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
@@ -494,25 +611,25 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem 0;
+  padding: 0.85rem 0;
   animation: upiFadeIn 0.3s ease;
 }
 
 .upi-success-checkmark {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .upi-success-title {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 900;
   color: #0f172a;
-  margin: 0 0 0.4rem 0;
+  margin: 0 0 0.35rem 0;
 }
 
 .upi-success-desc {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: #64748b;
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 1.15rem 0;
   max-width: 400px;
 }
 
@@ -521,11 +638,11 @@
   background: #f8fafc;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
-  padding: 1.25rem;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 1.5rem;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
   text-align: left;
 }
 
@@ -533,18 +650,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: #64748b;
 }
 
 .upi-receipt-row.main {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: #0f172a;
 }
 
 .upi-receipt-amount {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 900;
   color: #dc2626;
 }
@@ -552,18 +669,12 @@
 .upi-receipt-divider {
   height: 1px;
   background: #e2e8f0;
-  margin: 0.25rem 0;
+  margin: 0.2rem 0;
 }
 
 .upi-receipt-row .bold {
   font-weight: 700;
   color: #0f172a;
-}
-
-.upi-receipt-row .mono {
-  font-family: monospace;
-  font-weight: 600;
-  color: #2563eb;
 }
 
 .upi-receipt-row .badge {
@@ -577,7 +688,7 @@
 .upi-success-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.55rem;
   width: 100%;
 }
 
@@ -591,7 +702,7 @@
   color: #ffffff;
   border: none;
   border-radius: 14px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
@@ -602,12 +713,12 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.8rem;
+  padding: 0.78rem;
   background: #f1f5f9;
   color: #334155;
   border: 1px solid #cbd5e1;
   border-radius: 14px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
 }
