@@ -33,7 +33,6 @@ import logoImg from '@/assets/logo.png';
 
 export function UnifiedDashboard({
   onOpenAddTx,
-  onOpenUpiPay,
   onNavigateTab,
   onOpenNotifications,
   onOpenProfile
@@ -295,34 +294,6 @@ export function UnifiedDashboard({
                 </div>
               </div>
 
-              {/* Action Buttons: Direct UPI Pay */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {onOpenUpiPay && (
-                  <button
-                    type="button"
-                    onClick={() => onOpenUpiPay({ amount: '500' })}
-                    className="btn-brand-pill"
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '0.78rem',
-                      background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                      color: '#ffffff',
-                      boxShadow: '0 2px 10px rgba(5, 150, 105, 0.25)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.4rem',
-                      cursor: 'pointer',
-                      border: 'none',
-                      borderRadius: '9999px',
-                      fontWeight: 800
-                    }}
-                    title="Direct Pay via PhonePe, Google Pay, Paytm & Auto-Record Expense"
-                  >
-                    <Zap size={14} color="#ffffff" />
-                    <span>Direct UPI Pay</span>
-                  </button>
-                )}
-              </div>
             </div>
 
             {/* Three Interconnected Clean Full Circular Cards (Icons & Text Perfectly Aligned) */}

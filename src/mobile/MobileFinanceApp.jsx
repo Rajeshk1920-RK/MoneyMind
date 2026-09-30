@@ -139,7 +139,6 @@ export function MobileFinanceApp() {
             {currentTab === 'dashboard' && (
               <UnifiedDashboard
                 onOpenAddTx={handleOpenAddTx}
-                onOpenUpiPay={handleOpenUpiPay}
                 onNavigateTab={(tab) => setCurrentTab(tab)}
                 onOpenNotifications={() => setIsNotificationsOpen(true)}
                 onOpenProfile={() => setIsProfileOpen(true)}
