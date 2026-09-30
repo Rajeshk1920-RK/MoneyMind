@@ -7,7 +7,12 @@ import {
   ArrowDownRight,
   Tag,
   Smartphone,
-  Plus
+  Plus,
+  TrendingDown,
+  TrendingUp,
+  CheckCircle2,
+  Sparkles,
+  Info
 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import './calendar.css';
@@ -20,8 +25,8 @@ const MONTH_NAMES = [
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /**
- * Calendar UI Component with Daily Spending Intelligence
- * When a date is clicked, it calculates and displays day-specific spend & income breakdown.
+ * Calendar UI Component with Real-Time Daily Spending & Income Intelligence
+ * Directly displays on every calendar cell how much was spent vs received.
  */
 export function Calendar({
   value,
@@ -49,15 +54,15 @@ export function Calendar({
 
   const [currentYear, setCurrentYear] = useState(() => {
     const d = value ? new Date(selectedDateStr) : today;
-    return isNaN(d.getFullYear()) ? 2026 : d.getFullYear();
+    return isNaN(d.getFullYear()) ? today.getFullYear() : d.getFullYear();
   });
 
   const [currentMonth, setCurrentMonth] = useState(() => {
     const d = value ? new Date(selectedDateStr) : today;
-    return isNaN(d.getMonth()) ? 8 : d.getMonth(); // 0-indexed, default Sep
+    return isNaN(d.getMonth()) ? today.getMonth() : d.getMonth();
   });
 
-  // Calculate day-by-day spending map from transactions
+  // Calculate day-by-day spending & income map from transactions
   const dailySpendingMap = useMemo(() => {
     const map = {};
     if (!Array.isArray(transactions)) return map;
@@ -82,6 +87,32 @@ export function Calendar({
     });
     return map;
   }, [transactions]);
+
+  // Monthly totals for current viewed month
+  const monthlyStats = useMemo(() => {
+    let monthExpense = 0;
+    let monthIncome = 0;
+    let activeDaysCount = 0;
+
+    Object.keys(dailySpendingMap).forEach(dateStr => {
+      const d = new Date(dateStr);
+      if (!isNaN(d) && d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
+        const dayData = dailySpendingMap[dateStr];
+        monthExpense += dayData.expense;
+        monthIncome += dayData.income;
+        if (dayData.expense > 0 || dayData.income > 0) {
+          activeDaysCount++;
+        }
+      }
+    });
+
+    return {
+      expense: monthExpense,
+      income: monthIncome,
+      net: monthIncome - monthExpense,
+      activeDays: activeDaysCount
+    };
+  }, [dailySpendingMap, currentYear, currentMonth]);
 
   // Calendar Grid Generation
   const calendarDays = useMemo(() => {
@@ -170,9 +201,9 @@ export function Calendar({
     const d = new Date(selectedDateStr);
     if (isNaN(d.getTime())) return selectedDateStr;
     return d.toLocaleDateString('en-IN', {
-      weekday: 'long',
+      weekday: 'short',
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric'
     });
   }, [selectedDateStr]);
@@ -182,7 +213,7 @@ export function Calendar({
       {/* Calendar Header Navigation */}
       <div className="ui-cal-header">
         <div className="ui-cal-title-wrap">
-          <CalendarIcon size={18} color="#2563eb" />
+          <CalendarIcon size={18} color="#059669" />
           {captionLayout === 'dropdown' ? (
             <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
               <select
@@ -232,6 +263,23 @@ export function Calendar({
         </div>
       </div>
 
+      {/* Monthly Outflow / Inflow Summary Strip */}
+      <div className="ui-cal-monthly-strip">
+        <div className="ui-cal-strip-col">
+          <span className="ui-cal-strip-label">Spent This Month</span>
+          <span className="ui-cal-strip-val expense">
+            -{formatCurrency(monthlyStats.expense, 'INR', 1)}
+          </span>
+        </div>
+        <div className="ui-cal-strip-divider" />
+        <div className="ui-cal-strip-col">
+          <span className="ui-cal-strip-label">Received This Month</span>
+          <span className="ui-cal-strip-val income">
+            +{formatCurrency(monthlyStats.income, 'INR', 1)}
+          </span>
+        </div>
+      </div>
+
       {/* Weekday Headers */}
       <div className="ui-cal-weekdays">
         {WEEKDAYS.map(day => (
@@ -241,7 +289,7 @@ export function Calendar({
         ))}
       </div>
 
-      {/* Days Grid */}
+      {/* Days Grid with Readout Badges */}
       <div className="ui-cal-days-grid">
         {calendarDays.map((item, index) => {
           const isSelected = item.dateStr === selectedDateStr;
@@ -257,19 +305,23 @@ export function Calendar({
             >
               <span className="ui-cal-day-number">{item.dayNumber}</span>
 
-              {/* Spending Dots / Indicators */}
-              <div className="ui-cal-indicator-row">
+              {/* Readout of Spent & Received Amount on Calendar Cell */}
+              <div className="ui-cal-cell-amount-wrap">
                 {hasSpend && (
                   <span
-                    className="ui-cal-dot expense"
+                    className="ui-cal-cell-badge expense"
                     title={`Spent: ${formatCurrency(item.spending.expense, 'INR', 1)}`}
-                  />
+                  >
+                    -{item.spending.expense >= 1000 ? `${(item.spending.expense / 1000).toFixed(1)}k` : `₹${item.spending.expense}`}
+                  </span>
                 )}
-                {hasIncome && (
+                {hasIncome && !hasSpend && (
                   <span
-                    className="ui-cal-dot income"
-                    title={`Inflow: ${formatCurrency(item.spending.income, 'INR', 1)}`}
-                  />
+                    className="ui-cal-cell-badge income"
+                    title={`Received: ${formatCurrency(item.spending.income, 'INR', 1)}`}
+                  >
+                    +{item.spending.income >= 1000 ? `${(item.spending.income / 1000).toFixed(1)}k` : `₹${item.spending.income}`}
+                  </span>
                 )}
               </div>
             </button>
@@ -277,31 +329,32 @@ export function Calendar({
         })}
       </div>
 
-      {/* Selected Day Spending Intelligence Box */}
+      {/* Selected Day Spending & Inflow Intelligence Card */}
       <div className="ui-cal-day-details-panel">
         <div className="ui-cal-details-header">
           <div>
             <span className="ui-cal-details-date-label">{selectedDateFormatted}</span>
             <div className="ui-cal-details-summary">
               {selectedDayData.expense > 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#dc2626' }}>
-                    -{formatCurrency(selectedDayData.expense, 'INR', 1)}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#dc2626' }}>
+                    -{formatCurrency(selectedDayData.expense, 'INR', 1)} Spent
                   </span>
                   {selectedDayData.income > 0 && (
-                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#16a34a' }}>
-                      (+{formatCurrency(selectedDayData.income, 'INR', 1)} earned)
+                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#059669' }}>
+                      (+{formatCurrency(selectedDayData.income, 'INR', 1)} Received)
                     </span>
                   )}
                 </div>
               ) : selectedDayData.income > 0 ? (
-                <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#16a34a' }}>
-                  +{formatCurrency(selectedDayData.income, 'INR', 1)}
+                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#059669' }}>
+                  +{formatCurrency(selectedDayData.income, 'INR', 1)} Received
                 </span>
               ) : (
-                <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
-                  No spending recorded on this date.
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#059669', fontSize: '0.86rem', fontWeight: 700 }}>
+                  <span>🍃</span>
+                  <span>Zero Spending Day (No Outflow Recorded)</span>
+                </div>
               )}
             </div>
           </div>
@@ -310,17 +363,17 @@ export function Calendar({
             <button
               type="button"
               onClick={() => onOpenAddTx('expense')}
-              className="btn-light-pill"
-              style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }}
+              className="btn-brand-pill"
+              style={{ fontSize: '0.74rem', padding: '0.4rem 0.85rem' }}
             >
               <Plus size={13} />
-              <span>Add spend</span>
+              <span>Add Spend</span>
             </button>
           )}
         </div>
 
-        {/* List of Transactions for Selected Date */}
-        {selectedDayData.transactions.length > 0 && (
+        {/* List of Specific Transactions for Selected Date */}
+        {selectedDayData.transactions.length > 0 ? (
           <div className="ui-cal-tx-list">
             {selectedDayData.transactions.map(t => {
               const isIncome = t.type === 'income';
@@ -329,11 +382,11 @@ export function Calendar({
                 <div key={t.id} className="ui-cal-tx-item">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                     <div style={{
-                      width: '30px',
-                      height: '30px',
+                      width: '32px',
+                      height: '32px',
                       borderRadius: '8px',
-                      backgroundColor: isIncome ? '#dcfce7' : '#fee2e2',
-                      color: isIncome ? '#16a34a' : '#dc2626',
+                      backgroundColor: isIncome ? '#ecfdf5' : '#fef2f2',
+                      color: isIncome ? '#059669' : '#dc2626',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -342,34 +395,49 @@ export function Calendar({
                       {isIncome ? <ArrowDownRight size={15} /> : <ArrowUpRight size={15} />}
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
                         {t.merchant || t.title}
                       </div>
                       <div style={{ fontSize: '0.7rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span>{t.category}</span>
+                        {t.paymentMethod && (
+                          <>
+                            <span>•</span>
+                            <span style={{ fontWeight: 600 }}>{t.paymentMethod}</span>
+                          </>
+                        )}
                         {t.intentCategory && (
                           <>
                             <span>•</span>
                             <span style={{ color: '#2563eb', fontWeight: 600 }}>{t.intentCategory}</span>
                           </>
                         )}
-                        {t.intentNote && (
-                          <span style={{ fontStyle: 'italic' }}>("{t.intentNote}")</span>
-                        )}
                       </div>
                     </div>
                   </div>
 
                   <div style={{
-                    fontSize: '0.88rem',
+                    fontSize: '0.9rem',
                     fontWeight: 800,
-                    color: isIncome ? '#16a34a' : '#0f172a'
+                    color: isIncome ? '#059669' : '#dc2626'
                   }}>
                     {isIncome ? '+' : '-'}{formatCurrency(t.amount, 'INR', 1)}
                   </div>
                 </div>
               );
             })}
+          </div>
+        ) : (
+          <div style={{
+            padding: '1rem',
+            textAlign: 'center',
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            border: '1px dashed #e2ede8',
+            color: '#64748b',
+            fontSize: '0.78rem'
+          }}>
+            No debit or credit transactions on this day.
           </div>
         )}
       </div>

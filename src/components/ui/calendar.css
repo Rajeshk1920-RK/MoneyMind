@@ -134,7 +134,88 @@
   color: #ffffff;
 }
 
-/* Indicators */
+/* Monthly Strip */
+.ui-cal-monthly-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.ui-cal-strip-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ui-cal-strip-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ui-cal-strip-val {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: inherit;
+}
+
+.ui-cal-strip-val.expense {
+  color: #dc2626;
+}
+
+.ui-cal-strip-val.income {
+  color: #059669;
+}
+
+.ui-cal-strip-divider {
+  width: 1px;
+  height: 28px;
+  background-color: #cbd5e1;
+}
+
+/* Indicators and Amount Readout Badges */
+.ui-cal-cell-amount-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+  width: 100%;
+}
+
+.ui-cal-cell-badge {
+  font-size: 0.58rem;
+  font-weight: 800;
+  border-radius: 4px;
+  padding: 1px 3px;
+  line-height: 1;
+  max-width: 95%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-cal-cell-badge.expense {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.ui-cal-cell-badge.income {
+  color: #059669;
+  background-color: #ecfdf5;
+}
+
+.ui-cal-day-cell.selected .ui-cal-cell-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
 .ui-cal-indicator-row {
   display: flex;
   align-items: center;
