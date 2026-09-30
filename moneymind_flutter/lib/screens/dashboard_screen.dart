@@ -289,7 +289,7 @@ class DashboardScreen extends StatelessWidget {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: const Text(
-                      'No transactions yet. Add your first spend or wait for SMS auto-sync!',
+                      'No transactions yet. Add your first spend or use Direct UPI Pay!',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                     ),

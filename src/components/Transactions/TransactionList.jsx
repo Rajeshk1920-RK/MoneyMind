@@ -25,7 +25,7 @@ import { exportTransactionsToCSV } from '../../utils/exportUtils';
 import { PaymentIntentPopup } from '../PaymentIntent/PaymentIntentPopup';
 import { Calendar as UICalendar } from '../ui/calendar';
 
-export function TransactionList({ onOpenAddTx, onOpenSimulateUPI, onOpenUpiPay }) {
+export function TransactionList({ onOpenAddTx, onOpenUpiPay }) {
   const {
     transactions,
     deleteTransaction,
@@ -160,29 +160,6 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI, onOpenUpiPay }
           >
             <Zap size={14} color="#ffffff" />
             <span>Direct UPI Pay</span>
-          </button>
-        )}
-
-        {onOpenSimulateUPI && (
-          <button
-            onClick={onOpenSimulateUPI}
-            style={{
-              flexShrink: 0,
-              padding: '0.45rem 0.85rem',
-              borderRadius: '9999px',
-              backgroundColor: '#ecfdf5',
-              border: '1px solid #a7f3d0',
-              color: '#059669',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              cursor: 'pointer'
-            }}
-          >
-            <MessageSquare size={14} />
-            <span>Sync SMS</span>
           </button>
         )}
 
@@ -410,7 +387,7 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI, onOpenUpiPay }
                   No Transactions Found
                 </h4>
                 <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
-                  Tap the (+) button below or Sync SMS to log your expenses.
+                  Tap the (+) button below or Direct UPI Pay to log your expenses.
                 </p>
               </div>
             ) : (

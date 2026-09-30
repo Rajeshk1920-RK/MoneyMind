@@ -33,7 +33,6 @@ import logoImg from '@/assets/logo.png';
 
 export function UnifiedDashboard({
   onOpenAddTx,
-  onOpenSimulateUPI,
   onOpenUpiPay,
   onNavigateTab,
   onOpenNotifications,
@@ -296,7 +295,7 @@ export function UnifiedDashboard({
                 </div>
               </div>
 
-              {/* Action Buttons: Direct UPI Pay & Sync Banking SMS */}
+              {/* Action Buttons: Direct UPI Pay */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 {onOpenUpiPay && (
                   <button
@@ -321,30 +320,6 @@ export function UnifiedDashboard({
                   >
                     <Zap size={14} color="#ffffff" />
                     <span>Direct UPI Pay</span>
-                  </button>
-                )}
-
-                {onOpenSimulateUPI && (
-                  <button
-                    type="button"
-                    onClick={onOpenSimulateUPI}
-                    className="btn-light-pill"
-                    style={{
-                      padding: '0.5rem 1rem',
-                      fontSize: '0.78rem',
-                      backgroundColor: '#ecfdf5',
-                      color: '#059669',
-                      borderColor: '#a7f3d0',
-                      boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
-                      whiteSpace: 'nowrap',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.4rem'
-                    }}
-                    title="Read & auto-parse incoming banking SMS"
-                  >
-                    <MessageSquare size={14} color="#059669" />
-                    <span>Sync Bank SMS</span>
                   </button>
                 )}
               </div>
@@ -766,21 +741,24 @@ export function UnifiedDashboard({
                 </div>
               </div>
 
-              {/* Action: Sync Bank SMS */}
+              {/* Action: Add Transaction */}
               <button
-                onClick={() => onOpenSimulateUPI ? onOpenSimulateUPI() : onOpenAddTx('expense')}
+                onClick={() => onOpenAddTx('expense')}
                 className="btn-light-pill"
                 style={{
-                  padding: '0.5rem 1rem',
+                  padding: '0.45rem 0.95rem',
                   fontSize: '0.78rem',
-                  backgroundColor: '#ecfdf5',
-                  color: '#059669',
-                  borderColor: '#a7f3d0',
-                  boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)'
+                  backgroundColor: '#f8fafc',
+                  color: '#0f172a',
+                  borderColor: '#e2e8f0',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
                 }}
               >
-                <MessageSquare size={14} color="#059669" />
-                <span>Sync Bank SMS</span>
+                <Plus size={14} color="#059669" />
+                <span>Add Expense</span>
               </button>
             </div>
 
@@ -1022,95 +1000,6 @@ export function UnifiedDashboard({
                 })
               )}
             </div>
-          </div>
-
-          {/* 2. BANKING SMS AUTO-SYNC CARD */}
-          <div className="mm-card" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <MessageSquare size={16} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Banking SMS Auto-Sync</h3>
-                </div>
-              </div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                backgroundColor: '#ecfdf5',
-                borderRadius: '9999px',
-                padding: '2px 8px',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                color: '#059669',
-                border: '1px solid #a7f3d0'
-              }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#059669' }} />
-                <span>Auto-Read Active</span>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '0 0 1rem', lineHeight: 1.4 }}>
-              MoneyMind reads incoming SMS from HDFC, SBI, ICICI, Axis & UPI apps to organize your cashflow automatically.
-            </p>
-
-            {/* Live Bank SMS Feed Snippets */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-              {SAMPLE_BANK_SMS_MESSAGES.slice(0, 2).map(sms => {
-                const parsed = parseBankingSMS(sms.text);
-                return (
-                  <div
-                    key={sms.id}
-                    onClick={onOpenSimulateUPI}
-                    style={{
-                      padding: '0.65rem 0.85rem',
-                      backgroundColor: '#f8fafc',
-                      borderRadius: '12px',
-                      border: '1px solid #e2e8f0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a' }}>
-                        {sms.bank} • {parsed?.merchant}
-                      </div>
-                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>
-                        {sms.time} • {parsed?.category}
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 800,
-                      color: parsed?.type === 'expense' ? '#dc2626' : '#059669'
-                    }}>
-                      {parsed?.type === 'expense' ? `-₹${parsed?.amount}` : `+₹${parsed?.amount}`}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Open Bank SMS Reader CTA */}
-            <button
-              type="button"
-              onClick={onOpenSimulateUPI}
-              className="btn-brand-pill"
-              style={{
-                width: '100%',
-                justifyContent: 'center',
-                padding: '0.7rem 1rem',
-                fontSize: '0.84rem'
-              }}
-            >
-              <MessageSquare size={15} />
-              <span>Open Banking SMS Reader ({SAMPLE_BANK_SMS_MESSAGES.length} Alerts)</span>
-            </button>
           </div>
         </div>
       </div>

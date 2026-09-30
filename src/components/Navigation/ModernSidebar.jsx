@@ -20,7 +20,6 @@ export function ModernSidebar({
   onOpenNotifications,
   onOpenProfile,
   onOpenAddTx,
-  onOpenSimulateUPI,
   onOpenUpiPay,
   unreadCount = 0
 }) {
