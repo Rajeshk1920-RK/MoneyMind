@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
+import { LandingPage } from './components/Landing/LandingPage';
 import { LoginPage } from './components/Auth/LoginPage';
 import { ModernSidebar } from './components/Navigation/ModernSidebar';
 import { UnifiedDashboard } from './components/Dashboard/UnifiedDashboard';
@@ -16,9 +18,13 @@ import { BankSMSReader } from './components/BankingSMS/BankSMSReader';
 import { PaymentIntentPopup } from './components/PaymentIntent/PaymentIntentPopup';
 
 function MainAppContent() {
+  const isNative = Capacitor.isNativePlatform();
   const { user, isAuthenticated } = useAuth();
+  
+  // Separation: On Web Browser -> show Landing Showcase Page with APK Download.
+  // On Native Android App -> launch straight into the App / Auth flow.
+  const [currentTab, setCurrentTab] = useState(() => (isNative ? 'dashboard' : 'landing'));
   const [isGuest, setIsGuest] = useState(false);
-  const [currentTab, setCurrentTab] = useState('dashboard');
 
   // Modals state
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
@@ -42,17 +48,26 @@ function MainAppContent() {
     setActiveIntentTx(newTx);
   };
 
-  // Pure Native Android App Entry: If not logged in and not guest, show native mobile auth
+  // 1. WEB ONLY: Landing Showcase Page with Download APK & App Tour
+  if (currentTab === 'landing' && !isNative) {
+    return (
+      <LandingPage
+        onLaunchApp={() => setCurrentTab('dashboard')}
+      />
+    );
+  }
+
+  // 2. ANDROID APP & LAUNCHED DEMO: Native Login Screen if not authenticated
   if (!isAuthenticated && !isGuest) {
     return (
       <LoginPage onGuestAccess={() => setIsGuest(true)} />
     );
   }
 
-  // Main Native Android App Experience
+  // 3. MAIN MOBILE APP EXPERIENCE
   return (
     <div className="app-container">
-      {/* Modern Mind Navigation Dock on Mobile */}
+      {/* Modern Mind Bottom Navigation Dock on Mobile */}
       <ModernSidebar
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
