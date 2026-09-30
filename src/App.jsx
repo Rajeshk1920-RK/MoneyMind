@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
-import { AppHeader } from './components/Header/AppHeader';
-import { LandingPage } from './components/Landing/LandingPage';
+import { LoginPage } from './components/Auth/LoginPage';
 import { ModernSidebar } from './components/Navigation/ModernSidebar';
 import { UnifiedDashboard } from './components/Dashboard/UnifiedDashboard';
 import { TransactionList } from './components/Transactions/TransactionList';
@@ -17,7 +16,7 @@ import { BankSMSReader } from './components/BankingSMS/BankSMSReader';
 import { PaymentIntentPopup } from './components/PaymentIntent/PaymentIntentPopup';
 
 function MainAppContent() {
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [isGuest, setIsGuest] = useState(false);
   const [currentTab, setCurrentTab] = useState('dashboard');
 
@@ -43,19 +42,17 @@ function MainAppContent() {
     setActiveIntentTx(newTx);
   };
 
-  // When visiting landing tab explicitly
-  if (currentTab === 'landing') {
+  // Pure Native Android App Entry: If not logged in and not guest, show native mobile auth
+  if (!isAuthenticated && !isGuest) {
     return (
-      <LandingPage
-        onLaunchApp={() => setCurrentTab('dashboard')}
-      />
+      <LoginPage onGuestAccess={() => setIsGuest(true)} />
     );
   }
 
-  // Main Dashboard
+  // Main Native Android App Experience
   return (
     <div className="app-container">
-      {/* Modern Mind Left Vertical Navigation Dock on Desktop / Bottom Dock on Mobile */}
+      {/* Modern Mind Navigation Dock on Mobile */}
       <ModernSidebar
         currentTab={currentTab}
         onSelectTab={(tab) => setCurrentTab(tab)}
@@ -150,7 +147,6 @@ function MainAppContent() {
         <ProfileModal
           isOpen={isProfileOpen}
           onClose={() => setIsProfileOpen(false)}
-          onNavigateLanding={() => setCurrentTab('landing')}
         />
       )}
     </div>

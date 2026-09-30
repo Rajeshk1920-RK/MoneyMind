@@ -138,16 +138,7 @@ export function ModernSidebar({
           )}
         </button>
 
-        {/* Website Landing Page */}
-        <button
-          onClick={() => onSelectTab('landing')}
-          className={`nav-dock-btn ${currentTab === 'landing' ? 'active' : ''}`}
-          title="Visit Website & APK Download"
-        >
-          <Globe size={19} />
-        </button>
-
-        {/* Currency / Reports */}
+        {/* Reports & Analytics */}
         <button
           onClick={() => onSelectTab('reports')}
           className={`nav-dock-btn ${currentTab === 'reports' ? 'active' : ''}`}
@@ -155,17 +146,6 @@ export function ModernSidebar({
         >
           <ArrowLeftRight size={19} />
         </button>
-
-        {/* Download Android APK Direct Action */}
-        <a
-          href="./moneymind-v1.0.apk"
-          download="MoneyMind-v1.0.apk"
-          className="nav-dock-btn"
-          title="Download Android APK"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
-        >
-          <Download size={19} />
-        </a>
 
         {/* Profile Avatar */}
         <button
