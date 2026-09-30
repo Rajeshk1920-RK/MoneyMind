@@ -295,19 +295,15 @@ function ChatBody({
                     scrollAnchor={isUser}
                   >
                     <div className={`ai-message-turn ${isUser ? 'ai-message-turn-end' : 'ai-message-turn-start'}`}>
-                      <div className="ai-message-avatar-wrap">
-                        <Avatar>
-                          {isUser ? (
-                            <AvatarFallback style={{ backgroundColor: '#0f172a', color: '#fff', fontSize: '0.78rem', fontWeight: 800 }}>
-                              RK
-                            </AvatarFallback>
-                          ) : (
+                      {!isUser && (
+                        <div className="ai-message-avatar-wrap">
+                          <Avatar>
                             <AvatarFallback style={{ backgroundColor: '#059669', color: '#fff' }}>
                               <Bot size={17} />
                             </AvatarFallback>
-                          )}
-                        </Avatar>
-                      </div>
+                          </Avatar>
+                        </div>
+                      )}
 
                       <div className="ai-message-bubble-wrap">
                         <div className={`ai-bubble-box ${isUser ? 'ai-bubble-user' : 'ai-bubble-bot'}`}>
@@ -346,7 +342,7 @@ function ChatBody({
                           )}
                         </div>
 
-                        <div className="ai-bubble-footer">
+                        <div className="ai-bubble-footer" style={{ justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
                           <span>{msg.timestamp}</span>
                           {isUser && <span>&bull; Delivered</span>}
                         </div>
@@ -364,7 +360,6 @@ function ChatBody({
               )}
             </MessageScrollerContent>
           </MessageScrollerViewport>
-          <MessageScrollerButton />
         </MessageScroller>
       </div>
 
@@ -425,21 +420,17 @@ function ChatBody({
             </DropdownMenuTrigger>
 
             <div className="ai-input-textarea-wrap">
-              <textarea
-                placeholder="Ask FinAI about your spendings, savings..."
+              <input
+                type="text"
+                placeholder="Ask FinAI anything..."
                 value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = `${Math.min(e.target.scrollHeight, 100)}px`;
-                }}
+                onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === 'Enter') {
                     e.preventDefault();
                     sendMessage();
                   }
                 }}
-                rows={1}
                 disabled={isBusy}
                 className="ai-input-textarea"
               />
