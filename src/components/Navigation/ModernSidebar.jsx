@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImg from '@/assets/logo.png';
 import {
   Home,
   Clock,
@@ -48,7 +49,7 @@ export function ModernSidebar({
           title="MoneyMind"
         >
           <img
-            src="/logo.png"
+            src={logoImg}
             alt="MoneyMind Logo"
             style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2px' }}
           />
@@ -157,7 +158,7 @@ export function ModernSidebar({
 
         {/* Download Android APK Direct Action */}
         <a
-          href="/moneymind-v1.0.apk"
+          href="./moneymind-v1.0.apk"
           download="MoneyMind-v1.0.apk"
           className="nav-dock-btn"
           title="Download Android APK"

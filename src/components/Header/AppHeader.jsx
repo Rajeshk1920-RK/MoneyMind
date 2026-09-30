@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { useAuth } from '../../context/AuthContext';
+import logoImg from '@/assets/logo.png';
 
 export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onBackToLanding, onOpenNotifications, onOpenProfile }) {
   const {
@@ -77,7 +78,7 @@ export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onBackToLand
           padding: '2px'
         }}>
           <img
-            src="/logo.png"
+            src={logoImg}
             alt="MoneyMind"
             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           />

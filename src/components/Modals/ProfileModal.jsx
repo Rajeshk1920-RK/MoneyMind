@@ -26,6 +26,7 @@ import {
 import { useFinance } from '../../context/FinanceContext';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import logoImg from '@/assets/logo.png';
 
 export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
   const {
@@ -777,7 +778,7 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
           {activeSubView === 'about' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', textAlign: 'center', padding: '1rem 0' }}>
               <div style={{ width: '56px', height: '56px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2ede8', padding: '4px' }}>
-                <img src="/logo.png" alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <img src={logoImg} alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <div>
                 <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>MoneyMind</h4>

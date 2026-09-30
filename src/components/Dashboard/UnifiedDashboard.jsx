@@ -29,6 +29,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { SAMPLE_BANK_SMS_MESSAGES, parseBankingSMS } from '../../utils/smsParser';
 import confetti from 'canvas-confetti';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui';
+import logoImg from '@/assets/logo.png';
 
 export function UnifiedDashboard({
   onOpenAddTx,
@@ -141,7 +142,7 @@ export function UnifiedDashboard({
             padding: '2px',
             flexShrink: 0
           }}>
-            <img src="/logo.png" alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <img src={logoImg} alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <div>
             <h1 style={{
@@ -699,7 +700,7 @@ export function UnifiedDashboard({
                   padding: '2px',
                   boxShadow: '0 2px 8px rgba(37, 99, 235, 0.1)'
                 }}>
-                  <img src="/logo.png" alt="MoneyMind Intelligence" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <img src={logoImg} alt="MoneyMind Intelligence" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <div>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#131826', letterSpacing: '-0.01em' }}>

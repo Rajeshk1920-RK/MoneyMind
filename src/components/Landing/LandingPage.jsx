@@ -30,6 +30,7 @@ import {
   QrCode
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logoImg from '@/assets/logo.png';
 
 const GithubIcon = ({ size = 15 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,7 +63,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
   const handleDownloadApk = () => {
     const link = document.createElement('a');
-    link.href = '/moneymind-v1.0.apk';
+    link.href = './moneymind-v1.0.apk';
     link.download = 'MoneyMind-v1.0.apk';
     document.body.appendChild(link);
     link.click();
@@ -208,7 +209,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             padding: '2px'
           }}>
             <img
-              src="/logo.png"
+              src={logoImg}
               alt="MoneyMind"
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
@@ -293,7 +294,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           marginBottom: '1.75rem',
           padding: '8px'
         }}>
-          <img src="/logo.png" alt="MoneyMind App" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <img src={logoImg} alt="MoneyMind App" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
 
         {/* Headline */}
@@ -1071,7 +1072,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                   padding: '2px'
                 }}>
                   <img
-                    src="/logo.png"
+                    src={logoImg}
                     alt="MoneyMind"
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   />
