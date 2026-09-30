@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useFinance } from '../context/FinanceContext';
+import { parseBankingSMS } from '../utils/smsParser';
+import confetti from 'canvas-confetti';
 import { LoginPage } from '../components/Auth/LoginPage';
 import { ModernSidebar } from '../components/Navigation/ModernSidebar';
 import { UnifiedDashboard } from '../components/Dashboard/UnifiedDashboard';
@@ -20,6 +23,7 @@ import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPop
  */
 export function MobileFinanceApp() {
   const { user, isAuthenticated } = useAuth();
+  const { addTransaction, addNotification } = useFinance();
   
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [isGuest, setIsGuest] = useState(false);
@@ -31,6 +35,54 @@ export function MobileFinanceApp() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSimulateUPIOpen, setIsSimulateUPIOpen] = useState(false);
   const [activeIntentTx, setActiveIntentTx] = useState(null);
+
+  // Automatic Background/Foreground Incoming Banking SMS Detection
+  useEffect(() => {
+    const handleNativeSms = (e) => {
+      const sms = e.detail;
+      if (!sms || !sms.text) return;
+      const parsed = parseBankingSMS(sms.text);
+      if (parsed && parsed.amount > 0) {
+        const newTx = {
+          type: parsed.type,
+          title: parsed.merchant || 'Bank Transaction',
+          amount: parsed.amount,
+          category: parsed.category || 'General',
+          paymentMethod: parsed.paymentMethod || 'UPI',
+          date: parsed.date || new Date().toISOString().split('T')[0],
+          tags: ['Auto Bank SMS', parsed.bank],
+          note: `Auto-detected from ${sms.sender || parsed.bank}: "${sms.text.substring(0, 60)}..."`
+        };
+
+        addTransaction(newTx);
+        
+        if (addNotification) {
+          addNotification({
+            id: `sms-notif-${Date.now()}`,
+            title: `SMS Auto-Read: ${parsed.bank}`,
+            message: `${parsed.type === 'expense' ? 'Spent ₹' : 'Received ₹'}${parsed.amount} at ${parsed.merchant}`,
+            time: 'Just now',
+            type: parsed.type,
+            unread: true
+          });
+        }
+
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
+
+        // Open Payment Intent Popup to explain transaction
+        setActiveIntentTx(newTx);
+      }
+    };
+
+    window.addEventListener('nativeSmsReceived', handleNativeSms);
+    return () => window.removeEventListener('nativeSmsReceived', handleNativeSms);
+  }, [addTransaction, addNotification]);
 
   const handleOpenAddTx = (type = 'expense') => {
     setTxModalType(type);
