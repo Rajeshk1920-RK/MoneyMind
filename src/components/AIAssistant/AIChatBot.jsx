@@ -393,11 +393,46 @@ function ChatBody({
           style={{ width: '100%', margin: 0 }}
         >
           <div className="ai-input-container">
+            <DropdownMenuTrigger>
+              <button
+                type="button"
+                aria-label="Add financial resources"
+                className="ai-action-btn-circle ai-action-btn-outline"
+                title="Financial Analysis Tools"
+              >
+                <Plus size={17} />
+              </button>
+
+              <DropdownMenu className="w-56">
+                <DropdownMenuItem onClick={() => sendMessage('Audit my recent high transactions and unusual spends')}>
+                  <Paperclip size={15} />
+                  Audit Recent SMS Spends
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => sendMessage('Give me a detailed 50-30-20 budget recommendation')}>
+                  <PieChart size={15} />
+                  50-30-20 Budget Optimizer
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => sendMessage('Predict my month-end expenses based on current burn rate')}>
+                  <TrendingUp size={15} />
+                  Deep Expense Projection
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => sendMessage('What is the best strategy to settle group debts fast with SplitSmart?')}>
+                  <Zap size={15} />
+                  Debt Settlement Strategy
+                </DropdownMenuItem>
+              </DropdownMenu>
+            </DropdownMenuTrigger>
+
             <div className="ai-input-textarea-wrap">
               <textarea
-                placeholder="Ask FinAI about your spendings, savings, budgets or debt..."
+                placeholder="Ask FinAI about your spendings, savings..."
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${Math.min(e.target.scrollHeight, 100)}px`;
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -410,47 +445,14 @@ function ChatBody({
               />
             </div>
 
-            <div className="ai-input-action-bar">
-              <DropdownMenuTrigger>
-                <button
-                  type="button"
-                  aria-label="Add financial resources"
-                  className="ai-action-btn-circle ai-action-btn-outline"
-                  title="Financial Analysis Tools"
-                >
-                  <Plus size={16} />
-                </button>
-
-                <DropdownMenu className="w-56">
-                  <DropdownMenuItem onClick={() => sendMessage('Audit my recent high transactions and unusual spends')}>
-                    <Paperclip size={15} />
-                    Audit Recent SMS Spends
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => sendMessage('Give me a detailed 50-30-20 budget recommendation')}>
-                    <PieChart size={15} />
-                    50-30-20 Budget Optimizer
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => sendMessage('Predict my month-end expenses based on current burn rate')}>
-                    <TrendingUp size={15} />
-                    Deep Expense Projection
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => sendMessage('What is the best strategy to settle group debts fast with SplitSmart?')}>
-                    <Zap size={15} />
-                    Debt Settlement Strategy
-                  </DropdownMenuItem>
-                </DropdownMenu>
-              </DropdownMenuTrigger>
-
-              <button
-                type="submit"
-                disabled={!inputValue.trim() || isBusy}
-                className="ai-action-btn-circle ai-action-btn-send"
-                title="Send query"
-              >
-                <ArrowUp size={16} strokeWidth={2.5} />
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={!inputValue.trim() || isBusy}
+              className="ai-action-btn-circle ai-action-btn-send"
+              title="Send query"
+            >
+              <ArrowUp size={17} strokeWidth={2.5} />
+            </button>
           </div>
         </form>
       </div>

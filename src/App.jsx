@@ -100,7 +100,7 @@ function MainAppContent() {
           )}
 
           {currentTab === 'ai-assistant' && (
-            <div className="page-content-wrapper">
+            <div className="page-content-wrapper page-content-wrapper-ai">
               <AIChatBot />
             </div>
           )}

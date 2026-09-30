@@ -382,6 +382,13 @@ button, a {
   overflow-x: hidden;
 }
 
+.page-content-wrapper-ai {
+  height: calc(100vh - 30px);
+  padding: 1.25rem 2rem 1.25rem !important;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Dashboard Responsive Grids */
 .dashboard-main-grid {
   display: grid;
@@ -805,6 +812,14 @@ button, a {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+
+  .page-content-wrapper-ai {
+    height: calc(100dvh - 78px) !important;
+    padding: 0.5rem 0.5rem 0.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-width: 100% !important;
   }
 
   .mm-card {
