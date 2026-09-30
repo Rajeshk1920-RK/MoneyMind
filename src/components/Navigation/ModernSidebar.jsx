@@ -10,9 +10,7 @@ import {
   ArrowLeftRight,
   Sparkles,
   PieChart,
-  Target,
-  Globe,
-  Download
+  Target
 } from 'lucide-react';
 
 export function ModernSidebar({
