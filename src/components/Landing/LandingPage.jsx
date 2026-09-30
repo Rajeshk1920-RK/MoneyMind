@@ -960,10 +960,10 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             Join thousands of smart spenders using MoneyMind for personal budgeting and seamless friend group bill splitting.
           </p>
           <button
-            onClick={() => handleProtectedAction('signup')}
+            onClick={handleDownloadApk}
             style={{
               padding: '1rem 2.75rem',
-              borderRadius: '12px',
+              borderRadius: '9999px',
               backgroundColor: '#ffffff',
               color: '#1b4332',
               fontSize: '1.05rem',
@@ -972,11 +972,13 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.6rem'
+              gap: '0.6rem',
+              border: 'none',
+              transition: 'transform 0.15s ease'
             }}
           >
-            <span>Open Application Now</span>
-            <ArrowRight size={18} />
+            <Download size={18} />
+            <span>Download APK (v1.0)</span>
           </button>
         </div>
       </section>
@@ -984,23 +986,37 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
       {/* Footer */}
       <footer style={{
         borderTop: '1px solid #e3ebe5',
-        padding: '2.5rem 2rem',
+        padding: '2.5rem 2rem 5.5rem',
         maxWidth: '1280px',
         margin: '0 auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         fontSize: '0.88rem',
-        color: '#657e70'
+        color: '#657e70',
+        flexWrap: 'wrap',
+        gap: '1rem'
       }}>
         <div>
           © 2026 MoneyMind Financial Platform. All rights reserved.
         </div>
-        <div style={{ display: 'flex', gap: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <a href="#services" style={{ color: '#657e70', textDecoration: 'none' }}>Services</a>
           <a href="#features" style={{ color: '#657e70', textDecoration: 'none' }}>Features</a>
-          <a href="#about" style={{ color: '#657e70', textDecoration: 'none' }}>About us</a>
-          <button onClick={() => handleProtectedAction('login')} style={{ color: '#1b4332', fontWeight: 700, cursor: 'pointer' }}>Launch App</button>
+          <button
+            onClick={handleDownloadApk}
+            style={{
+              color: '#059669',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Download size={15} />
+            <span>Download APK</span>
+          </button>
         </div>
       </footer>
 
