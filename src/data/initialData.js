@@ -1,7 +1,5 @@
 export const INITIAL_PROFILES = [
-  { id: 'user-1', name: 'Rajesh Kumar', email: 'rajesh@example.com', avatar: 'RK', role: 'Personal Account', netBalance: 74500 },
-  { id: 'user-2', name: 'Kumar Family', email: 'family@home.net', avatar: 'KF', role: 'Shared Household', netBalance: 125000 },
-  { id: 'user-3', name: 'Freelance Studio', email: 'studio@creative.work', avatar: 'FS', role: 'Business / Projects', netBalance: 48200 }
+  { id: 'user-1', name: 'Rajesh Kumar', email: 'rajesh.kumar@moneymind.in', avatar: 'RK', role: 'Personal Account', upiId: 'rajesh@okhdfcbank', netBalance: 74500 }
 ];
 
 export const DEFAULT_CURRENCIES = [
@@ -30,121 +28,200 @@ export const INITIAL_TRANSACTIONS = [
     id: 'tx-1',
     type: 'income',
     title: 'Monthly Tech Salary',
+    merchant: 'Google DeepMind R&D',
     amount: 85000,
     category: 'Salary & Compensation',
     date: '2026-09-01',
     paymentMethod: 'Bank Transfer',
     profileId: 'user-1',
     note: 'Inflow from Google DeepMind R&D',
-    tags: ['salary', 'recurring']
+    tags: ['salary', 'recurring'],
+    intentCaptured: false,
+    source: 'bank_direct'
   },
   {
     id: 'tx-2',
     type: 'expense',
     title: 'Modern Apartment Rent',
+    merchant: 'Skyline Properties',
     amount: 22000,
     category: 'Housing & Rent',
     date: '2026-09-02',
     paymentMethod: 'Net Banking',
     profileId: 'user-1',
     note: 'Paid to landlord for September',
-    tags: ['rent', 'fixed']
+    tags: ['rent', 'fixed'],
+    intentCategory: 'Bills & Utilities',
+    intentNote: 'Monthly home lease',
+    intentFor: 'Myself',
+    intentCaptured: true,
+    source: 'manual'
   },
   {
     id: 'tx-3',
     type: 'expense',
     title: 'Gourmet Dinner & Swiggy',
+    merchant: 'ABC Restaurant',
     amount: 2450,
     category: 'Food & Dining',
     date: '2026-09-02',
     paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Weekend family celebration',
-    tags: ['dining', 'weekend']
+    tags: ['dining', 'weekend'],
+    intentCategory: 'Food & Dining',
+    intentNote: 'Dinner with friends',
+    intentFor: 'Friends',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   },
   {
     id: 'tx-4',
     type: 'expense',
     title: 'Uber Airport Ride & Metro Card',
+    merchant: 'Uber Rides India',
     amount: 1200,
     category: 'Travel & Transport',
     date: '2026-09-01',
-    paymentMethod: 'Credit Card',
+    paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Client meeting transit',
-    tags: ['commute']
+    tags: ['commute'],
+    intentCategory: 'Travel',
+    intentNote: 'Airport cab to client office',
+    intentFor: 'Work / Client',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   },
   {
     id: 'tx-5',
     type: 'income',
     title: 'Freelance UI/UX Audit',
+    merchant: 'Fintech Studio Client',
     amount: 18000,
     category: 'Freelance & Side Income',
     date: '2026-08-28',
     paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Completed Fintech dashboard design audit',
-    tags: ['sidegig']
+    tags: ['sidegig'],
+    intentCaptured: false,
+    source: 'simulated_upi'
   },
   {
     id: 'tx-6',
     type: 'expense',
     title: 'Fibre Internet & Cloud Servers',
+    merchant: 'Airtel Broadband',
     amount: 1850,
     category: 'Utilities & Bills',
     date: '2026-08-27',
-    paymentMethod: 'Credit Card',
+    paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Airtel Broadband + AWS hosting',
-    tags: ['utilities']
+    tags: ['utilities'],
+    intentCategory: 'Bills & Utilities',
+    intentNote: 'Home fiber WiFi and AWS hosting',
+    intentFor: 'Myself',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   },
   {
     id: 'tx-7',
     type: 'expense',
     title: 'Mechanical Keyboard & Desk Lamp',
+    merchant: 'Keychron India',
     amount: 4600,
     category: 'Shopping & Electronics',
     date: '2026-08-24',
-    paymentMethod: 'Credit Card',
+    paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Keychron wireless & BenQ screenbar',
-    tags: ['setup', 'shopping']
+    tags: ['setup', 'shopping'],
+    intentCategory: 'Shopping',
+    intentNote: 'Desk productivity upgrade',
+    intentFor: 'Myself',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   },
   {
     id: 'tx-8',
     type: 'expense',
     title: 'Mutual Fund SIP (Index Nifty 50)',
+    merchant: 'Groww Mutual Funds',
     amount: 15000,
     category: 'Investments & Savings',
     date: '2026-08-20',
     paymentMethod: 'Auto Debit',
     profileId: 'user-1',
     note: 'Long-term equity investment',
-    tags: ['investing', 'wealth']
+    tags: ['investing', 'wealth'],
+    intentCategory: 'Investment',
+    intentNote: 'Monthly index SIP',
+    intentFor: 'Myself',
+    intentCaptured: true,
+    source: 'bank_direct'
   },
   {
     id: 'tx-9',
     type: 'expense',
     title: 'Netflix, Spotify & ChatGPT Plus',
+    merchant: 'Digital Subscriptions',
     amount: 2890,
     category: 'Entertainment & Subs',
     date: '2026-08-18',
-    paymentMethod: 'Credit Card',
+    paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Monthly digital subscription stack',
-    tags: ['subscriptions']
+    tags: ['subscriptions'],
+    intentCategory: 'Entertainment',
+    intentNote: 'Family streaming bundle',
+    intentFor: 'Family',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   },
   {
     id: 'tx-10',
     type: 'expense',
     title: 'Annual Gym Membership & Supplements',
+    merchant: 'Cult.fit Fitness',
     amount: 6500,
     category: 'Healthcare & Wellness',
     date: '2026-08-14',
     paymentMethod: 'UPI',
     profileId: 'user-1',
     note: 'Cult.fit fitness pass renewal',
-    tags: ['health']
+    tags: ['health'],
+    intentCategory: 'Fitness',
+    intentNote: 'Gym pass renewal',
+    intentFor: 'Myself',
+    intentCaptured: true,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
+  },
+  {
+    id: 'tx-11',
+    type: 'expense',
+    title: 'Corner Supermarket Grocery Store',
+    merchant: 'Nature Basket',
+    amount: 1420,
+    category: 'Food & Dining',
+    date: '2026-09-03',
+    paymentMethod: 'UPI',
+    profileId: 'user-1',
+    note: 'Quick QR scan at checkout',
+    tags: ['groceries'],
+    intentCategory: null,
+    intentNote: '',
+    intentFor: '',
+    intentCaptured: false,
+    source: 'simulated_upi',
+    paymentStatus: 'success'
   }
 ];
 
@@ -186,86 +263,6 @@ export const INITIAL_GOALS = [
   }
 ];
 
-/* Splitwise initial groups and expenses */
-export const INITIAL_SPLIT_GROUPS = [
-  {
-    id: 'grp-goa',
-    name: 'Goa Weekend Trip',
-    description: '4 friends roadtrip & beach villa vacation',
-    currency: 'INR',
-    members: [
-      { id: 'mem-1', name: 'Rajesh (You)', avatar: 'RK' },
-      { id: 'mem-2', name: 'Aman Sharma', avatar: 'AS' },
-      { id: 'mem-3', name: 'Priya Patel', avatar: 'PP' },
-      { id: 'mem-4', name: 'Rohan Verma', avatar: 'RV' }
-    ],
-    expenses: [
-      {
-        id: 'se-1',
-        title: 'Seafood Beach Shack Feast',
-        amount: 2000,
-        paidBy: 'mem-1', // Rajesh paid 2000
-        splitType: 'equal',
-        involvedMembers: ['mem-1', 'mem-2', 'mem-3', 'mem-4'],
-        date: '2026-09-01',
-        category: 'Food'
-      },
-      {
-        id: 'se-2',
-        title: 'SUV Rental & Highway Tolls',
-        amount: 1500,
-        paidBy: 'mem-2', // Aman paid 1500
-        splitType: 'equal',
-        involvedMembers: ['mem-1', 'mem-2', 'mem-3', 'mem-4'],
-        date: '2026-09-01',
-        category: 'Travel'
-      },
-      {
-        id: 'se-3',
-        title: 'Heritage Villa Airbnb Stay',
-        amount: 8000,
-        paidBy: 'mem-3', // Priya paid 8000
-        splitType: 'equal',
-        involvedMembers: ['mem-1', 'mem-2', 'mem-3', 'mem-4'],
-        date: '2026-09-02',
-        category: 'Stay'
-      },
-      {
-        id: 'se-4',
-        title: 'Scuba Diving & Water Sports',
-        amount: 3200,
-        paidBy: 'mem-4', // Rohan paid 3200
-        splitType: 'equal',
-        involvedMembers: ['mem-1', 'mem-2', 'mem-3', 'mem-4'],
-        date: '2026-09-02',
-        category: 'Activity'
-      }
-    ]
-  },
-  {
-    id: 'grp-flat',
-    name: 'Flat 402 Roommates',
-    description: 'Shared groceries, WiFi & cook salary',
-    currency: 'INR',
-    members: [
-      { id: 'mem-1', name: 'Rajesh (You)', avatar: 'RK' },
-      { id: 'mem-2', name: 'Aman Sharma', avatar: 'AS' }
-    ],
-    expenses: [
-      {
-        id: 'se-10',
-        title: 'Monthly Organic Groceries & Milk',
-        amount: 4200,
-        paidBy: 'mem-1',
-        splitType: 'equal',
-        involvedMembers: ['mem-1', 'mem-2'],
-        date: '2026-08-28',
-        category: 'Groceries'
-      }
-    ]
-  }
-];
-
 export const INITIAL_NOTIFICATIONS = [
   {
     id: 'notif-1',
@@ -285,8 +282,8 @@ export const INITIAL_NOTIFICATIONS = [
   },
   {
     id: 'notif-3',
-    title: 'Splitwise Balance Update',
-    message: 'Aman Sharma owes you ₹125 from the Goa Weekend Trip.',
+    title: 'Goal Milestone Achieved',
+    message: 'You have reached 66% of your M4 Max MacBook Pro savings target!',
     type: 'success',
     timestamp: '1 day ago',
     read: true

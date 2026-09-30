@@ -1,0 +1,53 @@
+/* Marker UI Component Styling */
+
+.ui-marker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary, #64748b);
+  animation: markerFadeIn 0.2s ease;
+}
+
+.ui-marker-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background-color: var(--bg-surface, #f8fafc);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.ui-marker-content.shimmer,
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(241, 245, 249, 0.8) 0%,
+    rgba(226, 232, 240, 0.9) 50%,
+    rgba(241, 245, 249, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerMove 1.8s infinite linear;
+}
+
+@keyframes shimmerMove {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes markerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

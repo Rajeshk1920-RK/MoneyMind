@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Check, ArrowRight, Sparkles, User } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useSplit } from '../../context/SplitContext';
 import { useFinance } from '../../context/FinanceContext';
@@ -63,9 +63,9 @@ export function SettleModal({ isOpen, onClose, settlement }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.75rem'
+                color: '#ef4444'
               }}>
-                {settlement.fromAvatar}
+                <User size={24} />
               </div>
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {settlement.fromName}
@@ -91,9 +91,9 @@ export function SettleModal({ isOpen, onClose, settlement }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.75rem'
+                color: '#10b981'
               }}>
-                {settlement.toAvatar}
+                <User size={24} />
               </div>
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {settlement.toName}

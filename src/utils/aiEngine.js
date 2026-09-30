@@ -115,15 +115,63 @@ export function generateAISavingSuggestions(transactions, budgets) {
   return suggestions;
 }
 
-export function answerFinancialQuery(query, { transactions, budgets, goals, splitGroups, activeCurrency = 'INR' }) {
+import { getPaymentIntentStats } from '../components/PaymentIntent/paymentIntentUtils';
+
+export function answerFinancialQuery(query, { transactions, budgets, goals, activeCurrency = 'INR' }) {
   const q = query.toLowerCase();
 
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0);
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0);
   const netBalance = totalIncome - totalExpense;
+  const intentStats = getPaymentIntentStats(transactions);
 
-  // Splitwise summary
-  const goaGroup = splitGroups.find(g => g.id === 'grp-goa') || splitGroups[0];
+  // 1. Payment Intent specific queries
+  if (q.includes('intent') || q.includes('upi') || q.includes('why did i pay') || q.includes('reason') || q.includes('unexplained')) {
+    const topCats = intentStats.categoryList.slice(0, 3).map(c => `• **${c.name}**: ₹${c.amount.toLocaleString('en-IN')} (${c.count} payments - ${c.percentage}%)`).join('\n');
+    
+    return {
+      text: `**Payment Intent Breakdown**:
+• Total UPI Outflow: **₹${intentStats.totalUPIAmount.toLocaleString('en-IN')}** (${intentStats.totalUPIPayments} payments)
+• Explained Rate: **${intentStats.captureRate}%** (${intentStats.capturedPayments} of ${intentStats.totalUPIPayments} captured)
+${intentStats.uncapturedPayments > 0 ? `• ⚠️ You have **${intentStats.uncapturedPayments} unclassified UPI payment(s)** needing reasons.` : '• All UPI payments have documented reasons!'}
+
+**Top Intent Categories**:
+${topCats || 'No intent categories captured yet.'}
+
+*FinAI Tip: Tracking payment reasons helps you distinguish essential bills from discretionary impulse spending!*`,
+      actionable: true,
+      badge: 'Payment Intent AI'
+    };
+  }
+
+  if (q.includes('food') || q.includes('dining') || q.includes('restaurant')) {
+    const foodCat = intentStats.categories['Food & Dining'];
+    const foodCount = foodCat?.count || transactions.filter(t => t.category === 'Food & Dining').length;
+    const foodAmt = foodCat?.amount || transactions.filter(t => t.category === 'Food & Dining').reduce((s, t) => s + t.amount, 0);
+
+    return {
+      text: `**Food & Dining Insights**:
+• You made **${foodCount} food-related payments** totaling **₹${foodAmt.toLocaleString('en-IN')}**.
+• Food & Dining represents ${totalExpense > 0 ? Math.round((foodAmt / totalExpense) * 100) : 0}% of your total outflow.
+${foodAmt > 5000 ? '• *Tip: Preparing home-cooked meals for 2 dinners/week could save ~₹2,500 monthly.*' : '• *Your dining expenses are well within budget limits!*'}`,
+      actionable: false,
+      badge: 'Spending Intelligence'
+    };
+  }
+
+  if (q.includes('shopping')) {
+    const shopCat = intentStats.categories['Shopping'] || intentStats.categories['Shopping & Electronics'];
+    const shopCount = shopCat?.count || transactions.filter(t => t.category.includes('Shopping')).length;
+    const shopAmt = shopCat?.amount || transactions.filter(t => t.category.includes('Shopping')).reduce((s, t) => s + t.amount, 0);
+
+    return {
+      text: `**Shopping Outlay**:
+• You made **${shopCount} shopping payment(s)** totaling **₹${shopAmt.toLocaleString('en-IN')}**.
+• Discretionary retail spending represents ${totalExpense > 0 ? Math.round((shopAmt / totalExpense) * 100) : 0}% of your total budget.`,
+      actionable: false,
+      badge: 'Retail Intelligence'
+    };
+  }
 
   if (q.includes('save') || q.includes('cut') || q.includes('reduce')) {
     return {
@@ -148,18 +196,6 @@ export function answerFinancialQuery(query, { transactions, budgets, goals, spli
 *Tip: If you maintain your current pace, you will end the month within safe liquidity limits.*`,
       actionable: false,
       badge: 'Predictive Analytics'
-    };
-  }
-
-  if (q.includes('split') || q.includes('trip') || q.includes('who owes') || q.includes('owe') || q.includes('friend') || q.includes('goa')) {
-    return {
-      text: `**SplitSmart Trip Summary (${goaGroup ? goaGroup.name : 'All Groups'})**:
-- Total Group Expenses: ₹14,700 recorded across 4 members.
-- You paid ₹2,000 for the Seafood Beach Shack.
-- **Settlement status**: Aman Sharma owes you ₹125, while you have a minor balance settlement with Priya for the Airbnb.
-- You can tap **Split Groups** in the sidebar to view the full settlement matrix or settle up in 1 click!`,
-      actionable: true,
-      badge: 'Splitwise Sync'
     };
   }
 
@@ -195,9 +231,10 @@ Stashing an extra ₹5,000 this month will pull your MacBook target forward by 1
     text: `Hello Rajesh! Here is your current financial pulse:
 • **Total Inflow**: ₹${totalIncome.toLocaleString('en-IN')}
 • **Total Outflow**: ₹${totalExpense.toLocaleString('en-IN')}
+• **Intent Capture Rate**: ${intentStats.captureRate}% (${intentStats.capturedPayments} of ${intentStats.totalUPIPayments} UPI payments explained)
 • **Net Savings Buffer**: ₹${netBalance.toLocaleString('en-IN')} (${totalIncome > 0 ? Math.round((netBalance / totalIncome) * 100) : 0}% savings rate)
 
-You can ask me anything about your budgets, predict your month-end spend, ask who owes whom in your Goa Trip, or explore personalized saving suggestions!`,
+You can ask me about your Payment Intents, budgets, month-end forecast, or saving suggestions!`,
     actionable: false,
     badge: 'FinAI Advisor'
   };

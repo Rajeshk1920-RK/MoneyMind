@@ -8,16 +8,22 @@ export function exportTransactionsToCSV(transactions, filename = 'transactions_s
     return;
   }
 
-  const headers = ['ID', 'Date', 'Type', 'Title', 'Category', 'Amount (INR)', 'Payment Method', 'Tags', 'Note'];
+  const headers = ['ID', 'Date', 'Type', 'Title', 'Merchant', 'Category', 'Amount (INR)', 'Payment Method', 'Intent Category', 'Intent Note', 'Intent For', 'Intent Captured', 'Source', 'Tags', 'Note'];
   
   const rows = transactions.map(t => [
     `"${t.id}"`,
     `"${t.date}"`,
     `"${t.type.toUpperCase()}"`,
     `"${(t.title || '').replace(/"/g, '""')}"`,
+    `"${(t.merchant || t.title || '').replace(/"/g, '""')}"`,
     `"${(t.category || '').replace(/"/g, '""')}"`,
     t.amount,
     `"${(t.paymentMethod || '').replace(/"/g, '""')}"`,
+    `"${(t.intentCategory || '').replace(/"/g, '""')}"`,
+    `"${(t.intentNote || '').replace(/"/g, '""')}"`,
+    `"${(t.intentFor || '').replace(/"/g, '""')}"`,
+    `"${Boolean(t.intentCaptured)}"`,
+    `"${(t.source || 'manual')}"`,
     `"${(t.tags || []).join(', ')}"`,
     `"${(t.note || '').replace(/"/g, '""')}"`
   ]);

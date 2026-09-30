@@ -18,440 +18,485 @@ import {
   Lock,
   Mail,
   Check,
-  Globe
+  Globe,
+  Loader2,
+  AlertCircle,
+  ArrowLeft,
+  KeyRound,
+  MessageSquare,
+  Download,
+  Smartphone,
+  ExternalLink,
+  QrCode
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+
+const GithubIcon = ({ size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+const LinkedinIcon = ({ size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
 
 export function LandingPage({ onLaunchApp, onOpenAuth }) {
-  const [pricingCycle, setPricingCycle] = useState('monthly'); // 'monthly' | 'annual'
+  const { user, isAuthenticated, signIn, signUp, sendOtp, verifyOtp } = useAuth();
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
+  const [authStep, setAuthStep] = useState('email'); // 'email' | 'otp'
+  const [authMethod, setAuthMethod] = useState('otp'); // 'otp' | 'password'
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authFullName, setAuthFullName] = useState('');
+  const [authOtp, setAuthOtp] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
+  const [showApkModal, setShowApkModal] = useState(false);
+
+  const handleDownloadApk = () => {
+    const link = document.createElement('a');
+    link.href = '/moneymind-v1.0.apk';
+    link.download = 'MoneyMind-v1.0.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowApkModal(true);
+  };
 
   const openAuth = (mode = 'login') => {
     setAuthModal({ isOpen: true, mode });
+    setAuthStep('email');
+    setAuthEmail('');
+    setAuthPassword('');
+    setAuthFullName('');
+    setAuthOtp('');
+    setAuthError('');
+    setAuthSuccess('');
   };
 
   const closeAuth = () => {
     setAuthModal({ isOpen: false, mode: 'login' });
+    setAuthStep('email');
+    setAuthOtp('');
+    setAuthPassword('');
+    setAuthError('');
+    setAuthSuccess('');
   };
 
-  const handleAuthSubmit = (e) => {
+  // 1. Send OTP to user's entered email
+  const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
-    closeAuth();
-    onLaunchApp();
+    if (!authEmail.trim() || !authEmail.includes('@')) {
+      setAuthError('Please enter a valid email address.');
+      return;
+    }
+
+    setAuthError('');
+    setAuthSuccess('');
+    setAuthLoading(true);
+
+    try {
+      const res = await sendOtp(authEmail.trim(), authFullName.trim());
+      setAuthStep('otp');
+      setAuthSuccess(res.message || `6-digit verification code sent to ${authEmail.trim()}`);
+    } catch (err) {
+      setAuthError(err.message || 'Failed to send verification code. Please check your backend connection.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // 2. Verify 6-digit OTP
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
+    if (!authOtp.trim() || authOtp.trim().length < 6) {
+      setAuthError('Please enter the complete 6-digit verification code.');
+      return;
+    }
+
+    setAuthError('');
+    setAuthLoading(true);
+
+    try {
+      await verifyOtp(authEmail.trim(), authOtp.trim(), authFullName.trim());
+      closeAuth();
+      onLaunchApp();
+    } catch (err) {
+      setAuthError(err.message || 'Invalid or expired verification code.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // 3. Optional Password Login / Register
+  const handleEmailAuth = async (e) => {
+    if (e) e.preventDefault();
+    if (!authEmail.trim() || !authPassword) {
+      setAuthError('Please provide both email and password.');
+      return;
+    }
+
+    setAuthError('');
+    setAuthSuccess('');
+    setAuthLoading(true);
+
+    try {
+      if (authModal.mode === 'signup') {
+        await signUp(authEmail.trim(), authPassword, authFullName.trim());
+      } else {
+        await signIn(authEmail.trim(), authPassword);
+      }
+      closeAuth();
+      onLaunchApp();
+    } catch (err) {
+      console.error('PostgreSQL Auth error:', err);
+      setAuthError(err.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleProtectedAction = () => {
+    if (onLaunchApp) {
+      onLaunchApp();
+    }
   };
 
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#f4f6f0',
-      color: '#16382b',
+      backgroundColor: '#fcfdfd',
+      color: '#0f172a',
       fontFamily: 'var(--font-body)',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      position: 'relative'
     }}>
-      {/* Top Header / Navigation - Exact to Screenshot */}
+      {/* Top Header / Navigation */}
       <header style={{
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '1.5rem 2rem',
+        padding: '1.25rem 2rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         position: 'relative',
         zIndex: 50
       }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        {/* Left: Logo & Brand */}
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
           <div style={{
             width: '38px',
             height: '38px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
+            borderRadius: '12px',
+            backgroundColor: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#fff',
-            boxShadow: '0 4px 12px rgba(22, 56, 43, 0.25)'
+            overflow: 'hidden',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.06)',
+            border: '1px solid #e2ede8',
+            padding: '2px'
           }}>
-            <Sparkles size={20} />
+            <img
+              src="/logo.png"
+              alt="MoneyMind"
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
           </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#16382b', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
+          <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
             MoneyMind
           </span>
         </div>
 
-        {/* Menu Links - Exact to Screenshot */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '2.25rem', fontSize: '0.95rem', fontWeight: 500, color: '#445b4e' }}>
-          <a href="#home" style={{ color: '#16382b', fontWeight: 600, textDecoration: 'none' }}>Home</a>
-          <a href="#services" style={{ color: '#445b4e', textDecoration: 'none', transition: 'color 0.15s' }}>Services</a>
-          <a href="#features" style={{ color: '#445b4e', textDecoration: 'none', transition: 'color 0.15s' }}>Features</a>
-          <a href="#pricing" style={{ color: '#445b4e', textDecoration: 'none', transition: 'color 0.15s' }}>Pricing</a>
-          <a href="#about" style={{ color: '#445b4e', textDecoration: 'none', transition: 'color 0.15s' }}>About us</a>
-        </nav>
-
-        {/* Auth / Launch Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        {/* Right Actions: Download APK + Open Web App */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Download APK Button */}
           <button
-            onClick={() => openAuth('login')}
+            onClick={handleDownloadApk}
             style={{
-              padding: '0.55rem 1.35rem',
+              padding: '0.6rem 1.35rem',
               borderRadius: '9999px',
-              border: '1.5px solid #cfded4',
-              backgroundColor: '#ffffff',
-              color: '#16382b',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.borderColor = '#16382b'}
-            onMouseLeave={(e) => e.currentTarget.style.borderColor = '#cfded4'}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => openAuth('signup')}
-            style={{
-              padding: '0.55rem 1.5rem',
-              borderRadius: '9999px',
-              backgroundColor: '#1b4332',
+              backgroundColor: '#0f172a',
               color: '#ffffff',
-              fontSize: '0.9rem',
-              fontWeight: 600,
+              fontSize: '0.88rem',
+              fontWeight: 700,
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(27, 67, 50, 0.3)',
-              transition: 'all 0.15s ease'
+              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              border: 'none',
+              transition: 'all 0.16s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#122f23'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1b4332'}
+            title="Download Android APK (v1.0)"
           >
-            Sign up
+            <Download size={16} />
+            <span>Download APK</span>
+          </button>
+
+          {/* Open Web App Button */}
+          <button
+            onClick={() => onLaunchApp && onLaunchApp()}
+            style={{
+              padding: '0.6rem 1.25rem',
+              borderRadius: '9999px',
+              backgroundColor: '#ecfdf5',
+              color: '#059669',
+              border: '1px solid #a7f3d0',
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.16s ease'
+            }}
+            title="Open Interactive Web Application"
+          >
+            <Sparkles size={16} />
+            <span className="hide-on-mobile">Web App</span>
           </button>
         </div>
       </header>
 
-      {/* Hero Section - Exact Match to Screenshot */}
-      <section id="home" style={{
-        maxWidth: '1280px',
+      {/* Hero Showcase Section */}
+      <section style={{
+        maxWidth: '1040px',
         margin: '0 auto',
-        padding: '2.5rem 2rem 5rem',
-        display: 'grid',
-        gridTemplateColumns: '1.1fr 1fr',
-        gap: '3.5rem',
-        alignItems: 'center',
-        position: 'relative'
+        padding: '3rem 1.5rem 5rem',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
       }}>
-        {/* Left Hero Content */}
-        <div>
-          <h1 style={{
-            fontSize: '4.5rem',
-            lineHeight: 1.1,
-            fontWeight: 800,
-            color: '#16382b',
-            fontFamily: 'var(--font-display)',
-            letterSpacing: '-0.035em',
-            marginBottom: '1.6rem'
-          }}>
-            Smarter Finance<br />
-            Better Future
-          </h1>
+        {/* Floating App Icon Badge */}
+        <div style={{
+          width: '68px',
+          height: '68px',
+          borderRadius: '20px',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 12px 30px rgba(5, 150, 105, 0.15)',
+          border: '1.5px solid #a7f3d0',
+          marginBottom: '1.75rem',
+          padding: '8px'
+        }}>
+          <img src="/logo.png" alt="MoneyMind App" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        </div>
 
-          <p style={{
-            fontSize: '1.15rem',
-            lineHeight: 1.6,
-            color: '#52695c',
-            maxWidth: '470px',
-            marginBottom: '2.5rem'
-          }}>
-            Simplify tracking, saving, and growing your wealth with our all-in-one finance platform.
-          </p>
+        {/* Headline */}
+        <h1 style={{
+          fontSize: 'clamp(2.4rem, 6vw, 4.4rem)',
+          fontWeight: 800,
+          color: '#0f172a',
+          letterSpacing: '-0.035em',
+          lineHeight: 1.08,
+          marginBottom: '1.25rem',
+          fontFamily: 'var(--font-display)'
+        }}>
+          Expense tracking that works.<br />
+          <span style={{ color: '#059669' }}>No cloud. No limits.</span>
+        </h1>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                padding: '0.95rem 2.25rem',
-                borderRadius: '12px',
-                backgroundColor: '#1b4332',
-                color: '#ffffff',
-                fontSize: '1.05rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 8px 24px rgba(27, 67, 50, 0.35)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.6rem',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#122f23'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1b4332'}
-            >
-              <span>Get Started</span>
-              <ArrowRight size={18} />
-            </button>
+        {/* Subtitle */}
+        <p style={{
+          fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+          color: '#526b64',
+          maxWidth: '680px',
+          lineHeight: 1.6,
+          fontWeight: 500,
+          marginBottom: '2.5rem'
+        }}>
+          MoneyMind is a 100% private personal finance tracker for Android and Web with automated bank SMS detection, visual cashflow analytics, zero forced cloud lock-in, and radical privacy.
+        </p>
 
-            <button
-              onClick={onLaunchApp}
-              style={{
-                padding: '0.95rem 1.85rem',
-                borderRadius: '12px',
-                backgroundColor: '#ffffff',
-                border: '1.5px solid #d4dfd8',
-                color: '#1b4332',
-                fontSize: '1.05rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7faf7'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
-            >
-              <span>Explore Live Demo</span>
+        {/* Hero CTA Action Buttons */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          marginBottom: '3.5rem'
+        }}>
+          {/* Download APK Primary Action */}
+          <button
+            onClick={handleDownloadApk}
+            style={{
+              padding: '0.95rem 2.25rem',
+              borderRadius: '9999px',
+              backgroundColor: '#0f172a',
+              color: '#ffffff',
+              fontSize: '1.05rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 8px 26px rgba(15, 23, 42, 0.3)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              transition: 'all 0.18s ease'
+            }}
+          >
+            <Download size={20} />
+            <span>Download APK</span>
+          </button>
+
+          {/* Launch Web App Action */}
+          <button
+            onClick={() => onLaunchApp && onLaunchApp()}
+            style={{
+              padding: '0.95rem 2rem',
+              borderRadius: '9999px',
+              backgroundColor: '#ffffff',
+              border: '1.5px solid #a7f3d0',
+              color: '#059669',
+              fontSize: '1.05rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(5, 150, 105, 0.12)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.18s ease'
+            }}
+          >
+            <span>Launch Web App</span>
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </section>
+
+      {/* Floating Creator Widget (Bottom Right like Screenshot) */}
+      <div style={{
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: '0.5rem',
+        zIndex: 100
+      }}>
+        {/* Creator Speech Bubble */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '16px 16px 4px 16px',
+          padding: '0.75rem 1rem',
+          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
+          border: '1.5px solid #0f172a',
+          fontSize: '0.82rem',
+          fontWeight: 600,
+          color: '#0f172a',
+          maxWidth: '220px',
+          lineHeight: 1.35
+        }}>
+          Hi! I'm Rajesh, creator of MoneyMind. Enjoying the app?
+        </div>
+
+        {/* Creator Badge Pill */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          backgroundColor: '#ffffff',
+          borderRadius: '9999px',
+          padding: '0.45rem 0.9rem',
+          boxShadow: '0 6px 20px rgba(15, 23, 42, 0.12)',
+          border: '1.5px solid #0f172a'
+        }}>
+          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>Rajesh</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
+            <a href="https://github.com" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="GitHub">
+              <GithubIcon size={15} />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="LinkedIn">
+              <LinkedinIcon size={15} />
+            </a>
+            <button onClick={() => alert('Contact: rajesh@moneymind.app')} style={{ color: '#0f172a', padding: 0 }} title="Contact Email">
+              <Mail size={15} />
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Right Hero: Mobile Mockup with schematic diagrams */}
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-          {/* Top Schematic Badge (Magnifying glass + Finance) */}
-          <div style={{
-            position: 'absolute',
-            top: '-15px',
-            left: '10px',
-            backgroundColor: '#ffffff',
-            borderRadius: '18px',
-            padding: '1rem 1.4rem',
-            boxShadow: '0 14px 35px rgba(22, 56, 43, 0.09)',
-            border: '1px solid #e3ebe5',
-            zIndex: 10,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.4rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: '#e0f2fe',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0284c7'
-              }}>
-                <Search size={18} strokeWidth={2.5} />
-              </div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#16382b', letterSpacing: '0.08em' }}>FINANCE</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '24px', marginTop: '4px' }}>
-              {[12, 18, 14, 24, 16, 22].map((h, i) => (
-                <div key={i} style={{ width: '6px', height: `${h}px`, backgroundColor: '#0284c7', borderRadius: '3px' }} />
-              ))}
-            </div>
-          </div>
-
-          {/* Schematic SVG connecting lines */}
-          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 5 }}>
-            <path d="M 120 45 L 180 45 L 180 135 L 240 135" stroke="#b9ccbf" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
-            <path d="M 140 430 L 190 430 L 190 350 L 240 350" stroke="#b9ccbf" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
-          </svg>
-
-          {/* Bottom Schematic Badge (Team discussing charts) */}
-          <div style={{
-            position: 'absolute',
-            bottom: '35px',
-            left: '-15px',
-            backgroundColor: '#ffffff',
-            borderRadius: '18px',
-            padding: '1rem 1.4rem',
-            boxShadow: '0 14px 35px rgba(22, 56, 43, 0.09)',
-            border: '1px solid #e3ebe5',
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.9rem'
-          }}>
-            <div style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #eaf3ed 0%, #d5e6db 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.4rem',
-              color: '#16382b'
-            }}>
-              
-            </div>
-            <div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#16382b' }}>AI Debt Settlement</div>
-              <div style={{ fontSize: '0.74rem', color: '#52695c' }}>SplitSmart Active</div>
-            </div>
-          </div>
-
-          {/* Smartphone Frame */}
-          <div style={{
-            width: '325px',
-            backgroundColor: '#ffffff',
-            borderRadius: '46px',
-            padding: '12px',
-            boxShadow: '0 25px 65px -12px rgba(22, 56, 43, 0.25), 0 0 0 10px #1e293b, 0 0 0 12px #334155',
-            position: 'relative',
-            zIndex: 8
-          }}>
-            {/* Screen Content */}
-            <div style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '36px',
-              padding: '1.25rem 1.15rem',
-              minHeight: '580px',
-              display: 'flex',
-              flexDirection: 'column',
-              fontFamily: 'var(--font-body)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* Dynamic Island / Notch */}
-              <div style={{
-                position: 'absolute',
-                top: '10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '92px',
-                height: '24px',
-                backgroundColor: '#0f172a',
-                borderRadius: '99px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 8px'
-              }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} />
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1e293b' }} />
-              </div>
-
-              {/* Status Bar */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, color: '#0f172a', marginBottom: '1.3rem', paddingTop: '2px' }}>
-                <span>9:41</span>
-                <span>5G 100%</span>
-              </div>
-
-              {/* In-app Navigation */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.1rem' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>Analytics</span>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Search size={14} color="#64748b" />
-                  </button>
-                  <button style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Bell size={14} color="#64748b" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Sales Curve Card */}
-              <div style={{
-                backgroundColor: '#f8fafc',
-                borderRadius: '18px',
-                padding: '1rem',
-                border: '1px solid #e2e8f0',
-                marginBottom: '1rem'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>Sales</span>
-                  <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 700 }}>+18.4%</span>
-                </div>
-
-                {/* SVG Area Chart (Smooth cyan/blue wave) */}
-                <div style={{ height: '85px', width: '100%' }}>
-                  <svg width="100%" height="85" viewBox="0 0 240 85" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="phoneGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.5" />
-                        <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M 0 70 Q 40 45 80 52 T 160 22 T 240 12 L 240 85 L 0 85 Z"
-                      fill="url(#phoneGrad)"
-                    />
-                    <path
-                      d="M 0 70 Q 40 45 80 52 T 160 22 T 240 12"
-                      fill="none"
-                      stroke="#0284c7"
-                      strokeWidth="3.5"
-                    />
-                  </svg>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#94a3b8', marginTop: '4px' }}>
-                  <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-                </div>
-              </div>
-
-              {/* Mini Stats 2-col (Revenue $26,300 + Orders 2,465) */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
-                <div style={{ backgroundColor: '#f8fafc', padding: '0.85rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>Revenue</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>$26,300</div>
-                  <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700 }}>↑ 5.14%</span>
-                </div>
-                <div style={{ backgroundColor: '#f8fafc', padding: '0.85rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>Orders</span>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>2,465</div>
-                  <span style={{ fontSize: '0.7rem', color: '#0284c7', fontWeight: 700 }}>↑ 3.2%</span>
-                </div>
-              </div>
-
-              {/* Revenue Growth Bar Chart */}
-              <div style={{ backgroundColor: '#f8fafc', padding: '0.85rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.6rem' }}>
-                  Revenue Growth
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '48px', padding: '0 4px' }}>
-                  {[22, 30, 38, 52, 65, 80, 95].map((val, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        width: '18px',
-                        height: `${val}%`,
-                        borderRadius: '4px',
-                        background: 'linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%)'
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* User Activity / Launch Button */}
-              <button
-                onClick={onLaunchApp}
-                style={{
-                  marginTop: 'auto',
-                  padding: '0.8rem',
-                  borderRadius: '14px',
-                  background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
-                  color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  border: 'none',
-                  cursor: 'pointer',
+      {/* APK Download Instruction Modal */}
+      {showApkModal && (
+        <div className="modal-overlay" style={{ zIndex: 1000 }}>
+          <div className="modal-content" style={{ maxWidth: '440px', padding: '1.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '0.5rem',
-                  boxShadow: '0 4px 14px rgba(22, 56, 43, 0.35)'
+                  color: '#059669'
+                }}>
+                  <Download size={18} />
+                </div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Downloading APK</h3>
+              </div>
+              <button onClick={() => setShowApkModal(false)} style={{ color: '#64748b' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#526b64', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+              Your download for <strong>MoneyMind-v1.0.apk</strong> has started. Follow these steps to install on Android:
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  1
+                </div>
+                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>Tap the downloaded <strong>.apk</strong> file in your notifications or downloads folder.</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  2
+                </div>
+                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>If prompted by Android, enable <strong>"Install unknown apps"</strong> for your browser.</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  3
+                </div>
+                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>Tap <strong>Install</strong> and enjoy offline banking SMS tracking!</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button
+                onClick={() => {
+                  setShowApkModal(false);
+                  if (onLaunchApp) onLaunchApp();
                 }}
+                className="btn-brand-pill"
+                style={{ width: '100%', justifyContent: 'center' }}
               >
-                <span>Launch Live Dashboard</span>
-                <ArrowRight size={15} />
+                Open Web Version Instead
               </button>
             </div>
           </div>
         </div>
-      </section>
+      )}
 
       {/* Social Proof Strip: Trusted by 150+ companies (Exact match with authentic colors) */}
       <section style={{
@@ -480,8 +525,8 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           }}>
             {/* INTERCOM */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 800, color: '#111827', letterSpacing: '0.04em' }}>
-              <div style={{ width: '26px', height: '26px', borderRadius: '6px', backgroundColor: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem' }}>
-                ▥
+              <div style={{ width: '26px', height: '26px', borderRadius: '6px', backgroundColor: '#111827', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                <MessageSquare size={13} />
               </div>
               <span>INTERCOM</span>
             </div>
@@ -828,226 +873,6 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        padding: '5rem 2rem',
-        borderTop: '1px solid #e3ebe5'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1b4332', textTransform: 'uppercase', letterSpacing: '0.08em', backgroundColor: '#eaf3ed', padding: '0.3rem 0.85rem', borderRadius: '99px' }}>
-            Transparent Pricing
-          </span>
-          <h2 style={{ fontSize: '2.75rem', fontWeight: 800, color: '#16382b', marginTop: '1rem', marginBottom: '0.75rem' }}>
-            Simple Plans for Every Stage
-          </h2>
-          <p style={{ fontSize: '1.05rem', color: '#52695c', marginBottom: '2rem' }}>
-            Start for free and unlock advanced AI recommendations as you scale.
-          </p>
-
-          {/* Billing Cycle Toggle */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            backgroundColor: '#ffffff',
-            borderRadius: '99px',
-            padding: '4px',
-            border: '1px solid #d4dfd8'
-          }}>
-            <button
-              onClick={() => setPricingCycle('monthly')}
-              style={{
-                padding: '0.5rem 1.25rem',
-                borderRadius: '99px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                backgroundColor: pricingCycle === 'monthly' ? '#1b4332' : 'transparent',
-                color: pricingCycle === 'monthly' ? '#ffffff' : '#52695c',
-                cursor: 'pointer'
-              }}
-            >
-              Monthly Billing
-            </button>
-            <button
-              onClick={() => setPricingCycle('annual')}
-              style={{
-                padding: '0.5rem 1.25rem',
-                borderRadius: '99px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                backgroundColor: pricingCycle === 'annual' ? '#1b4332' : 'transparent',
-                color: pricingCycle === 'annual' ? '#ffffff' : '#52695c',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem'
-              }}
-            >
-              <span>Annual Billing</span>
-              <span style={{ fontSize: '0.7rem', backgroundColor: '#10b981', color: '#fff', padding: '0.1rem 0.45rem', borderRadius: '99px' }}>
-                Save 20%
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* 3 Pricing Cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '2rem',
-          alignItems: 'stretch'
-        }}>
-          {/* Free Tier */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.5rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 8px 24px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#16382b', marginBottom: '0.5rem' }}>Starter</div>
-              <p style={{ fontSize: '0.88rem', color: '#52695c', marginBottom: '1.5rem' }}>Essential personal budgeting & bill tracking.</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#16382b' }}>$0</span>
-                <span style={{ fontSize: '0.9rem', color: '#7e9788' }}>/ forever</span>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.9rem', color: '#52695c' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Unlimited transactions</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Up to 3 SplitSmart groups</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Standard monthly charts</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> CSV statement export</li>
-              </ul>
-            </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                width: '100%',
-                padding: '0.85rem',
-                borderRadius: '12px',
-                border: '1.5px solid #d4dfd8',
-                backgroundColor: '#ffffff',
-                color: '#16382b',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
-            >
-              Get Started Free
-            </button>
-          </div>
-
-          {/* Pro Tier (Featured) */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.5rem 2rem',
-            border: '2px solid #1b4332',
-            boxShadow: '0 16px 40px rgba(27, 67, 50, 0.12)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-14px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              backgroundColor: '#1b4332',
-              color: '#ffffff',
-              fontSize: '0.74rem',
-              fontWeight: 800,
-              padding: '0.25rem 0.9rem',
-              borderRadius: '99px',
-              letterSpacing: '0.04em'
-            }}>
-              MOST POPULAR
-            </div>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#16382b', marginBottom: '0.5rem' }}>Pro Wealth</div>
-              <p style={{ fontSize: '0.88rem', color: '#52695c', marginBottom: '1.5rem' }}>Full AI autonomous insights & group debt engines.</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#16382b' }}>
-                  {pricingCycle === 'monthly' ? '$12' : '$9'}
-                </span>
-                <span style={{ fontSize: '0.9rem', color: '#7e9788' }}>/ month</span>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.9rem', color: '#52695c' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> <strong>All Starter features</strong></li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Predictive linear AI burn-rate</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Unlimited SplitSmart trip groups</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> AI savings advice & waste audit</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Printable executive PDF reports</li>
-              </ul>
-            </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                width: '100%',
-                padding: '0.85rem',
-                borderRadius: '12px',
-                backgroundColor: '#1b4332',
-                color: '#ffffff',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(27, 67, 50, 0.35)'
-              }}
-            >
-              Start 14-Day Free Trial
-            </button>
-          </div>
-
-          {/* Enterprise Tier */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '24px',
-            padding: '2.5rem 2rem',
-            border: '1px solid #e3ebe5',
-            boxShadow: '0 8px 24px rgba(22, 56, 43, 0.04)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}>
-            <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#16382b', marginBottom: '0.5rem' }}>Enterprise Team</div>
-              <p style={{ fontSize: '0.88rem', color: '#52695c', marginBottom: '1.5rem' }}>For startups, roommate pods & co-living groups.</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginBottom: '2rem' }}>
-                <span style={{ fontSize: '3rem', fontWeight: 800, color: '#16382b' }}>
-                  {pricingCycle === 'monthly' ? '$49' : '$39'}
-                </span>
-                <span style={{ fontSize: '0.9rem', color: '#7e9788' }}>/ month</span>
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem 0', display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.9rem', color: '#52695c' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Multi-account team seats</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Shared billing & unified reconciliation</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Dedicated VIP financial support</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Check size={16} color="#10b981" /> Custom accounting exports</li>
-              </ul>
-            </div>
-            <button
-              onClick={onLaunchApp}
-              style={{
-                width: '100%',
-                padding: '0.85rem',
-                borderRadius: '12px',
-                border: '1.5px solid #d4dfd8',
-                backgroundColor: '#ffffff',
-                color: '#16382b',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
-            >
-              Contact Team Sales
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* About Us Section */}
       <section id="about" style={{
         maxWidth: '1280px',
@@ -1155,7 +980,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             Join thousands of smart spenders using MoneyMind for personal budgeting and seamless friend group bill splitting.
           </p>
           <button
-            onClick={onLaunchApp}
+            onClick={() => handleProtectedAction('signup')}
             style={{
               padding: '1rem 2.75rem',
               borderRadius: '12px',
@@ -1194,9 +1019,8 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         <div style={{ display: 'flex', gap: '2rem' }}>
           <a href="#services" style={{ color: '#657e70', textDecoration: 'none' }}>Services</a>
           <a href="#features" style={{ color: '#657e70', textDecoration: 'none' }}>Features</a>
-          <a href="#pricing" style={{ color: '#657e70', textDecoration: 'none' }}>Pricing</a>
           <a href="#about" style={{ color: '#657e70', textDecoration: 'none' }}>About us</a>
-          <button onClick={onLaunchApp} style={{ color: '#1b4332', fontWeight: 700, cursor: 'pointer' }}>Launch App</button>
+          <button onClick={() => handleProtectedAction('login')} style={{ color: '#1b4332', fontWeight: 700, cursor: 'pointer' }}>Launch App</button>
         </div>
       </footer>
 
@@ -1207,16 +1031,23 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <div style={{
-                  width: '34px',
-                  height: '34px',
+                  width: '36px',
+                  height: '36px',
                   borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
+                  backgroundColor: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#fff'
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  border: '1px solid #cfded4',
+                  padding: '2px'
                 }}>
-                  <Sparkles size={18} />
+                  <img
+                    src="/logo.png"
+                    alt="MoneyMind"
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
                 </div>
                 <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#16382b', fontFamily: 'var(--font-display)' }}>MoneyMind</span>
               </div>
@@ -1225,109 +1056,417 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               </button>
             </div>
 
-            {/* Tab switch */}
-            <div style={{ display: 'flex', backgroundColor: '#f2f5f1', borderRadius: '12px', padding: '4px', marginBottom: '1.5rem' }}>
-              <button
-                type="button"
-                onClick={() => setAuthModal({ ...authModal, mode: 'login' })}
-                style={{
-                  flex: 1,
-                  padding: '0.6rem',
-                  borderRadius: '9px',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  backgroundColor: authModal.mode === 'login' ? '#ffffff' : 'transparent',
-                  color: authModal.mode === 'login' ? '#16382b' : '#657e70',
-                  boxShadow: authModal.mode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthModal({ ...authModal, mode: 'signup' })}
-                style={{
-                  flex: 1,
-                  padding: '0.6rem',
-                  borderRadius: '9px',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  backgroundColor: authModal.mode === 'signup' ? '#ffffff' : 'transparent',
-                  color: authModal.mode === 'signup' ? '#16382b' : '#657e70',
-                  boxShadow: authModal.mode === 'signup' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                Create Account
-              </button>
-            </div>
+            {/* Navigation Header / Back Button */}
+            {authStep === 'otp' ? (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0.6rem 0.85rem',
+                backgroundColor: '#eaf3ed',
+                borderRadius: '12px',
+                marginBottom: '1.25rem'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => { setAuthStep('email'); setAuthOtp(''); setAuthError(''); setAuthSuccess(''); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    color: '#16382b',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ArrowLeft size={15} />
+                  <span>Change Email</span>
+                </button>
+                <span style={{ fontSize: '0.82rem', color: '#52695c', fontWeight: 600 }}>
+                  {authEmail}
+                </span>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', backgroundColor: '#f2f5f1', borderRadius: '12px', padding: '4px', marginBottom: '1.25rem' }}>
+                <button
+                  type="button"
+                  onClick={() => { setAuthModal({ ...authModal, mode: 'login' }); setAuthError(''); }}
+                  style={{
+                    flex: 1,
+                    padding: '0.6rem',
+                    borderRadius: '9px',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    backgroundColor: authModal.mode === 'login' ? '#ffffff' : 'transparent',
+                    color: authModal.mode === 'login' ? '#16382b' : '#657e70',
+                    boxShadow: authModal.mode === 'login' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthModal({ ...authModal, mode: 'signup' }); setAuthError(''); }}
+                  style={{
+                    flex: 1,
+                    padding: '0.6rem',
+                    borderRadius: '9px',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    backgroundColor: authModal.mode === 'signup' ? '#ffffff' : 'transparent',
+                    color: authModal.mode === 'signup' ? '#16382b' : '#657e70',
+                    boxShadow: authModal.mode === 'signup' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  Create Account
+                </button>
+              </div>
+            )}
 
-            {/* Form Fields */}
-            <form onSubmit={handleAuthSubmit}>
-              {authModal.mode === 'signup' && (
+            {/* Feedback Alerts */}
+            {authError && (
+              <div style={{
+                backgroundColor: '#fef2f2',
+                color: '#b91c1c',
+                border: '1px solid #fecaca',
+                borderRadius: '10px',
+                padding: '0.75rem 1rem',
+                marginBottom: '1rem',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <AlertCircle size={16} />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            {authSuccess && (
+              <div style={{
+                backgroundColor: '#f0fdf4',
+                color: '#15803d',
+                border: '1px solid #bbf7d0',
+                borderRadius: '10px',
+                padding: '0.75rem 1rem',
+                marginBottom: '1rem',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <Check size={16} />
+                <span>{authSuccess}</span>
+              </div>
+            )}
+
+            {/* STEP 1: Enter Email & Full Name (OTP Mode) */}
+            {authStep === 'email' && authMethod === 'otp' && (
+              <form onSubmit={handleSendOtp}>
+                {authModal.mode === 'signup' && (
+                  <div className="form-group">
+                    <label className="form-label" style={{ color: '#16382b', fontWeight: 700 }}>Full Name</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="e.g. Rajesh Kumar"
+                      value={authFullName}
+                      onChange={(e) => setAuthFullName(e.target.value)}
+                      style={{
+                        color: '#16382b',
+                        backgroundColor: '#ffffff',
+                        border: '1.5px solid #cfded4',
+                        fontSize: '0.95rem',
+                        fontWeight: 600,
+                        padding: '0.85rem 1rem'
+                      }}
+                      required
+                    />
+                  </div>
+                )}
+
                 <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input className="form-control" type="text" placeholder="Rajesh Kumar" defaultValue="Rajesh Kumar" required />
+                  <label className="form-label" style={{ color: '#16382b', fontWeight: 700 }}>Email Address</label>
+                  <input
+                    className="form-control"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    style={{
+                      color: '#16382b',
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #cfded4',
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      padding: '0.85rem 1rem'
+                    }}
+                    required
+                  />
                 </div>
-              )}
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input className="form-control" type="email" placeholder="rajesh@moneymind.io" defaultValue="rajesh@moneymind.io" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input className="form-control" type="password" placeholder="••••••••••••" defaultValue="password123" required />
-              </div>
 
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  padding: '0.9rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#1b4332',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '0.95rem',
-                  marginTop: '0.75rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 6px 18px rgba(27, 67, 50, 0.3)',
-                  transition: 'background-color 0.15s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#122f23'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1b4332'}
-              >
-                {authModal.mode === 'login' ? 'Sign In to Dashboard' : 'Create Account & Open Dashboard'}
-              </button>
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    borderRadius: '12px',
+                    backgroundColor: '#1b4332',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    marginTop: '0.75rem',
+                    cursor: authLoading ? 'not-allowed' : 'pointer',
+                    opacity: authLoading ? 0.7 : 1,
+                    boxShadow: '0 6px 18px rgba(27, 67, 50, 0.3)',
+                    transition: 'background-color 0.15s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    border: 'none'
+                  }}
+                  onMouseEnter={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#122f23')}
+                  onMouseLeave={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#1b4332')}
+                >
+                  {authLoading && <Loader2 size={18} className="animate-spin" />}
+                  <span>
+                    {authLoading
+                      ? 'Sending Verification Code...'
+                      : 'Send 6-Digit Verification Code'}
+                  </span>
+                </button>
 
-              <div style={{ textAlign: 'center', margin: '1rem 0', fontSize: '0.8rem', color: '#7e9788' }}>
-                — OR —
-              </div>
+                <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setAuthMethod('password'); setAuthError(''); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1b4332',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Or Sign In with Password instead
+                  </button>
+                </div>
+              </form>
+            )}
 
-              <button
-                type="button"
-                onClick={() => { closeAuth(); onLaunchApp(); }}
-                style={{
-                  width: '100%',
-                  padding: '0.8rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#eaf3ed',
-                  color: '#16382b',
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  border: '1.5px solid #c8ded0',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dbece0'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#eaf3ed'}
-              >
-                Instant Guest Demo Login
-              </button>
-            </form>
+            {/* STEP 2: Enter 6-Digit OTP */}
+            {authStep === 'otp' && (
+              <form onSubmit={handleVerifyOtp}>
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#16382b', fontWeight: 700, textAlign: 'center', display: 'block' }}>
+                    Enter 6-Digit Verification Code
+                  </label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    placeholder="••••••"
+                    maxLength={6}
+                    value={authOtp}
+                    onChange={(e) => setAuthOtp(e.target.value.replace(/\D/g, ''))}
+                    style={{
+                      color: '#16382b',
+                      backgroundColor: '#ffffff',
+                      border: '2px solid #1b4332',
+                      fontSize: '1.6rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.35em',
+                      textAlign: 'center',
+                      padding: '0.85rem 1rem'
+                    }}
+                    autoFocus
+                    required
+                  />
+                  <p style={{ fontSize: '0.78rem', color: '#52695c', textAlign: 'center', marginTop: '0.35rem' }}>
+                    Enter the code sent to your email inbox
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authLoading || authOtp.length < 6}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    borderRadius: '12px',
+                    backgroundColor: '#1b4332',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    marginTop: '0.75rem',
+                    cursor: (authLoading || authOtp.length < 6) ? 'not-allowed' : 'pointer',
+                    opacity: (authLoading || authOtp.length < 6) ? 0.7 : 1,
+                    boxShadow: '0 6px 18px rgba(27, 67, 50, 0.3)',
+                    transition: 'background-color 0.15s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    border: 'none'
+                  }}
+                  onMouseEnter={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#122f23')}
+                  onMouseLeave={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#1b4332')}
+                >
+                  {authLoading && <Loader2 size={18} className="animate-spin" />}
+                  <span>
+                    {authLoading ? 'Verifying Code...' : 'Verify Code & Open Dashboard'}
+                  </span>
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                  <button
+                    type="button"
+                    disabled={authLoading}
+                    onClick={handleSendOtp}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1b4332',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Didn't receive the code? Resend Code
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Alternative: Password Login */}
+            {authStep === 'email' && authMethod === 'password' && (
+              <form onSubmit={handleEmailAuth}>
+                {authModal.mode === 'signup' && (
+                  <div className="form-group">
+                    <label className="form-label" style={{ color: '#16382b', fontWeight: 700 }}>Full Name</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="e.g. Rajesh Kumar"
+                      value={authFullName}
+                      onChange={(e) => setAuthFullName(e.target.value)}
+                      style={{
+                        color: '#16382b',
+                        backgroundColor: '#ffffff',
+                        border: '1.5px solid #cfded4',
+                        fontSize: '0.95rem',
+                        fontWeight: 600,
+                        padding: '0.85rem 1rem'
+                      }}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#16382b', fontWeight: 700 }}>Email Address</label>
+                  <input
+                    className="form-control"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    style={{
+                      color: '#16382b',
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #cfded4',
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      padding: '0.85rem 1rem'
+                    }}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ color: '#16382b', fontWeight: 700 }}>Password</label>
+                  <input
+                    className="form-control"
+                    type="password"
+                    placeholder="••••••••••••"
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    style={{
+                      color: '#16382b',
+                      backgroundColor: '#ffffff',
+                      border: '1.5px solid #cfded4',
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      padding: '0.85rem 1rem'
+                    }}
+                    required
+                    minLength={6}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authLoading}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    borderRadius: '12px',
+                    backgroundColor: '#1b4332',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    marginTop: '0.75rem',
+                    cursor: authLoading ? 'not-allowed' : 'pointer',
+                    opacity: authLoading ? 0.7 : 1,
+                    boxShadow: '0 6px 18px rgba(27, 67, 50, 0.3)',
+                    transition: 'background-color 0.15s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    border: 'none'
+                  }}
+                  onMouseEnter={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#122f23')}
+                  onMouseLeave={(e) => !authLoading && (e.currentTarget.style.backgroundColor = '#1b4332')}
+                >
+                  {authLoading && <Loader2 size={18} className="animate-spin" />}
+                  <span>
+                    {authLoading
+                      ? 'Authenticating...'
+                      : authModal.mode === 'login'
+                      ? 'Sign In to MoneyMind'
+                      : 'Create Free Account'}
+                  </span>
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setAuthMethod('otp'); setAuthError(''); }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#1b4332',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Or Send 6-Digit Code to Email
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

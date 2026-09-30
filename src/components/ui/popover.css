@@ -1,0 +1,51 @@
+/* Popover UI Component Styling */
+
+.ui-popover-root {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.ui-popover-trigger-wrapper {
+  display: inline-flex;
+  width: 100%;
+}
+
+.ui-popover-content {
+  position: absolute;
+  z-index: 9999;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(15, 23, 42, 0.08);
+  margin-top: 0.5rem;
+  overflow: hidden;
+  animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ui-popover-content.placement-bottom-start {
+  top: 100%;
+  left: 0;
+}
+
+.ui-popover-content.placement-bottom-end {
+  top: 100%;
+  right: 0;
+}
+
+.ui-popover-content.placement-bottom-center {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

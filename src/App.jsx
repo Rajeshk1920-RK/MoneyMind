@@ -1,170 +1,156 @@
-import React, { useState } from 'react';
-import { FinanceProvider, useFinance } from './context/FinanceContext';
-import { SplitProvider } from './context/SplitContext';
+import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { FinanceProvider } from './context/FinanceContext';
 import { AppHeader } from './components/Header/AppHeader';
 import { LandingPage } from './components/Landing/LandingPage';
+import { ModernSidebar } from './components/Navigation/ModernSidebar';
 import { UnifiedDashboard } from './components/Dashboard/UnifiedDashboard';
 import { TransactionList } from './components/Transactions/TransactionList';
 import { AddTransactionModal } from './components/Transactions/AddTransactionModal';
-import { SplitGroups } from './components/Splitwise/SplitGroups';
-import { AddSplitModal } from './components/Splitwise/AddSplitModal';
 import { BudgetManager } from './components/Budgets/BudgetManager';
 import { SavingsGoals } from './components/Goals/SavingsGoals';
 import { AIChatBot } from './components/AIAssistant/AIChatBot';
 import { ReportsView } from './components/Reports/ReportsView';
 import { ProfileModal } from './components/Modals/ProfileModal';
 import { NotificationsDrawer } from './components/Modals/NotificationsDrawer';
-import { Sparkles } from 'lucide-react';
+import { BankSMSReader } from './components/BankingSMS/BankSMSReader';
+import { PaymentIntentPopup } from './components/PaymentIntent/PaymentIntentPopup';
 
 function MainAppContent() {
-  // Tabs: 'landing', 'dashboard', 'transactions', 'splitwise', 'budgets', 'goals', 'ai-assistant', 'reports'
-  const [currentTab, setCurrentTab] = useState('landing');
+  const { user, isAuthenticated, signOut } = useAuth();
+  const [isGuest, setIsGuest] = useState(false);
+  const [currentTab, setCurrentTab] = useState('dashboard');
 
   // Modals state
   const [isAddTxOpen, setIsAddTxOpen] = useState(false);
   const [txModalType, setTxModalType] = useState('expense');
-  const [isAddSplitOpen, setIsAddSplitOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSimulateUPIOpen, setIsSimulateUPIOpen] = useState(false);
+  const [activeIntentTx, setActiveIntentTx] = useState(null);
 
   const handleOpenAddTx = (type = 'expense') => {
     setTxModalType(type);
     setIsAddTxOpen(true);
   };
 
-  // If on landing / signing page, display the pixel-perfect MoneyMind landing page
+  const handleOpenSimulateUPI = () => {
+    setIsSimulateUPIOpen(true);
+  };
+
+  const handlePaymentComplete = (newTx) => {
+    setIsSimulateUPIOpen(false);
+    setActiveIntentTx(newTx);
+  };
+
+  // When visiting landing tab explicitly
   if (currentTab === 'landing') {
     return (
-      <>
-        <LandingPage
-          onLaunchApp={() => setCurrentTab('dashboard')}
-        />
-
-        {/* Floating Quick Action to Launch Dashboard */}
-        <button
-          onClick={() => setCurrentTab('dashboard')}
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            borderRadius: '9999px',
-            padding: '0.85rem 1.6rem',
-            background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
-            color: '#ffffff',
-            boxShadow: '0 8px 30px rgba(22, 56, 43, 0.45)',
-            zIndex: 90,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            border: 'none',
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'transform 0.15s ease'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          <Sparkles size={18} />
-          <span>Open MoneyMind Dashboard</span>
-        </button>
-      </>
+      <LandingPage
+        onLaunchApp={() => setCurrentTab('dashboard')}
+      />
     );
   }
 
-  // After signing up or logging in, the Main Dashboard has the EXACT same layout & aesthetic!
+  // Main Dashboard
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f4f6f0',
-      color: '#16382b',
-      fontFamily: 'var(--font-body)',
-      overflowX: 'hidden'
-    }}>
-      {/* Top Header - Exact styling as landing page with navigation tabs */}
-      <AppHeader
+    <div className="app-container">
+      {/* Modern Mind Left Vertical Navigation Dock on Desktop / Bottom Dock on Mobile */}
+      <ModernSidebar
         currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        onOpenAddTx={handleOpenAddTx}
-        onOpenAddSplit={() => setIsAddSplitOpen(true)}
-        onBackToLanding={() => setCurrentTab('landing')}
+        onSelectTab={(tab) => setCurrentTab(tab)}
         onOpenNotifications={() => setIsNotificationsOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenAddTx={handleOpenAddTx}
+        onOpenSimulateUPI={handleOpenSimulateUPI}
       />
 
-      {/* Main Tab Content Canvas */}
-      <main style={{ minHeight: 'calc(100vh - 80px)' }}>
-        {currentTab === 'dashboard' && (
-          <UnifiedDashboard
-            onOpenAddTx={handleOpenAddTx}
-            onOpenAddSplit={() => setIsAddSplitOpen(true)}
-            onNavigateTab={(tab) => setCurrentTab(tab)}
-          />
-        )}
+      {/* Main Content Canvas */}
+      <div className="app-main-canvas">
+        <main style={{ width: '100%', minHeight: '100%' }}>
+          {currentTab === 'dashboard' && (
+            <UnifiedDashboard
+              onOpenAddTx={handleOpenAddTx}
+              onOpenSimulateUPI={handleOpenSimulateUPI}
+              onNavigateTab={(tab) => setCurrentTab(tab)}
+              onOpenNotifications={() => setIsNotificationsOpen(true)}
+              onOpenProfile={() => setIsProfileOpen(true)}
+            />
+          )}
 
-        {currentTab === 'transactions' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <TransactionList onOpenAddTx={handleOpenAddTx} />
-          </div>
-        )}
+          {currentTab === 'transactions' && (
+            <div className="page-content-wrapper">
+              <TransactionList
+                onOpenAddTx={handleOpenAddTx}
+                onOpenSimulateUPI={handleOpenSimulateUPI}
+              />
+            </div>
+          )}
 
-        {currentTab === 'splitwise' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <SplitGroups />
-          </div>
-        )}
+          {currentTab === 'budgets' && (
+            <div className="page-content-wrapper">
+              <BudgetManager />
+            </div>
+          )}
 
-        {currentTab === 'budgets' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <BudgetManager />
-          </div>
-        )}
+          {currentTab === 'goals' && (
+            <div className="page-content-wrapper">
+              <SavingsGoals />
+            </div>
+          )}
 
-        {currentTab === 'goals' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <SavingsGoals />
-          </div>
-        )}
+          {currentTab === 'ai-assistant' && (
+            <div className="page-content-wrapper">
+              <AIChatBot />
+            </div>
+          )}
 
-        {currentTab === 'ai-assistant' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <AIChatBot />
-          </div>
-        )}
-
-        {currentTab === 'reports' && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-            <ReportsView />
-          </div>
-        )}
-      </main>
+          {currentTab === 'reports' && (
+            <div className="page-content-wrapper">
+              <ReportsView />
+            </div>
+          )}
+        </main>
+      </div>
 
       {/* Modals & Drawers */}
       {isAddTxOpen && (
         <AddTransactionModal
+          isOpen={isAddTxOpen}
           initialType={txModalType}
           onClose={() => setIsAddTxOpen(false)}
         />
       )}
 
-      {isAddSplitOpen && (
-        <AddSplitModal
-          onClose={() => setIsAddSplitOpen(false)}
+      {isSimulateUPIOpen && (
+        <BankSMSReader
+          isOpen={isSimulateUPIOpen}
+          onClose={() => setIsSimulateUPIOpen(false)}
+          onTransactionAdded={() => {}}
+        />
+      )}
+
+      {activeIntentTx && (
+        <PaymentIntentPopup
+          isOpen={Boolean(activeIntentTx)}
+          transaction={activeIntentTx}
+          onClose={() => setActiveIntentTx(null)}
+          onSaved={() => setActiveIntentTx(null)}
         />
       )}
 
       {isNotificationsOpen && (
         <NotificationsDrawer
+          isOpen={isNotificationsOpen}
           onClose={() => setIsNotificationsOpen(false)}
-          onOpenSplitwise={() => {
-            setIsNotificationsOpen(false);
-            setCurrentTab('splitwise');
-          }}
         />
       )}
 
       {isProfileOpen && (
         <ProfileModal
+          isOpen={isProfileOpen}
           onClose={() => setIsProfileOpen(false)}
+          onNavigateLanding={() => setCurrentTab('landing')}
         />
       )}
     </div>
@@ -173,10 +159,10 @@ function MainAppContent() {
 
 export default function App() {
   return (
-    <FinanceProvider>
-      <SplitProvider>
+    <AuthProvider>
+      <FinanceProvider>
         <MainAppContent />
-      </SplitProvider>
-    </FinanceProvider>
+      </FinanceProvider>
+    </AuthProvider>
   );
 }

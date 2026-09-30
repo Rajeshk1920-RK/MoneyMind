@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, Users } from 'lucide-react';
+import { X, Check, Users, User } from 'lucide-react';
 import { useSplit } from '../../context/SplitContext';
 import { useFinance } from '../../context/FinanceContext';
 
@@ -119,7 +119,7 @@ export function AddSplitModal({ isOpen, onClose }) {
               >
                 {activeGroup.members.map(m => (
                   <option key={m.id} value={m.id}>
-                    {m.avatar} {m.name}
+                    {m.name}
                   </option>
                 ))}
               </select>
@@ -174,7 +174,7 @@ export function AddSplitModal({ isOpen, onClose }) {
                       textAlign: 'left'
                     }}
                   >
-                    <span>{m.avatar}</span>
+                    <User size={14} color={isSelected ? 'var(--accent-split)' : '#94a3b8'} />
                     <span style={{ fontWeight: isSelected ? 600 : 400, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {m.name}
                     </span>

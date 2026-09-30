@@ -102,10 +102,9 @@ export function SplitGroups() {
                 color: isSelected ? '#ffffff' : 'var(--accent-split)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.2rem'
+                justifyContent: 'center'
               }}>
-                Trip
+                <Users size={20} />
               </div>
 
               <div>

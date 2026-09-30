@@ -2,7 +2,7 @@ import React from 'react';
 import { X, Bell, Check, Trash2, AlertTriangle, Info, CheckCircle2 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 
-export function NotificationsDrawer({ isOpen, onClose }) {
+export function NotificationsDrawer({ isOpen = true, onClose }) {
   const {
     notifications,
     markAllNotificationsRead,

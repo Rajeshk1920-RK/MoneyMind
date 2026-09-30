@@ -9,9 +9,10 @@ import {
   Award
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
-import { useSplit } from '../../context/SplitContext';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { exportTransactionsToCSV, triggerPrintReport } from '../../utils/exportUtils';
+
+import { getPaymentIntentStats } from '../PaymentIntent/paymentIntentUtils';
 
 export function ReportsView() {
   const {
@@ -25,8 +26,6 @@ export function ReportsView() {
     activeCurrencyCode
   } = useFinance();
 
-  const { groups } = useSplit();
-
   const [selectedPeriod, setSelectedPeriod] = useState('2026-09');
 
   // Category breakdown
@@ -34,6 +33,9 @@ export function ReportsView() {
   transactions.filter(t => t.type === 'expense').forEach(t => {
     categorySummary[t.category] = (categorySummary[t.category] || 0) + Number(t.amount);
   });
+
+  // Dynamic Payment Intent stats
+  const intentStats = getPaymentIntentStats(transactions);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -155,7 +157,8 @@ export function ReportsView() {
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
             Category Outlay Breakdown
           </h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', minWidth: '400px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-medium)', color: 'var(--text-tertiary)', fontSize: '0.74rem', textTransform: 'uppercase' }}>
                 <th style={{ padding: '0.75rem 0.5rem' }}>Category</th>
@@ -182,25 +185,62 @@ export function ReportsView() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
 
-        {/* Splitwise Groups Summary */}
-        <div>
-          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '0.75rem' }}>
-            Shared SplitSmart Groups Summary
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-            {groups.map(grp => {
-              const totalSpent = grp.expenses.filter(e => !e.isSettlement).reduce((s, e) => s + Number(e.amount), 0);
-              return (
-                <div key={grp.id} style={{ padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-subtle)', background: 'var(--bg-input)' }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{grp.name}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                    {grp.members.length} Members • Total: {formatCurrency(totalSpent, activeCurrencyCode, activeCurrency.rate)}
-                  </div>
-                </div>
-              );
-            })}
+        {/* Spending Intent Breakdown Table */}
+        <div style={{ borderTop: '1px solid var(--border-medium)', paddingTop: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
+                Spending Intent Breakdown
+              </h3>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                Analysis of documented UPI payments and spending purposes
+              </p>
+            </div>
+            <span className="badge" style={{ backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', fontSize: '0.74rem' }}>
+              {intentStats.captureRate}% Intent Capture Rate ({intentStats.capturedPayments}/{intentStats.totalUPIPayments})
+            </span>
+          </div>
+
+          <div className="table-responsive-container">
+            <table style={{ width: '100%', minWidth: '400px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-medium)', color: 'var(--text-tertiary)', fontSize: '0.74rem', textTransform: 'uppercase' }}>
+                  <th style={{ padding: '0.75rem 0.5rem' }}>Intent Reason / Category</th>
+                  <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>Transactions</th>
+                  <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Explained Amount</th>
+                  <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Share of UPI Spend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {intentStats.categoryList.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-tertiary)' }}>
+                      No payment intents recorded in this period.
+                    </td>
+                  </tr>
+                ) : (
+                  intentStats.categoryList.map(item => (
+                    <tr key={item.name} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                        {item.name}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        {item.count}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'right', fontWeight: 600 }}>
+                        {formatCurrency(item.amount, activeCurrencyCode, activeCurrency.rate)}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.5rem', textAlign: 'right', color: 'var(--text-secondary)' }}>
+                        {item.percentage}%
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -212,7 +252,7 @@ export function ReportsView() {
           color: 'var(--text-tertiary)',
           textAlign: 'center'
         }}>
-          FinAI + SplitSmart • Encrypted & Local-First Financial Record • Generated for personal audit purposes.
+          MoneyMind Financial Statement • Encrypted & Local-First Financial Record • Generated for personal audit purposes.
         </div>
       </div>
     </div>

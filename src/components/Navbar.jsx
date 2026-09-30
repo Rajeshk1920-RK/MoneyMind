@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Sparkles,
   Bell,
@@ -48,11 +49,11 @@ export function Navbar({ onOpenAI, onOpenNotifications, onOpenProfile, onBackToL
             width: '40px',
             height: '40px',
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
+            backgroundColor: '#059669',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(22, 56, 43, 0.28)',
+            boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
             color: '#fff'
           }}>
             <Sparkles size={20} />

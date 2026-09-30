@@ -1,0 +1,72 @@
+.ui-input-group {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+}
+
+.ui-input-group:focus-within {
+  border-color: #059669;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.ui-input-group-addon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem 0.6rem;
+  position: relative;
+}
+
+.ui-input-group-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border: none;
+  flex-shrink: 0;
+}
+
+.ui-input-group-btn-icon-sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+}
+
+.ui-input-group-btn-outline {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.ui-input-group-btn-outline:hover:not(:disabled) {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.ui-input-group-btn-default {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+}
+
+.ui-input-group-btn-default:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+}
+
+.ui-input-group-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

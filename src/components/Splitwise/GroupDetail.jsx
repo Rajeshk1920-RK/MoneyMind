@@ -9,7 +9,14 @@ import {
   Trash2,
   Tag,
   ShieldCheck,
-  Zap
+  Zap,
+  User,
+  Utensils,
+  Plane,
+  Home,
+  Activity,
+  ShoppingBag,
+  Receipt
 } from 'lucide-react';
 import { useSplit } from '../../context/SplitContext';
 import { useFinance } from '../../context/FinanceContext';
@@ -17,6 +24,30 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import { exportSplitSummaryToCSV } from '../../utils/exportUtils';
 import { AddSplitModal } from './AddSplitModal';
 import { SettleModal } from './SettleModal';
+
+function getCategoryIcon(cat, isSettlement) {
+  if (isSettlement) return <CheckCircle2 size={18} color="#10b981" />;
+  switch ((cat || '').toLowerCase()) {
+    case 'food':
+    case 'dining':
+      return <Utensils size={18} color="#f59e0b" />;
+    case 'travel':
+    case 'trip':
+      return <Plane size={18} color="#3b82f6" />;
+    case 'stay':
+    case 'hotel':
+    case 'housing':
+      return <Home size={18} color="#8b5cf6" />;
+    case 'activity':
+    case 'events':
+      return <Activity size={18} color="#ec4899" />;
+    case 'groceries':
+    case 'shopping':
+      return <ShoppingBag size={18} color="#10b981" />;
+    default:
+      return <Receipt size={18} color="#8b5cf6" />;
+  }
+}
 
 export function GroupDetail() {
   const {
@@ -85,14 +116,20 @@ export function GroupDetail() {
                 key={m.id}
                 title={m.name}
                 style={{
-                  fontSize: '1.2rem',
-                  padding: '0.2rem 0.35rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.25rem 0.55rem',
                   borderRadius: '8px',
                   backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)'
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)'
                 }}
               >
-                {m.avatar}
+                <User size={13} color="var(--accent-split)" />
+                <span>{m.name.split(' ')[0]}</span>
               </span>
             ))}
           </div>
@@ -135,7 +172,7 @@ export function GroupDetail() {
         </div>
       </div>
 
-      {/* ⭐ WHO OWES WHOM: Minimal Debt Settlement Section ⭐ */}
+      {/* WHO OWES WHOM: Minimal Debt Settlement Section */}
       <div className="glass-panel" style={{ padding: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div>
@@ -196,7 +233,20 @@ export function GroupDetail() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <span style={{ fontSize: '1.35rem' }}>{debt.fromAvatar}</span>
+                      <div style={{
+                        width: '34px',
+                        height: '34px',
+                        borderRadius: '50%',
+                        backgroundColor: '#fee2e2',
+                        color: '#ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '0.76rem'
+                      }}>
+                        <User size={16} />
+                      </div>
                       <div>
                         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {debt.fromName}
@@ -214,7 +264,20 @@ export function GroupDetail() {
                         </div>
                         <span style={{ fontSize: '0.68rem', color: 'var(--accent-income)' }}>Gets Paid</span>
                       </div>
-                      <span style={{ fontSize: '1.35rem' }}>{debt.toAvatar}</span>
+                      <div style={{
+                        width: '34px',
+                        height: '34px',
+                        borderRadius: '50%',
+                        backgroundColor: '#dcfce7',
+                        color: '#10b981',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '0.76rem'
+                      }}>
+                        <User size={16} />
+                      </div>
                     </div>
                   </div>
 
@@ -278,7 +341,19 @@ export function GroupDetail() {
                   gap: '0.85rem'
                 }}
               >
-                <div style={{ fontSize: '1.6rem' }}>{member.avatar}</div>
+                <div style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px solid var(--border-medium)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--accent-split)'
+                }}>
+                  <User size={18} />
+                </div>
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {member.name}
@@ -337,13 +412,11 @@ export function GroupDetail() {
                       height: '38px',
                       borderRadius: '10px',
                       background: expense.isSettlement ? 'rgba(16, 185, 129, 0.15)' : 'rgba(168, 85, 247, 0.15)',
-                      color: expense.isSettlement ? 'var(--accent-income)' : 'var(--accent-split)',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1rem'
+                      justifyContent: 'center'
                     }}>
-                      {expense.isSettlement ? 'SETTLED' : 'EXPENSE'}
+                      {getCategoryIcon(expense.category, expense.isSettlement)}
                     </div>
 
                     <div>

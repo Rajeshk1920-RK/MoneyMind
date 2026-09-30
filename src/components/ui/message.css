@@ -1,0 +1,64 @@
+/* Message Component Suite Styling */
+
+.ui-message {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  animation: messageSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ui-message-align-start {
+  align-self: flex-start;
+  justify-content: flex-start;
+}
+
+.ui-message-align-end {
+  align-self: flex-end;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.ui-message-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.ui-message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 82%;
+}
+
+.ui-message-align-end .ui-message-content {
+  align-items: flex-end;
+}
+
+.ui-message-align-start .ui-message-content {
+  align-items: flex-start;
+}
+
+.ui-message-footer {
+  font-size: 0.68rem;
+  color: var(--text-tertiary, #94a3b8);
+  padding: 0 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

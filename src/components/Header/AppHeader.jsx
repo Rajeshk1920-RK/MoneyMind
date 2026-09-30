@@ -13,28 +13,30 @@ import {
   PieChart,
   Target,
   FileText,
-  User
+  User,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
-import { useSplit } from '../../context/SplitContext';
+import { useAuth } from '../../context/AuthContext';
 
-export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onOpenAddSplit, onBackToLanding, onOpenNotifications, onOpenProfile }) {
+export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onBackToLanding, onOpenNotifications, onOpenProfile }) {
   const {
     currencies,
     activeCurrencyCode,
     setActiveCurrencyCode,
     activeProfile,
-    notifications
+    notifications,
+    isCloudSyncing
   } = useFinance();
 
-  const { groups } = useSplit();
+  const { user, profile: authProfile, isAuthenticated, signOut } = useAuth();
   const [currencyDropdown, setCurrencyDropdown] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
-    { id: 'splitwise', label: 'SplitSmart', icon: Users, badge: `${groups.length}` },
     { id: 'budgets', label: 'Budgets', icon: PieChart },
     { id: 'goals', label: 'Savings Goals', icon: Target },
     { id: 'ai-assistant', label: 'AI Advisor', icon: Sparkles },
@@ -62,17 +64,23 @@ export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onOpenAddSpl
         onClick={() => setCurrentTab('dashboard')}
       >
         <div style={{
-          width: '38px',
-          height: '38px',
-          borderRadius: '10px',
-          background: 'linear-gradient(135deg, #16382b 0%, #2d6a4f 100%)',
+          width: '40px',
+          height: '40px',
+          borderRadius: '12px',
+          backgroundColor: '#ffffff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#fff',
-          boxShadow: '0 4px 12px rgba(22, 56, 43, 0.25)'
+          overflow: 'hidden',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)',
+          border: '1px solid #e2e8f0',
+          padding: '2px'
         }}>
-          <Sparkles size={20} />
+          <img
+            src="/logo.png"
+            alt="MoneyMind"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
         </div>
         <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#16382b', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
           MoneyMind
@@ -240,25 +248,85 @@ export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onOpenAddSpl
         </button>
 
         {/* User Profile Pill */}
-        <button
-          onClick={onOpenProfile}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem 0.35rem 0.45rem',
-            borderRadius: '9999px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #cfded4',
-            cursor: 'pointer'
-          }}
-        >
-          <span style={{ fontSize: '1.15rem' }}><span style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#eaf3ed', color: '#16382b', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 800 }}>RK</span></span>
-          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#16382b' }}>
-            {activeProfile?.name || 'Rajesh'}
-          </span>
-          <ChevronDown size={13} color="#7e9788" />
-        </button>
+        {(() => {
+          const displayName = isAuthenticated
+            ? (authProfile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User')
+            : (activeProfile?.name || 'Rajesh');
+
+          const initials = displayName
+            .split(' ')
+            .filter(Boolean)
+            .map(part => part[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase() || 'MM';
+
+          return (
+            <button
+              onClick={onOpenProfile}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.35rem 0.85rem 0.35rem 0.45rem',
+                borderRadius: '9999px',
+                backgroundColor: '#ffffff',
+                border: isAuthenticated ? '1.5px solid #2d6a4f' : '1px solid #cfded4',
+                cursor: 'pointer'
+              }}
+              title={isAuthenticated ? `Signed in as ${user?.email}` : 'Guest Profile'}
+            >
+              <span style={{ fontSize: '1.15rem' }}>
+                <span style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: isAuthenticated ? '#2d6a4f' : '#eaf3ed',
+                  color: isAuthenticated ? '#ffffff' : '#16382b',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.72rem',
+                  fontWeight: 800
+                }}>
+                  {initials}
+                </span>
+              </span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#16382b' }}>
+                {displayName}
+              </span>
+              <ChevronDown size={13} color="#7e9788" />
+            </button>
+          );
+        })()}
+
+        {/* Supabase Sign Out (if authenticated) */}
+        {isAuthenticated && (
+          <button
+            onClick={async () => {
+              await signOut();
+              onBackToLanding();
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.45rem 0.85rem',
+              borderRadius: '9999px',
+              backgroundColor: '#fee2e2',
+              color: '#b91c1c',
+              border: '1px solid #fecaca',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+            title="Sign out of Supabase"
+          >
+            <LogOut size={13} />
+            <span>Sign Out</span>
+          </button>
+        )}
 
         {/* Back to Public Landing Page Link */}
         <button
