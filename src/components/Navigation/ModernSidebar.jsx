@@ -62,7 +62,9 @@ export function ModernSidebar({
             title="Dashboard"
             aria-label="Home Dashboard"
           >
-            <Home size={20} />
+            <div className="nav-icon-wrap">
+              <Home size={20} />
+            </div>
             <span className="mobile-nav-label">Home</span>
           </button>
 
@@ -73,7 +75,9 @@ export function ModernSidebar({
             title="Transactions"
             aria-label="Transactions & Calendar"
           >
-            <Clock size={20} />
+            <div className="nav-icon-wrap">
+              <Clock size={20} />
+            </div>
             <span className="mobile-nav-label">Activity</span>
           </button>
 
@@ -85,7 +89,7 @@ export function ModernSidebar({
               title="Add Transaction"
               aria-label="Add Transaction"
             >
-              <Plus size={22} color="#ffffff" strokeWidth={2.8} />
+              <Plus size={20} color="#ffffff" strokeWidth={2.8} />
             </button>
           </div>
 
@@ -96,7 +100,9 @@ export function ModernSidebar({
             title="Budgets"
             aria-label="Budgets"
           >
-            <PieChart size={20} />
+            <div className="nav-icon-wrap">
+              <PieChart size={20} />
+            </div>
             <span className="mobile-nav-label">Budgets</span>
           </button>
 
@@ -107,7 +113,9 @@ export function ModernSidebar({
             title="FinAI Assistant"
             aria-label="AI Advisor"
           >
-            <Sparkles size={20} />
+            <div className="nav-icon-wrap">
+              <Sparkles size={20} />
+            </div>
             <span className="mobile-nav-label">FinAI</span>
           </button>
         </div>
