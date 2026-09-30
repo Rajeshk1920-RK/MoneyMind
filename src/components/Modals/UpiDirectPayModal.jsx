@@ -182,45 +182,11 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
     }
 
     setFormError('');
+
+    // 1. Launch Platform URL
     window.location.href = url;
 
-    if (addNotification) {
-      addNotification({
-        id: `bank-tx-init-${Date.now()}`,
-        title: `Redirecting to ${platformName}`,
-        message: `Transferring ₹${numAmount} to ${beneficiaryName}. Confirm once completed to auto-calculate!`,
-        time: 'Just now',
-        type: 'info',
-        unread: true
-      });
-    }
-  };
-
-  // Confirm Bank Transfer and Auto-Calculate into MoneyMind Ledger
-  const handleConfirmAndCalculate = () => {
-    if (!beneficiaryName.trim()) {
-      setFormError('Please enter the Beneficiary / Account Holder Name.');
-      return;
-    }
-    if (!accountNumber.trim()) {
-      setFormError('Please enter the Bank Account Number.');
-      return;
-    }
-    if (confirmAccountNumber && accountNumber !== confirmAccountNumber) {
-      setFormError('Account numbers do not match. Please verify.');
-      return;
-    }
-    if (!ifscCode.trim()) {
-      setFormError('Please enter the IFSC Code.');
-      return;
-    }
-    if (numAmount <= 0) {
-      setFormError('Please enter a valid amount greater than ₹0.');
-      return;
-    }
-
-    setFormError('');
-
+    // 2. Automatically create & calculate transaction in MoneyMind Ledger
     const accountMask = accountNumber.length >= 4 ? `A/c ••${accountNumber.slice(-4)}` : 'Bank A/c';
     const finalTitle = beneficiaryName.trim();
 
@@ -231,18 +197,17 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
       amount: numAmount,
       type: 'expense',
       category: category,
-      paymentMethod: 'Bank Transfer',
+      paymentMethod: `Bank Transfer (${platformName})`,
       date: new Date().toISOString().split('T')[0],
-      tags: ['Bank Transfer', ifscCode.toUpperCase(), accountMask],
-      note: note.trim() || `Transferred to ${accountMask} (${ifscCode.toUpperCase()})`
+      tags: ['Bank Transfer', ifscCode.toUpperCase(), accountMask, platformName],
+      note: note.trim() || `Transferred via ${platformName} to ${accountMask} (${ifscCode.toUpperCase()})`
     };
 
-    // 1. Add to Ledger in FinanceContext (updates balance, budgets, calendar readouts)
     addTransaction(newTx);
     setRecordedTx(newTx);
     setActiveView('success');
 
-    // 2. Trigger Confetti
+    // 3. Trigger Confetti
     try {
       confetti({
         particleCount: 75,
@@ -251,12 +216,12 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
       });
     } catch {}
 
-    // 3. Notification
+    // 4. Notification
     if (addNotification) {
       addNotification({
         id: `bank-tx-done-${Date.now()}`,
-        title: `₹${numAmount} Bank Transfer Deducted`,
-        message: `Sent to ${finalTitle} (${accountMask}). Balance and budget updated!`,
+        title: `₹${numAmount} Auto-Calculated & Logged`,
+        message: `Sent to ${finalTitle} (${accountMask}) via ${platformName}. Balance and budget updated!`,
         time: 'Just now',
         type: 'expense',
         unread: true
@@ -571,23 +536,10 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Confirm & Auto-Calculate Button */}
-              <div className="upi-confirm-box">
-                <div className="upi-confirm-notice">
-                  <ShieldCheck size={16} color="#059669" />
-                  <span>
-                    After sending payment, tap below to <strong>auto-deduct & calculate</strong> the bank transfer in MoneyMind!
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleConfirmAndCalculate}
-                  className="upi-confirm-btn"
-                >
-                  <CheckCircle2 size={18} />
-                  <span>Confirm ₹{numAmount} Transfer & Calculate</span>
-                </button>
+              {/* Auto-Add Info Notice */}
+              <div className="upi-footer-security">
+                <ShieldCheck size={16} color="#059669" />
+                <span>Tapping any platform above will launch payment & auto-calculate into MoneyMind</span>
               </div>
             </div>
           )}
