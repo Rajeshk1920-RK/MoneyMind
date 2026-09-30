@@ -5,12 +5,20 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('moneymind_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('moneymind_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   const [profile, setProfile] = useState(() => {
-    const saved = localStorage.getItem('moneymind_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('moneymind_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   const [loading, setLoading] = useState(false);
 
@@ -23,6 +31,23 @@ export function AuthProvider({ children }) {
       setProfile(null);
     }
   }, [user]);
+
+  // Instant Account Creation (Name & Email)
+  const createAccount = (fullName, email) => {
+    const cleanName = (fullName || 'User').trim();
+    const cleanEmail = (email || 'user@moneymind.app').trim();
+    const newUser = {
+      id: 'usr_' + Date.now(),
+      email: cleanEmail,
+      fullName: cleanName,
+      full_name: cleanName,
+      name: cleanName,
+      avatar: cleanName.charAt(0).toUpperCase(),
+      created_at: new Date().toISOString()
+    };
+    setUser(newUser);
+    return newUser;
+  };
 
   const signUp = async (email, password, fullName) => {
     const data = await authApi.register(email, password, fullName);
@@ -57,6 +82,7 @@ export function AuthProvider({ children }) {
     profile,
     loading,
     isAuthenticated: !!user,
+    createAccount,
     signUp,
     signIn,
     signOut,
