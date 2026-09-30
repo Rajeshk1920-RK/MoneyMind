@@ -16,7 +16,8 @@ import {
   MessageSquare,
   List,
   Calendar as CalendarIcon,
-  X
+  X,
+  Zap
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatCurrency, formatDate } from '../../utils/formatters';
@@ -24,7 +25,7 @@ import { exportTransactionsToCSV } from '../../utils/exportUtils';
 import { PaymentIntentPopup } from '../PaymentIntent/PaymentIntentPopup';
 import { Calendar as UICalendar } from '../ui/calendar';
 
-export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
+export function TransactionList({ onOpenAddTx, onOpenSimulateUPI, onOpenUpiPay }) {
   const {
     transactions,
     deleteTransaction,
@@ -137,6 +138,31 @@ export function TransactionList({ onOpenAddTx, onOpenSimulateUPI }) {
         paddingBottom: '4px',
         WebkitOverflowScrolling: 'touch'
       }}>
+        {onOpenUpiPay && (
+          <button
+            onClick={() => onOpenUpiPay({ amount: '500' })}
+            style={{
+              flexShrink: 0,
+              padding: '0.45rem 0.85rem',
+              borderRadius: '9999px',
+              background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+              color: '#ffffff',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              cursor: 'pointer',
+              border: 'none',
+              boxShadow: '0 2px 8px rgba(5, 150, 105, 0.25)'
+            }}
+            title="Direct Pay via PhonePe, Google Pay, Paytm & Auto-Record Expense"
+          >
+            <Zap size={14} color="#ffffff" />
+            <span>Direct UPI Pay</span>
+          </button>
+        )}
+
         {onOpenSimulateUPI && (
           <button
             onClick={onOpenSimulateUPI}

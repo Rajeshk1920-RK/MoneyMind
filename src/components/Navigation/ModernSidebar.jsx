@@ -10,7 +10,8 @@ import {
   ArrowLeftRight,
   Sparkles,
   PieChart,
-  Target
+  Target,
+  Zap
 } from 'lucide-react';
 
 export function ModernSidebar({
@@ -20,6 +21,7 @@ export function ModernSidebar({
   onOpenProfile,
   onOpenAddTx,
   onOpenSimulateUPI,
+  onOpenUpiPay,
   unreadCount = 0
 }) {
   return (
@@ -123,6 +125,22 @@ export function ModernSidebar({
 
       {/* Bottom Section: Desktop Actions & Profile */}
       <div className="sidebar-bottom-section">
+        {/* Direct UPI Pay Quick Button */}
+        {onOpenUpiPay && (
+          <button
+            onClick={() => onOpenUpiPay({ amount: '500' })}
+            className="nav-dock-btn"
+            style={{
+              color: '#059669',
+              backgroundColor: '#ecfdf5'
+            }}
+            title="Direct UPI Pay (PhonePe / GPay / Paytm)"
+            aria-label="Direct UPI Pay"
+          >
+            <Zap size={19} color="#059669" />
+          </button>
+        )}
+
         {/* Notifications */}
         <button
           onClick={onOpenNotifications}

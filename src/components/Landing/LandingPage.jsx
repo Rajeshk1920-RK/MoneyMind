@@ -30,6 +30,7 @@ import {
   QrCode
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { UpiDirectPayModal } from '../Modals/UpiDirectPayModal';
 import logoImg from '@/assets/logo.png';
 
 const GithubIcon = ({ size = 15 }) => (
@@ -60,6 +61,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
   const [showApkModal, setShowApkModal] = useState(false);
+  const [showUpiPayModal, setShowUpiPayModal] = useState(false);
 
   const handleDownloadApk = () => {
     const releaseUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
@@ -221,8 +223,32 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </span>
         </div>
 
-        {/* Right Actions: Download APK Only */}
+        {/* Right Actions: Direct UPI Pay & Download APK */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Try UPI Direct Pay Button */}
+          <button
+            onClick={() => setShowUpiPayModal(true)}
+            style={{
+              padding: '0.65rem 1.25rem',
+              borderRadius: '9999px',
+              backgroundColor: '#ecfdf5',
+              color: '#059669',
+              border: '1.5px solid #a7f3d0',
+              fontSize: '0.86rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
+              transition: 'all 0.16s ease'
+            }}
+            title="Try Direct UPI Pay (PhonePe / GPay / Paytm)"
+          >
+            <Zap size={16} color="#059669" />
+            <span>Pay with UPI</span>
+          </button>
+
           {/* Download APK Button */}
           <button
             onClick={handleDownloadApk}
@@ -1467,6 +1493,14 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             )}
           </div>
         </div>
+      )}
+
+      {/* UPI Direct Pay & Auto-Log Modal */}
+      {showUpiPayModal && (
+        <UpiDirectPayModal
+          isOpen={showUpiPayModal}
+          onClose={() => setShowUpiPayModal(false)}
+        />
       )}
     </div>
   );

@@ -16,6 +16,7 @@ import { ProfileModal } from '../components/Modals/ProfileModal';
 import { NotificationsDrawer } from '../components/Modals/NotificationsDrawer';
 import { BankSMSReader } from '../components/BankingSMS/BankSMSReader';
 import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPopup';
+import { UpiDirectPayModal } from '../components/Modals/UpiDirectPayModal';
 
 /**
  * MobileFinanceApp
@@ -34,6 +35,8 @@ export function MobileFinanceApp() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSimulateUPIOpen, setIsSimulateUPIOpen] = useState(false);
+  const [isUpiPayOpen, setIsUpiPayOpen] = useState(false);
+  const [upiPayInitialData, setUpiPayInitialData] = useState({ amount: '350', payee: '' });
   const [activeIntentTx, setActiveIntentTx] = useState(null);
 
   // Automatic Background/Foreground Incoming Banking SMS Detection
@@ -93,6 +96,14 @@ export function MobileFinanceApp() {
     setIsSimulateUPIOpen(true);
   };
 
+  const handleOpenUpiPay = (initialData = {}) => {
+    setUpiPayInitialData({
+      amount: initialData.amount || '350',
+      payee: initialData.payee || ''
+    });
+    setIsUpiPayOpen(true);
+  };
+
   // Login Screen if not authenticated and not in guest mode
   if (!isAuthenticated && !isGuest) {
     return <LoginPage onGuestAccess={() => setIsGuest(true)} />;
@@ -109,6 +120,7 @@ export function MobileFinanceApp() {
           onOpenProfile={() => setIsProfileOpen(true)}
           onOpenAddTx={handleOpenAddTx}
           onOpenSimulateUPI={handleOpenSimulateUPI}
+          onOpenUpiPay={handleOpenUpiPay}
         />
 
         {/* Main Screen Canvas */}
@@ -118,6 +130,7 @@ export function MobileFinanceApp() {
               <UnifiedDashboard
                 onOpenAddTx={handleOpenAddTx}
                 onOpenSimulateUPI={handleOpenSimulateUPI}
+                onOpenUpiPay={handleOpenUpiPay}
                 onNavigateTab={(tab) => setCurrentTab(tab)}
                 onOpenNotifications={() => setIsNotificationsOpen(true)}
                 onOpenProfile={() => setIsProfileOpen(true)}
@@ -129,6 +142,7 @@ export function MobileFinanceApp() {
                 <TransactionList
                   onOpenAddTx={handleOpenAddTx}
                   onOpenSimulateUPI={handleOpenSimulateUPI}
+                  onOpenUpiPay={handleOpenUpiPay}
                 />
               </div>
             )}
@@ -165,6 +179,15 @@ export function MobileFinanceApp() {
             isOpen={isAddTxOpen}
             initialType={txModalType}
             onClose={() => setIsAddTxOpen(false)}
+          />
+        )}
+
+        {isUpiPayOpen && (
+          <UpiDirectPayModal
+            isOpen={isUpiPayOpen}
+            initialAmount={upiPayInitialData.amount}
+            initialPayee={upiPayInitialData.payee}
+            onClose={() => setIsUpiPayOpen(false)}
           />
         )}
 

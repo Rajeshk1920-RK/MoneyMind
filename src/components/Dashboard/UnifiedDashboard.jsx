@@ -34,6 +34,7 @@ import logoImg from '@/assets/logo.png';
 export function UnifiedDashboard({
   onOpenAddTx,
   onOpenSimulateUPI,
+  onOpenUpiPay,
   onNavigateTab,
   onOpenNotifications,
   onOpenProfile
@@ -70,6 +71,15 @@ export function UnifiedDashboard({
   const handleQuickTransfer = () => {
     const amt = parseFloat(quickTransferAmount);
     if (!amt || amt <= 0) return;
+
+    if (onOpenUpiPay) {
+      const contact = contacts[selectedContact];
+      onOpenUpiPay({
+        amount: quickTransferAmount,
+        payee: contact ? contact.name : 'Swiggy'
+      });
+      return;
+    }
 
     confetti({
       particleCount: 60,
@@ -286,27 +296,58 @@ export function UnifiedDashboard({
                 </div>
               </div>
 
-              {/* Action: Sync Banking SMS */}
-              {onOpenSimulateUPI && (
-                <button
-                  type="button"
-                  onClick={onOpenSimulateUPI}
-                  className="btn-light-pill"
-                  style={{
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.78rem',
-                    backgroundColor: '#ecfdf5',
-                    color: '#059669',
-                    borderColor: '#a7f3d0',
-                    boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
-                    whiteSpace: 'nowrap'
-                  }}
-                  title="Read & auto-parse incoming banking SMS"
-                >
-                  <MessageSquare size={14} color="#059669" />
-                  <span>Sync Bank SMS</span>
-                </button>
-              )}
+              {/* Action Buttons: Direct UPI Pay & Sync Banking SMS */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {onOpenUpiPay && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenUpiPay({ amount: '500' })}
+                    className="btn-brand-pill"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.78rem',
+                      background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                      color: '#ffffff',
+                      boxShadow: '0 2px 10px rgba(5, 150, 105, 0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      cursor: 'pointer',
+                      border: 'none',
+                      borderRadius: '9999px',
+                      fontWeight: 800
+                    }}
+                    title="Direct Pay via PhonePe, Google Pay, Paytm & Auto-Record Expense"
+                  >
+                    <Zap size={14} color="#ffffff" />
+                    <span>Direct UPI Pay</span>
+                  </button>
+                )}
+
+                {onOpenSimulateUPI && (
+                  <button
+                    type="button"
+                    onClick={onOpenSimulateUPI}
+                    className="btn-light-pill"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.78rem',
+                      backgroundColor: '#ecfdf5',
+                      color: '#059669',
+                      borderColor: '#a7f3d0',
+                      boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem'
+                    }}
+                    title="Read & auto-parse incoming banking SMS"
+                  >
+                    <MessageSquare size={14} color="#059669" />
+                    <span>Sync Bank SMS</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Three Interconnected Clean Full Circular Cards (Icons & Text Perfectly Aligned) */}
