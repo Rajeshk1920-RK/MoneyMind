@@ -2,12 +2,14 @@ import React, { Suspense, lazy } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { AuthProvider } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
+import { MobileFinanceApp } from './mobile/MobileFinanceApp';
 
 const WebLandingApp = lazy(() => import('./web/WebLandingApp').then(m => ({ default: m.WebLandingApp })));
-const MobileFinanceApp = lazy(() => import('./mobile/MobileFinanceApp').then(m => ({ default: m.MobileFinanceApp })));
 
 /**
- * MoneyMind Router (High-performance code-split entry)
+ * MoneyMind Router
+ * - Mobile App: Synchronous 0ms immediate render with zero white-screen flash
+ * - Web Landing App: Lazy loaded for browser visitors
  */
 export default function App() {
   const isNative = Capacitor.isNativePlatform();
@@ -21,9 +23,13 @@ export default function App() {
   return (
     <AuthProvider>
       <FinanceProvider>
-        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#ffffff' }} />}>
-          {isMobileApp ? <MobileFinanceApp /> : <WebLandingApp />}
-        </Suspense>
+        {isMobileApp ? (
+          <MobileFinanceApp />
+        ) : (
+          <Suspense fallback={<div style={{ minHeight: '100vh', background: '#ffffff' }} />}>
+            <WebLandingApp />
+          </Suspense>
+        )}
       </FinanceProvider>
     </AuthProvider>
   );

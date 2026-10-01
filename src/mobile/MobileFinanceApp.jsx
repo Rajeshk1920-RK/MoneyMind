@@ -1,23 +1,22 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
 import { parseBankingSMS } from '../utils/smsParser';
+import confetti from 'canvas-confetti';
 import { LoginPage } from '../components/Auth/LoginPage';
-
-// Lazy-load heavy dashboard & modal components so initial login renders instantly in 0ms
-const ModernSidebar = lazy(() => import('../components/Navigation/ModernSidebar').then(m => ({ default: m.ModernSidebar })));
-const UnifiedDashboard = lazy(() => import('../components/Dashboard/UnifiedDashboard').then(m => ({ default: m.UnifiedDashboard })));
-const TransactionList = lazy(() => import('../components/Transactions/TransactionList').then(m => ({ default: m.TransactionList })));
-const AddTransactionModal = lazy(() => import('../components/Transactions/AddTransactionModal').then(m => ({ default: m.AddTransactionModal })));
-const BudgetManager = lazy(() => import('../components/Budgets/BudgetManager').then(m => ({ default: m.BudgetManager })));
-const SavingsGoals = lazy(() => import('../components/Goals/SavingsGoals').then(m => ({ default: m.SavingsGoals })));
-const AIChatBot = lazy(() => import('../components/AIAssistant/AIChatBot').then(m => ({ default: m.AIChatBot })));
-const ReportsView = lazy(() => import('../components/Reports/ReportsView').then(m => ({ default: m.ReportsView })));
-const ProfileModal = lazy(() => import('../components/Modals/ProfileModal').then(m => ({ default: m.ProfileModal })));
-const NotificationsDrawer = lazy(() => import('../components/Modals/NotificationsDrawer').then(m => ({ default: m.NotificationsDrawer })));
-const PaymentIntentPopup = lazy(() => import('../components/PaymentIntent/PaymentIntentPopup').then(m => ({ default: m.PaymentIntentPopup })));
-const UpiDirectPayModal = lazy(() => import('../components/Modals/UpiDirectPayModal').then(m => ({ default: m.UpiDirectPayModal })));
-const QuickActionMenuModal = lazy(() => import('../components/Modals/QuickActionMenuModal').then(m => ({ default: m.QuickActionMenuModal })));
+import { ModernSidebar } from '../components/Navigation/ModernSidebar';
+import { UnifiedDashboard } from '../components/Dashboard/UnifiedDashboard';
+import { TransactionList } from '../components/Transactions/TransactionList';
+import { AddTransactionModal } from '../components/Transactions/AddTransactionModal';
+import { BudgetManager } from '../components/Budgets/BudgetManager';
+import { SavingsGoals } from '../components/Goals/SavingsGoals';
+import { AIChatBot } from '../components/AIAssistant/AIChatBot';
+import { ReportsView } from '../components/Reports/ReportsView';
+import { ProfileModal } from '../components/Modals/ProfileModal';
+import { NotificationsDrawer } from '../components/Modals/NotificationsDrawer';
+import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPopup';
+import { UpiDirectPayModal } from '../components/Modals/UpiDirectPayModal';
+import { QuickActionMenuModal } from '../components/Modals/QuickActionMenuModal';
 
 /**
  * MobileFinanceApp
@@ -71,15 +70,13 @@ export function MobileFinanceApp() {
           });
         }
 
-        import('canvas-confetti').then(confetti => {
-          try {
-            confetti.default({
-              particleCount: 50,
-              spread: 60,
-              origin: { y: 0.6 }
-            });
-          } catch {}
-        });
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 }
+          });
+        } catch {}
 
         // Open Payment Intent Popup to explain transaction
         setActiveIntentTx(newTx);
@@ -123,118 +120,116 @@ export function MobileFinanceApp() {
   }
 
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#ffffff' }} />}>
-      <div className="mobile-app-desktop-frame">
-        <div className="app-container">
-          {/* Native Bottom Navigation Dock */}
-          <ModernSidebar
-            currentTab={currentTab}
-            onSelectTab={(tab) => setCurrentTab(tab)}
-            onOpenNotifications={() => setIsNotificationsOpen(true)}
-            onOpenProfile={() => setIsProfileOpen(true)}
-            onOpenAddTx={handleOpenAddTx}
-            onOpenUpiPay={handleOpenUpiPay}
-            onOpenQuickAction={handleOpenQuickAction}
-          />
+    <div className="mobile-app-desktop-frame">
+      <div className="app-container">
+        {/* Native Bottom Navigation Dock */}
+        <ModernSidebar
+          currentTab={currentTab}
+          onSelectTab={(tab) => setCurrentTab(tab)}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
+          onOpenProfile={() => setIsProfileOpen(true)}
+          onOpenAddTx={handleOpenAddTx}
+          onOpenUpiPay={handleOpenUpiPay}
+          onOpenQuickAction={handleOpenQuickAction}
+        />
 
-          {/* Main Screen Canvas */}
-          <div className="app-main-canvas">
-            <main style={{ width: '100%', minHeight: '100%' }}>
-              {currentTab === 'dashboard' && (
-                <UnifiedDashboard
+        {/* Main Screen Canvas */}
+        <div className="app-main-canvas">
+          <main style={{ width: '100%', minHeight: '100%' }}>
+            {currentTab === 'dashboard' && (
+              <UnifiedDashboard
+                onOpenAddTx={handleOpenAddTx}
+                onNavigateTab={(tab) => setCurrentTab(tab)}
+                onOpenNotifications={() => setIsNotificationsOpen(true)}
+                onOpenProfile={() => setIsProfileOpen(true)}
+              />
+            )}
+
+            {currentTab === 'transactions' && (
+              <div className="page-content-wrapper">
+                <TransactionList
                   onOpenAddTx={handleOpenAddTx}
-                  onNavigateTab={(tab) => setCurrentTab(tab)}
-                  onOpenNotifications={() => setIsNotificationsOpen(true)}
-                  onOpenProfile={() => setIsProfileOpen(true)}
+                  onOpenUpiPay={handleOpenUpiPay}
                 />
-              )}
+              </div>
+            )}
 
-              {currentTab === 'transactions' && (
-                <div className="page-content-wrapper">
-                  <TransactionList
-                    onOpenAddTx={handleOpenAddTx}
-                    onOpenUpiPay={handleOpenUpiPay}
-                  />
-                </div>
-              )}
+            {currentTab === 'budgets' && (
+              <div className="page-content-wrapper">
+                <BudgetManager />
+              </div>
+            )}
 
-              {currentTab === 'budgets' && (
-                <div className="page-content-wrapper">
-                  <BudgetManager />
-                </div>
-              )}
+            {currentTab === 'goals' && (
+              <div className="page-content-wrapper">
+                <SavingsGoals />
+              </div>
+            )}
 
-              {currentTab === 'goals' && (
-                <div className="page-content-wrapper">
-                  <SavingsGoals />
-                </div>
-              )}
+            {currentTab === 'ai-assistant' && (
+              <div className="page-content-wrapper page-content-wrapper-ai">
+                <AIChatBot />
+              </div>
+            )}
 
-              {currentTab === 'ai-assistant' && (
-                <div className="page-content-wrapper page-content-wrapper-ai">
-                  <AIChatBot />
-                </div>
-              )}
-
-              {currentTab === 'reports' && (
-                <div className="page-content-wrapper">
-                  <ReportsView />
-                </div>
-              )}
-            </main>
-          </div>
-
-          {/* Modals & Native Bottom Sheets */}
-          {isQuickActionOpen && (
-            <QuickActionMenuModal
-              isOpen={isQuickActionOpen}
-              onClose={() => setIsQuickActionOpen(false)}
-              onSelectDirectUpiPay={handleSelectDirectUpiPay}
-              onSelectRecordTransfer={handleSelectRecordTransfer}
-            />
-          )}
-
-          {isAddTxOpen && (
-            <AddTransactionModal
-              isOpen={isAddTxOpen}
-              initialType={txModalType}
-              onClose={() => setIsAddTxOpen(false)}
-            />
-          )}
-
-          {isUpiPayOpen && (
-            <UpiDirectPayModal
-              isOpen={isUpiPayOpen}
-              initialAmount={upiPayInitialData.amount}
-              initialPayee={upiPayInitialData.payee}
-              onClose={() => setIsUpiPayOpen(false)}
-            />
-          )}
-
-          {activeIntentTx && (
-            <PaymentIntentPopup
-              isOpen={Boolean(activeIntentTx)}
-              transaction={activeIntentTx}
-              onClose={() => setActiveIntentTx(null)}
-              onSaved={() => setActiveIntentTx(null)}
-            />
-          )}
-
-          {isNotificationsOpen && (
-            <NotificationsDrawer
-              isOpen={isNotificationsOpen}
-              onClose={() => setIsNotificationsOpen(false)}
-            />
-          )}
-
-          {isProfileOpen && (
-            <ProfileModal
-              isOpen={isProfileOpen}
-              onClose={() => setIsProfileOpen(false)}
-            />
-          )}
+            {currentTab === 'reports' && (
+              <div className="page-content-wrapper">
+                <ReportsView />
+              </div>
+            )}
+          </main>
         </div>
+
+        {/* Modals & Native Bottom Sheets */}
+        {isQuickActionOpen && (
+          <QuickActionMenuModal
+            isOpen={isQuickActionOpen}
+            onClose={() => setIsQuickActionOpen(false)}
+            onSelectDirectUpiPay={handleSelectDirectUpiPay}
+            onSelectRecordTransfer={handleSelectRecordTransfer}
+          />
+        )}
+
+        {isAddTxOpen && (
+          <AddTransactionModal
+            isOpen={isAddTxOpen}
+            initialType={txModalType}
+            onClose={() => setIsAddTxOpen(false)}
+          />
+        )}
+
+        {isUpiPayOpen && (
+          <UpiDirectPayModal
+            isOpen={isUpiPayOpen}
+            initialAmount={upiPayInitialData.amount}
+            initialPayee={upiPayInitialData.payee}
+            onClose={() => setIsUpiPayOpen(false)}
+          />
+        )}
+
+        {activeIntentTx && (
+          <PaymentIntentPopup
+            isOpen={Boolean(activeIntentTx)}
+            transaction={activeIntentTx}
+            onClose={() => setActiveIntentTx(null)}
+            onSaved={() => setActiveIntentTx(null)}
+          />
+        )}
+
+        {isNotificationsOpen && (
+          <NotificationsDrawer
+            isOpen={isNotificationsOpen}
+            onClose={() => setIsNotificationsOpen(false)}
+          />
+        )}
+
+        {isProfileOpen && (
+          <ProfileModal
+            isOpen={isProfileOpen}
+            onClose={() => setIsProfileOpen(false)}
+          />
+        )}
       </div>
-    </Suspense>
+    </div>
   );
 }
