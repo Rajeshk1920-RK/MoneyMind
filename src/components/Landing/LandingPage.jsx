@@ -65,7 +65,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
   const handleDownloadApk = () => {
     const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-    const githubRawUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/public/MoneyMind-v1.0.apk';
+    const githubRawUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/MoneyMind-v1.0.apk';
     const downloadUrl = isGitHubPages ? githubRawUrl : '/api/download-apk';
 
     const link = document.createElement('a');
@@ -474,7 +474,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
               <a
-                href="https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/public/MoneyMind-v1.0.apk"
+                href="https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/MoneyMind-v1.0.apk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-brand-pill"
