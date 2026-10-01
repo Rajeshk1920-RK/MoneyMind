@@ -13,9 +13,12 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         instance = this;
 
-        // Match WebView background with MoneyMind clean theme
+        // Match WebView background with MoneyMind clean theme & optimize startup rendering
         if (getBridge() != null && getBridge().getWebView() != null) {
             getBridge().getWebView().setBackgroundColor(Color.parseColor("#ffffff"));
+            getBridge().getWebView().getSettings().setDomStorageEnabled(true);
+            getBridge().getWebView().getSettings().setDatabaseEnabled(true);
+            getBridge().getWebView().getSettings().setCacheMode(android.webkit.WebSettings.LOAD_DEFAULT);
         }
     }
 

@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { AuthProvider } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
-import { WebLandingApp } from './web/WebLandingApp';
-import { MobileFinanceApp } from './mobile/MobileFinanceApp';
+
+const WebLandingApp = lazy(() => import('./web/WebLandingApp').then(m => ({ default: m.WebLandingApp })));
+const MobileFinanceApp = lazy(() => import('./mobile/MobileFinanceApp').then(m => ({ default: m.MobileFinanceApp })));
 
 /**
- * MoneyMind Router
- * - Web Page (Browser / GitHub Pages): Serves the official MoneyMind Website with direct APK Download
- * - Android App (Capacitor Native / APK): Runs the Mobile Finance Application directly
+ * MoneyMind Router (High-performance code-split entry)
  */
 export default function App() {
   const isNative = Capacitor.isNativePlatform();
@@ -22,7 +21,9 @@ export default function App() {
   return (
     <AuthProvider>
       <FinanceProvider>
-        {isMobileApp ? <MobileFinanceApp /> : <WebLandingApp />}
+        <Suspense fallback={<div style={{ minHeight: '100vh', background: '#ffffff' }} />}>
+          {isMobileApp ? <MobileFinanceApp /> : <WebLandingApp />}
+        </Suspense>
       </FinanceProvider>
     </AuthProvider>
   );
