@@ -4,11 +4,11 @@
   "webDir": "dist",
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0,
+      "launchShowDuration": 1500,
       "launchAutoHide": true,
-      "backgroundColor": "#ffffff",
+      "backgroundColor": "#0a1f18",
       "showSpinner": false,
-      "androidSplashResourceName": "splash_screen_native"
+      "androidSplashResourceName": "splash"
     }
   }
 }

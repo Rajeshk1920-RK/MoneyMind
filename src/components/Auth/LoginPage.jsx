@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoImg from '@/assets/logo.png';
 import confetti from 'canvas-confetti';
@@ -10,20 +10,22 @@ import './LoginPage.css';
  * Full-screen Onboarding & Welcome experience with "Get Started" entry & Password field
  */
 export function LoginPage({ onGuestAccess }) {
-  const { createAccount } = useAuth();
+  const { createAccount, signIn } = useAuth();
   const [step, setStep] = useState('welcome'); // 'welcome' | 'form'
+  const [authMode, setAuthMode] = useState('signup'); // 'signin' | 'signup'
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!fullName.trim()) {
-      setError('Please enter your full name.');
-      return;
-    }
+    setError('');
+
     if (!email.trim() || !email.includes('@')) {
       setError('Please enter a valid email address.');
       return;
@@ -33,17 +35,57 @@ export function LoginPage({ onGuestAccess }) {
       return;
     }
 
-    setError('');
-    createAccount(fullName.trim(), email.trim(), password);
+    if (authMode === 'signup') {
+      if (!fullName.trim()) {
+        setError('Please enter your full name.');
+        return;
+      }
+      if (!confirmPassword) {
+        setError('Please confirm your password.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match. Please make sure both passwords match.');
+        return;
+      }
 
-    // Celebration Confetti
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } catch {}
+      setLoading(true);
+      try {
+        await createAccount(fullName.trim(), email.trim(), password);
+        try {
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        } catch {}
+      } catch (err) {
+        setError(err.message || 'Failed to create account.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Sign In mode
+      setLoading(true);
+      try {
+        const u = await signIn(email.trim(), password);
+        if (!u) {
+          setError('Invalid email or password.');
+        } else {
+          try {
+            confetti({
+              particleCount: 50,
+              spread: 60,
+              origin: { y: 0.6 }
+            });
+          } catch {}
+        }
+      } catch (err) {
+        setError(err.message || 'Invalid email or password.');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -140,15 +182,38 @@ export function LoginPage({ onGuestAccess }) {
               </div>
 
               <h1 className="welcome-brand-title" style={{ fontSize: '1.95rem' }}>
-                Setup Profile
+                {authMode === 'signup' ? 'Create Account' : 'Welcome Back'}
               </h1>
               <p className="welcome-brand-tagline">
-                Enter your details & password to secure your wallet
+                {authMode === 'signup' 
+                  ? 'Enter your details & password to secure your wallet'
+                  : 'Sign in to access your wallet & cloud data'
+                }
               </p>
             </div>
 
             {/* Form Fields Card */}
             <div className="login-form-card">
+              {/* Segmented Switcher Tabs */}
+              <div className="login-mode-tabs">
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('signup'); setError(''); }}
+                  className={`login-mode-tab ${authMode === 'signup' ? 'active' : ''}`}
+                >
+                  <User size={15} />
+                  <span>Sign Up</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('signin'); setError(''); }}
+                  className={`login-mode-tab ${authMode === 'signin' ? 'active' : ''}`}
+                >
+                  <Lock size={15} />
+                  <span>Sign In</span>
+                </button>
+              </div>
+
               {error && (
                 <div className="login-error-banner">
                   {error}
@@ -156,24 +221,26 @@ export function LoginPage({ onGuestAccess }) {
               )}
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                {/* Full Name */}
-                <div className="login-field-group">
-                  <label className="login-field-label">
-                    Your Full Name
-                  </label>
-                  <div className="login-input-wrap">
-                    <User size={18} className="login-input-icon" />
-                    <input
-                      type="text"
-                      placeholder="e.g. Rajesh Kumar"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="login-text-input"
-                      autoFocus
-                      required
-                    />
+                {/* Full Name (Sign Up only) */}
+                {authMode === 'signup' && (
+                  <div className="login-field-group">
+                    <label className="login-field-label">
+                      Your Full Name
+                    </label>
+                    <div className="login-input-wrap">
+                      <User size={18} className="login-input-icon" />
+                      <input
+                        type="text"
+                        placeholder="e.g. Rajesh Kumar"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="login-text-input"
+                        autoFocus
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Email Address */}
                 <div className="login-field-group">
@@ -188,6 +255,7 @@ export function LoginPage({ onGuestAccess }) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="login-text-input"
+                      autoFocus={authMode === 'signin'}
                       required
                     />
                   </div>
@@ -202,7 +270,7 @@ export function LoginPage({ onGuestAccess }) {
                     <Lock size={18} className="login-input-icon" />
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter a secure password (min. 6 chars)"
+                      placeholder="Enter your password (min. 6 chars)"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="login-text-input login-password-input"
@@ -220,18 +288,93 @@ export function LoginPage({ onGuestAccess }) {
                   </div>
                 </div>
 
-                {/* Launch Button */}
+                {/* Confirm Password Section (Sign Up only) */}
+                {authMode === 'signup' && (
+                  <div className="login-field-group">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                      <label className="login-field-label" style={{ marginBottom: 0 }}>
+                        Confirm Password
+                      </label>
+                      {confirmPassword && password && (
+                        <span style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          color: password === confirmPassword ? '#059669' : '#ef4444',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.25rem'
+                        }}>
+                          {password === confirmPassword ? (
+                            <>
+                              <CheckCircle2 size={12} />
+                              <span>Passwords Match</span>
+                            </>
+                          ) : (
+                            <span>Does not match</span>
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    <div className="login-input-wrap">
+                      <Lock size={18} className="login-input-icon" />
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Re-enter your password to confirm"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="login-text-input login-password-input"
+                        required
+                        minLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="login-password-toggle-btn"
+                        aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Submit Launch Button */}
                 <button
                   type="submit"
+                  disabled={loading}
                   className="login-submit-btn"
                 >
-                  <span>Launch Wallet</span>
+                  <span>{loading ? 'Verifying...' : authMode === 'signup' ? 'Create Account' : 'Sign In to Account'}</span>
                   <ArrowRight size={19} strokeWidth={2.5} />
                 </button>
               </form>
 
+              {/* Mode Toggle Link */}
+              <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode(authMode === 'signup' ? 'signin' : 'signup');
+                    setError('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#059669',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {authMode === 'signup' 
+                    ? 'Already have an account? Sign In'
+                    : "Don't have an account? Sign Up"
+                  }
+                </button>
+              </div>
+
               {/* Action Links */}
-              <div className="login-action-links-row">
+              <div className="login-action-links-row" style={{ marginTop: '0.5rem' }}>
                 <button
                   type="button"
                   onClick={() => setStep('welcome')}

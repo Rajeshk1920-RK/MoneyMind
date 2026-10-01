@@ -2,16 +2,42 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { Resend } from 'resend';
 import { ensureDatabaseExists, initTables, pool } from './db.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Direct Full 43.59 MB Android APK Download Route
+app.get(['/api/download-apk', '/download-apk'], (req, res) => {
+  const possiblePaths = [
+    path.join(__dirname, '../public/MoneyMind-v1.0.apk'),
+    path.join(__dirname, '../public/moneymind-v1.0.apk'),
+    path.join(__dirname, '../public/app-debug.apk'),
+    path.join(__dirname, '../android/app/build/outputs/apk/debug/app-debug.apk')
+  ];
+
+  for (const apkPath of possiblePaths) {
+    if (fs.existsSync(apkPath)) {
+      res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+      res.setHeader('Content-Disposition', 'attachment; filename="MoneyMind-v1.0.apk"');
+      return res.sendFile(path.resolve(apkPath));
+    }
+  }
+
+  res.status(404).send('APK file not found.');
+});
 
 const resendApiKey = process.env.RESEND_API_KEY || '';
 const resend = resendApiKey ? new Resend(resendApiKey) : null;

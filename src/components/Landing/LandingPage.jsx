@@ -64,11 +64,17 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
   const [showUpiPayModal, setShowUpiPayModal] = useState(false);
 
   const handleDownloadApk = () => {
-    const releaseUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
+    const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+    const githubReleaseUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
+    const downloadUrl = isGitHubPages ? githubReleaseUrl : '/api/download-apk';
+
     const link = document.createElement('a');
-    link.href = releaseUrl;
+    link.href = downloadUrl;
     link.download = 'MoneyMind-v1.0.apk';
-    link.target = '_blank';
+    if (isGitHubPages) {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

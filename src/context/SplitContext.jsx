@@ -1,25 +1,55 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { INITIAL_SPLIT_GROUPS } from '../data/initialData';
 import { calculateGroupBalances, simplifyDebts } from '../utils/debtSimplifier';
 import { useFinance } from './FinanceContext';
+import { useAuth } from './AuthContext';
 
 const SplitContext = createContext(null);
 
 export function SplitProvider({ children }) {
   const { addNotification } = useFinance();
+  const { user } = useAuth();
+  const currentUserId = user?.id || 'guest';
+  const prevUserIdRef = useRef(currentUserId);
 
   const [groups, setGroups] = useState(() => {
-    const saved = localStorage.getItem('finai_split_groups');
-    return saved ? JSON.parse(saved) : INITIAL_SPLIT_GROUPS;
+    try {
+      const saved = localStorage.getItem(`moneymind_split_groups_${currentUserId}`);
+      if (saved) return JSON.parse(saved);
+      return currentUserId === 'guest' ? INITIAL_SPLIT_GROUPS : [];
+    } catch {
+      return [];
+    }
   });
 
   const [selectedGroupId, setSelectedGroupId] = useState(() => {
     return groups.length > 0 ? groups[0].id : null;
   });
 
+  // Switch groups when user account switches
   useEffect(() => {
-    localStorage.setItem('finai_split_groups', JSON.stringify(groups));
-  }, [groups]);
+    if (prevUserIdRef.current !== currentUserId) {
+      prevUserIdRef.current = currentUserId;
+      try {
+        const saved = localStorage.getItem(`moneymind_split_groups_${currentUserId}`);
+        const userGroups = saved ? JSON.parse(saved) : (currentUserId === 'guest' ? INITIAL_SPLIT_GROUPS : []);
+        setGroups(userGroups);
+        setSelectedGroupId(userGroups.length > 0 ? userGroups[0].id : null);
+      } catch {
+        setGroups([]);
+        setSelectedGroupId(null);
+      }
+    }
+  }, [currentUserId]);
+
+  // Persist current user's groups to their specific cache
+  useEffect(() => {
+    try {
+      localStorage.setItem(`moneymind_split_groups_${currentUserId}`, JSON.stringify(groups));
+    } catch (e) {
+      console.warn('Could not cache split groups:', e);
+    }
+  }, [groups, currentUserId]);
 
   const activeGroup = groups.find(g => g.id === selectedGroupId) || groups[0] || null;
 

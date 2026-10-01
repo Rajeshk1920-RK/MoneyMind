@@ -1,28 +1,36 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import {
   INITIAL_PROFILES,
   DEFAULT_CURRENCIES,
   CATEGORIES,
-  INITIAL_TRANSACTIONS,
   INITIAL_BUDGETS,
-  INITIAL_GOALS,
   INITIAL_NOTIFICATIONS
 } from '../data/initialData';
 import { useAuth } from './AuthContext';
+import { supabase } from '../utils/supabase';
 import { financeApi } from '../utils/api';
 
 const FinanceContext = createContext(null);
 
 export function FinanceProvider({ children }) {
   const { user, updateProfileName } = useAuth();
+  const currentUserId = user?.id || 'guest';
+  const prevUserIdRef = useRef(currentUserId);
+
+  // User-scoped storage key helper
+  const getUserStorageKey = useCallback((key, uid = currentUserId) => {
+    return `moneymind_${key}_${uid || 'guest'}`;
+  }, [currentUserId]);
 
   // Theme state: unified permanently with the MoneyMind landing page design
   const [theme, setTheme] = useState('light');
   
   // Profile state
   const [profiles] = useState(INITIAL_PROFILES);
-  const [userName, setUserName] = useState(() => localStorage.getItem('finai_user_name') || 'User');
-  const [activeProfileId, setActiveProfileId] = useState(() => localStorage.getItem('finai_profile') || 'user-1');
+  const [userName, setUserName] = useState(() => {
+    return user?.fullName || user?.full_name || user?.name || localStorage.getItem('finai_user_name') || 'User';
+  });
+  const [activeProfileId, setActiveProfileId] = useState('user-1');
 
   const updateUserName = (newName) => {
     if (!newName || !newName.trim()) return;
@@ -36,27 +44,56 @@ export function FinanceProvider({ children }) {
 
   // Currency state
   const [currencies] = useState(DEFAULT_CURRENCIES);
-  const [activeCurrencyCode, setActiveCurrencyCode] = useState(() => localStorage.getItem('finai_currency') || 'INR');
+  const [activeCurrencyCode, setActiveCurrencyCode] = useState(() => {
+    return localStorage.getItem(`moneymind_currency_${currentUserId}`) || 'INR';
+  });
 
-  // Local/cached data states
+  // Local/cached data states scoped to current user
   const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem('finai_transactions');
-    return saved ? JSON.parse(saved) : INITIAL_TRANSACTIONS;
+    try {
+      const saved = localStorage.getItem(`moneymind_transactions_${currentUserId}`);
+      if (saved) return JSON.parse(saved);
+      // For guest demo mode only, fallback to initial transactions; for registered accounts start empty
+      return currentUserId === 'guest' ? [] : [];
+    } catch {
+      return [];
+    }
   });
 
   const [budgets, setBudgets] = useState(() => {
-    const saved = localStorage.getItem('finai_budgets');
-    return saved ? JSON.parse(saved) : INITIAL_BUDGETS;
+    try {
+      const saved = localStorage.getItem(`moneymind_budgets_${currentUserId}`);
+      return saved ? JSON.parse(saved) : INITIAL_BUDGETS;
+    } catch {
+      return INITIAL_BUDGETS;
+    }
   });
 
   const [goals, setGoals] = useState(() => {
-    const saved = localStorage.getItem('finai_goals');
-    return saved ? JSON.parse(saved) : INITIAL_GOALS;
+    try {
+      const saved = localStorage.getItem(`moneymind_goals_${currentUserId}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('finai_notifs');
-    return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+    try {
+      const saved = localStorage.getItem(`moneymind_notifs_${currentUserId}`);
+      return saved ? JSON.parse(saved) : [
+        {
+          id: `welcome-${Date.now()}`,
+          title: 'Welcome to MoneyMind',
+          message: 'Your personal finance workspace is ready.',
+          time: 'Just now',
+          read: false,
+          type: 'success'
+        }
+      ];
+    } catch {
+      return [];
+    }
   });
 
   const [categories] = useState(CATEGORIES);
@@ -65,67 +102,181 @@ export function FinanceProvider({ children }) {
   // Sync theme to light permanently
   useEffect(() => {
     document.body.className = 'light-theme';
-    localStorage.setItem('finai_theme', 'light');
   }, []);
 
-  // Sync to local storage
+  // Save current user's state to their specific localStorage keys
   useEffect(() => {
-    if (!user) {
-      localStorage.setItem('finai_transactions', JSON.stringify(transactions));
+    try {
+      localStorage.setItem(`moneymind_transactions_${currentUserId}`, JSON.stringify(transactions));
+    } catch (e) {
+      console.warn('Could not cache transactions:', e);
     }
-  }, [transactions, user]);
+  }, [transactions, currentUserId]);
 
   useEffect(() => {
-    if (!user) {
-      localStorage.setItem('finai_budgets', JSON.stringify(budgets));
+    try {
+      localStorage.setItem(`moneymind_budgets_${currentUserId}`, JSON.stringify(budgets));
+    } catch (e) {
+      console.warn('Could not cache budgets:', e);
     }
-  }, [budgets, user]);
+  }, [budgets, currentUserId]);
 
   useEffect(() => {
-    if (!user) {
-      localStorage.setItem('finai_goals', JSON.stringify(goals));
+    try {
+      localStorage.setItem(`moneymind_goals_${currentUserId}`, JSON.stringify(goals));
+    } catch (e) {
+      console.warn('Could not cache goals:', e);
     }
-  }, [goals, user]);
+  }, [goals, currentUserId]);
 
   useEffect(() => {
-    localStorage.setItem('finai_notifs', JSON.stringify(notifications));
-  }, [notifications]);
+    try {
+      localStorage.setItem(`moneymind_notifs_${currentUserId}`, JSON.stringify(notifications));
+    } catch (e) {
+      console.warn('Could not cache notifs:', e);
+    }
+  }, [notifications, currentUserId]);
 
   useEffect(() => {
-    localStorage.setItem('finai_profile', activeProfileId);
-  }, [activeProfileId]);
+    try {
+      localStorage.setItem(`moneymind_currency_${currentUserId}`, activeCurrencyCode);
+    } catch (e) {
+      console.warn('Could not cache currency:', e);
+    }
+  }, [activeCurrencyCode, currentUserId]);
 
+  // Handle User Switch / Login / Logout Isolation
   useEffect(() => {
-    localStorage.setItem('finai_currency', activeCurrencyCode);
-  }, [activeCurrencyCode]);
+    if (prevUserIdRef.current !== currentUserId) {
+      prevUserIdRef.current = currentUserId;
 
-  // Load data from PostgreSQL when user logs in
+      // 1. Instant switch to this specific user's local cache
+      const userTx = localStorage.getItem(`moneymind_transactions_${currentUserId}`);
+      const userBudgets = localStorage.getItem(`moneymind_budgets_${currentUserId}`);
+      const userGoals = localStorage.getItem(`moneymind_goals_${currentUserId}`);
+      const userNotifs = localStorage.getItem(`moneymind_notifs_${currentUserId}`);
+      const userCur = localStorage.getItem(`moneymind_currency_${currentUserId}`);
+
+      setTransactions(userTx ? JSON.parse(userTx) : []);
+      setBudgets(userBudgets ? JSON.parse(userBudgets) : INITIAL_BUDGETS);
+      setGoals(userGoals ? JSON.parse(userGoals) : []);
+      setNotifications(userNotifs ? JSON.parse(userNotifs) : [
+        {
+          id: `welcome-${Date.now()}`,
+          title: `Welcome, ${user?.fullName || user?.name || 'User'}!`,
+          message: 'Your personal finance workspace is ready. Start tracking your income & expenses.',
+          time: 'Just now',
+          read: false,
+          type: 'success'
+        }
+      ]);
+      if (userCur) setActiveCurrencyCode(userCur);
+    }
+  }, [currentUserId, user]);
+
+  // Load cloud data strictly scoped to userId
   const loadUserData = useCallback(async (userId) => {
-    if (!userId) return;
+    if (!userId || userId === 'guest') return;
     setIsCloudSyncing(true);
 
     try {
-      const data = await financeApi.getFinances(userId);
-      if (data) {
-        if (data.transactions && data.transactions.length > 0) {
-          setTransactions(data.transactions);
+      if (!userId.startsWith('usr_')) {
+        // Query Supabase strictly for this user's data
+        const { data: txs, error: txErr } = await supabase
+          .from('transactions')
+          .select('*')
+          .eq('user_id', userId)
+          .order('date', { ascending: false });
+
+        if (!txErr && Array.isArray(txs)) {
+          const mappedTxs = txs.map(t => ({
+            id: t.id,
+            title: t.title,
+            amount: Number(t.amount),
+            type: t.type,
+            category: t.category,
+            paymentMethod: t.payment_method || 'UPI',
+            date: t.date,
+            notes: t.notes || '',
+            note: t.notes || '',
+            tags: t.tags || [],
+            merchant: t.merchant || t.title,
+            intentCategory: t.intent_category,
+            intentNote: t.intent_note,
+            intentFor: t.intent_for,
+            intentCaptured: Boolean(t.intent_captured),
+            source: t.source || 'manual',
+            paymentStatus: t.payment_status || 'success'
+          }));
+          setTransactions(mappedTxs);
+          localStorage.setItem(`moneymind_transactions_${userId}`, JSON.stringify(mappedTxs));
         }
-        if (data.budgets && data.budgets.length > 0) {
-          setBudgets(data.budgets);
+
+        const { data: bgs, error: bgErr } = await supabase
+          .from('budgets')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (!bgErr && Array.isArray(bgs) && bgs.length > 0) {
+          const mappedBgs = bgs.map(b => ({
+            id: b.id,
+            category: b.category,
+            monthlyLimit: Number(b.monthly_limit),
+            alertThreshold: Number(b.alert_threshold || 80)
+          }));
+          setBudgets(mappedBgs);
+          localStorage.setItem(`moneymind_budgets_${userId}`, JSON.stringify(mappedBgs));
         }
-        if (data.goals && data.goals.length > 0) {
-          setGoals(data.goals);
+
+        const { data: gls, error: glErr } = await supabase
+          .from('goals')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (!glErr && Array.isArray(gls)) {
+          const mappedGls = gls.map(g => ({
+            id: g.id,
+            title: g.title,
+            targetAmount: Number(g.target_amount),
+            currentAmount: Number(g.current_amount || 0),
+            targetDate: g.target_date,
+            category: g.category,
+            color: g.color || '#16382b'
+          }));
+          setGoals(mappedGls);
+          localStorage.setItem(`moneymind_goals_${userId}`, JSON.stringify(mappedGls));
         }
       }
+
+      // Query PostgreSQL backend if configured
+      try {
+        const data = await financeApi.getFinances(userId);
+        if (data) {
+          if (Array.isArray(data.transactions)) {
+            setTransactions(data.transactions);
+            localStorage.setItem(`moneymind_transactions_${userId}`, JSON.stringify(data.transactions));
+          }
+          if (Array.isArray(data.budgets) && data.budgets.length > 0) {
+            setBudgets(data.budgets);
+            localStorage.setItem(`moneymind_budgets_${userId}`, JSON.stringify(data.budgets));
+          }
+          if (Array.isArray(data.goals)) {
+            setGoals(data.goals);
+            localStorage.setItem(`moneymind_goals_${userId}`, JSON.stringify(data.goals));
+          }
+        }
+      } catch {
+        // Safe backend fallback
+      }
     } catch (err) {
-      console.warn('PostgreSQL data load note:', err.message);
+      console.warn('Cloud data load note:', err.message);
     } finally {
       setIsCloudSyncing(false);
     }
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && user.id !== 'guest') {
       loadUserData(user.id);
     }
   }, [user?.id, loadUserData]);
@@ -139,6 +290,22 @@ export function FinanceProvider({ children }) {
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  // Activity Logger Helper for Supabase
+  const logUserActivity = async (type, title, details = {}) => {
+    if (user?.id && !user.id.startsWith('usr_')) {
+      try {
+        await supabase.from('user_activities').insert([{
+          user_id: user.id,
+          activity_type: type,
+          title: title,
+          details: details
+        }]);
+      } catch (err) {
+        // Safe silent fallback
+      }
+    }
   };
 
   // Transaction Actions
@@ -174,7 +341,35 @@ export function FinanceProvider({ children }) {
       }
     }
 
+    logUserActivity('transaction_added', `Recorded ${txObj.type}: ₹${txObj.amount} at ${txObj.title}`, {
+      category: txObj.category,
+      amount: txObj.amount,
+      type: txObj.type
+    });
+
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          const { data: inserted } = await supabase.from('transactions').insert([{
+            user_id: user.id,
+            title: txObj.title,
+            amount: txObj.amount,
+            type: txObj.type,
+            category: txObj.category,
+            payment_method: txObj.paymentMethod || 'UPI',
+            date: txObj.date,
+            notes: txObj.note || txObj.notes || '',
+            tags: txObj.tags || []
+          }]).select().single();
+
+          if (inserted?.id) {
+            setTransactions(prev => prev.map(t => t.id === tempId ? { ...t, id: inserted.id } : t));
+          }
+        } catch (err) {
+          console.warn('Supabase add transaction note:', err.message);
+        }
+      }
+
       try {
         const saved = await financeApi.addTransaction({
           userId: user.id,
@@ -201,6 +396,13 @@ export function FinanceProvider({ children }) {
   const deleteTransaction = async (id) => {
     setTransactions(prev => prev.filter(t => t.id !== id));
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('transactions').delete().eq('id', id).eq('user_id', user.id);
+        } catch (err) {
+          console.warn('Supabase delete transaction note:', err.message);
+        }
+      }
       try {
         await financeApi.deleteTransaction(id);
       } catch (err) {
@@ -213,6 +415,22 @@ export function FinanceProvider({ children }) {
     setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updatedFields } : t));
 
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          const updatePayload = {};
+          if (updatedFields.title) updatePayload.title = updatedFields.title;
+          if (updatedFields.amount !== undefined) updatePayload.amount = Number(updatedFields.amount);
+          if (updatedFields.type) updatePayload.type = updatedFields.type;
+          if (updatedFields.category) updatePayload.category = updatedFields.category;
+          if (updatedFields.paymentMethod) updatePayload.payment_method = updatedFields.paymentMethod;
+          if (updatedFields.date) updatePayload.date = updatedFields.date;
+          if (updatedFields.notes || updatedFields.note) updatePayload.notes = updatedFields.notes || updatedFields.note;
+          
+          await supabase.from('transactions').update(updatePayload).eq('id', id).eq('user_id', user.id);
+        } catch (err) {
+          console.warn('Supabase edit transaction note:', err.message);
+        }
+      }
       try {
         await financeApi.updateTransaction?.(id, updatedFields);
       } catch (err) {
@@ -314,8 +532,19 @@ export function FinanceProvider({ children }) {
       return t;
     }));
 
-    // Update cloud if logged in
     if (user?.id && updatedTx) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('transactions').update({
+            category: updatedTx.category,
+            intent_category: updatedTx.intentCategory,
+            intent_note: updatedTx.intentNote,
+            intent_for: updatedTx.intentFor,
+            intent_captured: true,
+            notes: updatedTx.note
+          }).eq('id', id).eq('user_id', user.id);
+        } catch (e) {}
+      }
       try {
         await financeApi.updateIntent?.(id, {
           category: updatedTx.category,
@@ -355,8 +584,19 @@ export function FinanceProvider({ children }) {
     };
     setBudgets(prev => [...prev.filter(b => b.category !== budget.category), budget]);
 
-    // Sync budget to PostgreSQL
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('budgets').upsert([{
+            user_id: user.id,
+            category: budget.category,
+            monthly_limit: budget.monthlyLimit,
+            alert_threshold: budget.alertThreshold
+          }], { onConflict: 'user_id, category' });
+        } catch (err) {
+          console.warn('Supabase save budget error:', err.message);
+        }
+      }
       try {
         await financeApi.saveBudget({
           userId: user.id,
@@ -374,6 +614,11 @@ export function FinanceProvider({ children }) {
     setBudgets(prev => prev.filter(b => b.id !== id));
 
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('budgets').delete().eq('id', id).eq('user_id', user.id);
+        } catch (err) {}
+      }
       try {
         await financeApi.deleteBudget(id);
       } catch (err) {
@@ -394,8 +639,27 @@ export function FinanceProvider({ children }) {
     };
     setGoals(prev => [...prev, goal]);
 
-    // Sync goal to PostgreSQL
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          const { data: inserted } = await supabase.from('goals').insert([{
+            user_id: user.id,
+            title: goal.title,
+            target_amount: goal.targetAmount,
+            current_amount: goal.currentAmount || 0,
+            target_date: goal.targetDate,
+            category: goal.category,
+            color: goal.color
+          }]).select().single();
+
+          if (inserted?.id) {
+            setGoals(prev => prev.map(g => g.id === tempId ? { ...g, id: inserted.id } : g));
+          }
+        } catch (err) {
+          console.warn('Supabase save goal note:', err.message);
+        }
+      }
+
       try {
         const saved = await financeApi.saveGoal({
           userId: user.id,
@@ -426,8 +690,12 @@ export function FinanceProvider({ children }) {
       return g;
     }));
 
-    // Sync contribute to PostgreSQL
     if (user?.id && updatedGoal) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('goals').update({ current_amount: updatedGoal.currentAmount }).eq('id', id).eq('user_id', user.id);
+        } catch (err) {}
+      }
       try {
         await financeApi.contributeGoal(id, amount);
       } catch (err) {
@@ -440,8 +708,13 @@ export function FinanceProvider({ children }) {
     setGoals(prev => prev.filter(g => g.id !== id));
 
     if (user?.id) {
+      if (!user.id.startsWith('usr_')) {
+        try {
+          await supabase.from('goals').delete().eq('id', id).eq('user_id', user.id);
+        } catch (err) {}
+      }
       try {
-        await supabase.from('goals').delete().eq('id', id);
+        await financeApi.deleteGoal?.(id);
       } catch (err) {
         console.warn('Could not delete goal from cloud:', err.message);
       }
@@ -467,7 +740,7 @@ export function FinanceProvider({ children }) {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Transactions for account
+  // Transactions for current active account
   const filteredTransactions = transactions;
 
   // Financial summary metrics
@@ -483,10 +756,10 @@ export function FinanceProvider({ children }) {
   const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0;
 
   const clearAllData = () => {
-    localStorage.removeItem('finai_transactions');
-    localStorage.removeItem('finai_budgets');
-    localStorage.removeItem('finai_goals');
-    localStorage.removeItem('finai_notifs');
+    localStorage.removeItem(`moneymind_transactions_${currentUserId}`);
+    localStorage.removeItem(`moneymind_budgets_${currentUserId}`);
+    localStorage.removeItem(`moneymind_goals_${currentUserId}`);
+    localStorage.removeItem(`moneymind_notifs_${currentUserId}`);
     setTransactions([]);
     setBudgets([]);
     setGoals([]);

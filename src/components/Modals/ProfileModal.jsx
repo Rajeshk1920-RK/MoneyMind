@@ -53,8 +53,9 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
   const [editedName, setEditedName] = useState(() => user?.fullName || user?.full_name || user?.name || activeProfile?.name || 'User');
 
   // Sub-view interactive toggles
-  const [upiVpa, setUpiVpa] = useState(() => localStorage.getItem('finai_upi_vpa') || 'rajesh@okhdfcbank');
-  const [upiLimit, setUpiLimit] = useState(() => localStorage.getItem('finai_upi_limit') || '50000');
+  const currentUserId = user?.id || 'guest';
+  const [upiVpa, setUpiVpa] = useState(() => localStorage.getItem(`moneymind_upi_vpa_${currentUserId}`) || '');
+  const [upiLimit, setUpiLimit] = useState(() => localStorage.getItem(`moneymind_upi_limit_${currentUserId}`) || '50000');
   const [finaiAutoTips, setFinaiAutoTips] = useState(true);
   const [finaiForecasts, setFinaiForecasts] = useState(true);
   const [notifDailyDigest, setNotifDailyDigest] = useState(true);
@@ -611,7 +612,7 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
                   value={upiVpa}
                   onChange={(e) => {
                     setUpiVpa(e.target.value);
-                    localStorage.setItem('finai_upi_vpa', e.target.value);
+                    localStorage.setItem(`moneymind_upi_vpa_${currentUserId}`, e.target.value);
                   }}
                   className="form-control"
                   placeholder="name@okhdfcbank"
@@ -626,7 +627,7 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
                   value={upiLimit}
                   onChange={(e) => {
                     setUpiLimit(e.target.value);
-                    localStorage.setItem('finai_upi_limit', e.target.value);
+                    localStorage.setItem(`moneymind_upi_limit_${currentUserId}`, e.target.value);
                   }}
                   className="form-control"
                   placeholder="50000"
