@@ -65,8 +65,8 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
   const handleDownloadApk = () => {
     const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
-    const githubReleaseUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
-    const downloadUrl = isGitHubPages ? githubReleaseUrl : '/api/download-apk';
+    const githubRawUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/public/MoneyMind-v1.0.apk';
+    const downloadUrl = isGitHubPages ? githubRawUrl : '/api/download-apk';
 
     const link = document.createElement('a');
     link.href = downloadUrl;
@@ -472,13 +472,22 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              <a
+                href="https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/public/MoneyMind-v1.0.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-brand-pill"
+                style={{ width: '100%', justifyContent: 'center', backgroundColor: '#0f291e', color: '#ffffff', textDecoration: 'none' }}
+              >
+                <Download size={16} /> Direct Git Link (84.5 MB APK)
+              </a>
               <button
                 onClick={() => setShowApkModal(false)}
                 className="btn-brand-pill"
-                style={{ width: '100%', justifyContent: 'center' }}
+                style={{ width: '100%', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
               >
-                Got it
+                Close
               </button>
             </div>
           </div>
