@@ -30,3 +30,7 @@ dist-ssr
 .env.test.local
 .env.production.local
 *.env
+
+# Binary artifacts (built via GitHub Actions Releases)
+*.apk
+output/

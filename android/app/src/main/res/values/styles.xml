@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Base application theme. -->
@@ -15,7 +14,7 @@
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#0a1f18</item>
+        <item name="windowSplashScreenBackground">#ffffff</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
