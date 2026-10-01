@@ -27,3 +27,4 @@ export const INITIAL_TRANSACTIONS = [];
 export const INITIAL_BUDGETS = [];
 export const INITIAL_GOALS = [];
 export const INITIAL_NOTIFICATIONS = [];
+export const INITIAL_SPLIT_GROUPS = [];

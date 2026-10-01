@@ -138,9 +138,9 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
       try {
         const data = JSON.parse(e.target.result);
         if (data.transactions && Array.isArray(data.transactions)) {
-          localStorage.setItem('finai_transactions', JSON.stringify(data.transactions));
-          if (data.budgets) localStorage.setItem('finai_budgets', JSON.stringify(data.budgets));
-          if (data.goals) localStorage.setItem('finai_goals', JSON.stringify(data.goals));
+          localStorage.setItem(`moneymind_transactions_${currentUserId}`, JSON.stringify(data.transactions));
+          if (data.budgets) localStorage.setItem(`moneymind_budgets_${currentUserId}`, JSON.stringify(data.budgets));
+          if (data.goals) localStorage.setItem(`moneymind_goals_${currentUserId}`, JSON.stringify(data.goals));
           showToast('Data restored! Refreshing...');
           setTimeout(() => window.location.reload(), 800);
         } else {
@@ -724,7 +724,7 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
                     key={c.code}
                     onClick={() => {
                       setActiveCurrencyCode(c.code);
-                      localStorage.setItem('finai_currency', c.code);
+                      localStorage.setItem(`moneymind_currency_${currentUserId}`, c.code);
                       showToast(`Currency changed to ${c.name} (${c.symbol})`);
                     }}
                     style={{

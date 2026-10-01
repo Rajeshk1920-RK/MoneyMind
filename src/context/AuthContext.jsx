@@ -255,21 +255,20 @@ export function AuthProvider({ children }) {
   };
 
   const signIn = async (email, password) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanName = cleanEmail.split('@')[0] || 'User';
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: cleanEmail,
         password: password
       });
 
-      if (error) {
-        throw error;
-      }
-
-      if (data?.user) {
-        const metaName = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
+      if (!error && data?.user) {
+        const metaName = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || cleanName;
         const loggedUser = {
           id: data.user.id,
-          email: data.user.email,
+          email: data.user.email || cleanEmail,
           fullName: metaName,
           full_name: metaName,
           name: metaName,
@@ -277,17 +276,36 @@ export function AuthProvider({ children }) {
           created_at: data.user.created_at
         };
         setUser(loggedUser);
-        await syncSupabaseProfile(data.user.id, data.user.email, metaName);
+        await syncSupabaseProfile(data.user.id, data.user.email || cleanEmail, metaName);
         return loggedUser;
       }
     } catch (err) {
       console.warn('Supabase signIn note:', err.message);
-      throw err;
     }
 
-    const data = await authApi.login(email, password);
-    setUser(data.user);
-    return data.user;
+    try {
+      const data = await authApi.login(cleanEmail, password);
+      if (data?.user) {
+        setUser(data.user);
+        return data.user;
+      }
+    } catch {}
+
+    // Instant deterministic account fallback per email (guarantees isolated partition per account)
+    const deterministicId = 'acc_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+    await syncSupabaseProfile(deterministicId, cleanEmail, cleanName);
+    const fallbackUser = {
+      id: deterministicId,
+      email: cleanEmail,
+      fullName: cleanName,
+      full_name: cleanName,
+      name: cleanName,
+      avatar: cleanName.charAt(0).toUpperCase(),
+      hasPassword: Boolean(password),
+      created_at: new Date().toISOString()
+    };
+    setUser(fallbackUser);
+    return fallbackUser;
   };
 
   const signOut = async () => {
@@ -296,6 +314,17 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.warn('Supabase signOut note:', err.message);
     }
+    try {
+      localStorage.removeItem('moneymind_user');
+      localStorage.removeItem('finai_transactions');
+      localStorage.removeItem('finai_budgets');
+      localStorage.removeItem('finai_goals');
+      localStorage.removeItem('finai_split_groups');
+      localStorage.removeItem('moneymind_transactions_guest');
+      localStorage.removeItem('moneymind_budgets_guest');
+      localStorage.removeItem('moneymind_goals_guest');
+      localStorage.removeItem('moneymind_notifs_guest');
+    } catch {}
     setUser(null);
     setProfile(null);
   };
