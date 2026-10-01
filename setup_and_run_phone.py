@@ -101,14 +101,14 @@ def setup_jdk_and_install():
         adb_path = 'adb.exe'
         
     print("\n--- Installing MoneyMind APK onto connected mobile device via USB ---")
-    install_res = subprocess.run([adb_path, 'install', '-r', apk_path], capture_output=True, text=True)
+    install_res = subprocess.run([adb_path, 'install', '-r', apk_path], capture_output=True, text=True, env=env)
     print("ADB Output:", install_res.stdout)
     if install_res.stderr:
         print("ADB Stderr:", install_res.stderr)
         
     if "Success" in install_res.stdout:
         print("\n--- Launching MoneyMind on Phone ---")
-        launch_res = subprocess.run([adb_path, 'shell', 'monkey', '-p', 'com.moneymind.app', '-c', 'android.intent.category.LAUNCHER', '1'], capture_output=True, text=True)
+        launch_res = subprocess.run([adb_path, 'shell', 'monkey', '-p', 'com.moneymind.app', '-c', 'android.intent.category.LAUNCHER', '1'], capture_output=True, text=True, env=env)
         print("App launched successfully on your mobile phone!")
         return True
     else:
