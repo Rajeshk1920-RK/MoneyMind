@@ -8,7 +8,7 @@
       "launchAutoHide": true,
       "backgroundColor": "#ffffff",
       "showSpinner": false,
-      "androidSplashResourceName": "splash"
+      "androidSplashResourceName": "splash_screen_native"
     }
   }
 }
