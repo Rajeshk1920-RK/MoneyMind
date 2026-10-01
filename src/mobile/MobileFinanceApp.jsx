@@ -227,6 +227,10 @@ export function MobileFinanceApp() {
           <ProfileModal
             isOpen={isProfileOpen}
             onClose={() => setIsProfileOpen(false)}
+            onLogout={() => {
+              setIsGuest(false);
+              setIsProfileOpen(false);
+            }}
           />
         )}
       </div>

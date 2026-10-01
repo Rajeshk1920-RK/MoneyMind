@@ -22,14 +22,15 @@ import {
   Sparkles,
   Zap,
   Save,
-  Trash2
+  Trash2,
+  LogOut
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import logoImg from '@/assets/logo.png';
 
-export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
+export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLanding }) {
   const {
     activeProfile,
     updateUserName,
@@ -42,7 +43,7 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
     clearAllData
   } = useFinance();
 
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Active view: null = main list, or 'payment' | 'finai' | 'notifications' | 'currency' | 'appearance' | 'export' | 'backup' | 'help' | 'about'
   const [activeSubView, setActiveSubView] = useState(null);
@@ -151,8 +152,19 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
     reader.readAsText(file);
   };
 
-  const initials = activeProfile?.name
-    ? activeProfile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm('Are you sure you want to log out of MoneyMind?');
+    if (confirmLogout) {
+      if (onClose) onClose();
+      if (onLogout) onLogout();
+      await signOut();
+    }
+  };
+
+  const displayName = user?.fullName || user?.name || activeProfile?.name || 'Rajesh Kumar';
+  const displayEmail = user?.email || '';
+  const initials = displayName
+    ? displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
     : 'RK';
 
   return (
@@ -305,13 +317,18 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
                 ) : (
                   <>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      {activeProfile?.name || 'Rajesh Kumar'}
+                      {displayName}
                     </h3>
+                    {displayEmail && (
+                      <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500, marginTop: '0.15rem' }}>
+                        {displayEmail}
+                      </span>
+                    )}
                     <div style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.35rem',
-                      marginTop: '0.25rem',
+                      marginTop: '0.35rem',
                       padding: '0.2rem 0.65rem',
                       borderRadius: '99px',
                       backgroundColor: '#ecfdf5',
@@ -537,6 +554,42 @@ export function ProfileModal({ isOpen = true, onClose, onNavigateLanding }) {
                   </div>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>v2.4</span>
                 </div>
+              </div>
+
+              {/* 5. ACCOUNT & LOGOUT SECTION */}
+              <div style={{ marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.65rem',
+                    padding: '0.85rem 1rem',
+                    backgroundColor: '#fef2f2',
+                    color: '#dc2626',
+                    border: '1.5px solid #fecaca',
+                    borderRadius: '16px',
+                    fontWeight: 800,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.08)',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fee2e2';
+                    e.currentTarget.style.borderColor = '#fca5a5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fef2f2';
+                    e.currentTarget.style.borderColor = '#fecaca';
+                  }}
+                >
+                  <LogOut size={18} color="#dc2626" />
+                  <span>Log Out Account</span>
+                </button>
               </div>
 
             </div>
