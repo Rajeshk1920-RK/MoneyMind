@@ -60,17 +60,15 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
-  const [showApkModal, setShowApkModal] = useState(false);
   const [showUpiPayModal, setShowUpiPayModal] = useState(false);
+
+  const APK_DOWNLOAD_URL = 'https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/MoneyMind-v1.0.apk';
 
   const handleDownloadApk = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const directDownloadUrl = 'https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/MoneyMind-v1.0.apk';
-
-    // Direct instant download
     const link = document.createElement('a');
-    link.href = directDownloadUrl;
-    link.download = 'MoneyMind-v1.0.apk';
+    link.href = APK_DOWNLOAD_URL;
+    link.setAttribute('download', 'MoneyMind-v1.0.apk');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -251,8 +249,9 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </button>
 
           {/* Download APK Button */}
-          <button
-            onClick={handleDownloadApk}
+          <a
+            href={APK_DOWNLOAD_URL}
+            download="MoneyMind-v1.0.apk"
             style={{
               padding: '0.65rem 1.45rem',
               borderRadius: '9999px',
@@ -265,14 +264,14 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
-              border: 'none',
+              textDecoration: 'none',
               transition: 'all 0.16s ease'
             }}
             title="Download Android APK (v1.0)"
           >
             <Download size={16} />
             <span>Download APK</span>
-          </button>
+          </a>
         </div>
       </header>
 
@@ -339,8 +338,9 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           marginBottom: '3.5rem'
         }}>
           {/* Download APK Primary Action */}
-          <button
-            onClick={handleDownloadApk}
+          <a
+            href={APK_DOWNLOAD_URL}
+            download="MoneyMind-v1.0.apk"
             style={{
               padding: '0.95rem 2.5rem',
               borderRadius: '9999px',
@@ -353,13 +353,13 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.65rem',
-              border: 'none',
+              textDecoration: 'none',
               transition: 'all 0.18s ease'
             }}
           >
             <Download size={20} />
             <span>Download APK</span>
-          </button>
+          </a>
         </div>
       </section>
 
@@ -416,78 +416,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         </div>
       </div>
 
-      {/* APK Download Instruction Modal */}
-      {showApkModal && (
-        <div className="modal-overlay" style={{ zIndex: 1000 }}>
-          <div className="modal-content" style={{ maxWidth: '440px', padding: '1.75rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  backgroundColor: '#ecfdf5',
-                  border: '1px solid #a7f3d0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#059669'
-                }}>
-                  <Download size={18} />
-                </div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>Downloading APK</h3>
-              </div>
-              <button onClick={() => setShowApkModal(false)} style={{ color: '#64748b' }}>
-                <X size={20} />
-              </button>
-            </div>
 
-            <p style={{ fontSize: '0.88rem', color: '#526b64', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-              Your download for <strong>MoneyMind-v1.0.apk</strong> has started. Follow these steps to install on Android:
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  1
-                </div>
-                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>Tap the downloaded <strong>.apk</strong> file in your notifications or downloads folder.</span>
-              </div>
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  2
-                </div>
-                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>If prompted by Android, enable <strong>"Install unknown apps"</strong> for your browser.</span>
-              </div>
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  3
-                </div>
-                <span style={{ fontSize: '0.84rem', color: '#0f172a' }}>Tap <strong>Install</strong> and enjoy offline banking SMS tracking!</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              <a
-                href="https://github.com/Rajeshk1920-RK/MoneyMind/raw/main/MoneyMind-v1.0.apk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-brand-pill"
-                style={{ width: '100%', justifyContent: 'center', backgroundColor: '#0f291e', color: '#ffffff', textDecoration: 'none' }}
-              >
-                <Download size={16} /> Direct Git Link (84.5 MB APK)
-              </a>
-              <button
-                onClick={() => setShowApkModal(false)}
-                className="btn-brand-pill"
-                style={{ width: '100%', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Feature Showcase: "Built for the way you spend" (Exact match with reference image) */}
       <section id="features" style={{
@@ -997,8 +926,9 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           <p style={{ fontSize: '1.1rem', color: '#a3c2b1', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
             Join thousands of smart spenders using MoneyMind for personal budgeting and seamless friend group bill splitting.
           </p>
-          <button
-            onClick={handleDownloadApk}
+          <a
+            href={APK_DOWNLOAD_URL}
+            download="MoneyMind-v1.0.apk"
             style={{
               padding: '1rem 2.75rem',
               borderRadius: '9999px',
@@ -1011,13 +941,13 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.6rem',
-              border: 'none',
+              textDecoration: 'none',
               transition: 'transform 0.15s ease'
             }}
           >
             <Download size={18} />
             <span>Download APK (v1.0)</span>
-          </button>
+          </a>
         </div>
       </section>
 
@@ -1041,20 +971,22 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <a href="#services" style={{ color: '#657e70', textDecoration: 'none' }}>Services</a>
           <a href="#features" style={{ color: '#657e70', textDecoration: 'none' }}>Features</a>
-          <button
-            onClick={handleDownloadApk}
+          <a
+            href={APK_DOWNLOAD_URL}
+            download="MoneyMind-v1.0.apk"
             style={{
               color: '#059669',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              gap: '4px',
+              textDecoration: 'none'
             }}
           >
             <Download size={15} />
             <span>Download APK</span>
-          </button>
+          </a>
         </div>
       </footer>
 
