@@ -178,7 +178,8 @@
         background: linear-gradient(90deg, #059669 0%, #10b981 70%, #34d399 100%);
         border-radius: 9999px;
         box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-        animation: instantProgressFill 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: instantProgressFill 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        will-change: width;
       }
 
       .instant-security {
@@ -193,9 +194,8 @@
 
       @keyframes instantProgressFill {
         0% { width: 4%; }
-        25% { width: 35%; }
-        60% { width: 70%; }
-        90% { width: 92%; }
+        30% { width: 45%; }
+        70% { width: 85%; }
         100% { width: 100%; }
       }
 
