@@ -19,10 +19,6 @@
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <script>
-      window.__app_start_time = Date.now();
-    </script>
-
     <style>
       html, body {
         background-color: #0f172a;
@@ -33,14 +29,15 @@
         overflow-x: hidden;
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
+
       #root {
         background-color: #0f172a;
         min-height: 100%;
         width: 100%;
       }
 
-      /* Instant Zero-Delay Splash Screen Styles */
-      .instant-splash {
+      /* Instant Zero-Delay Hardware-Accelerated Splash Screen Overlay */
+      #app-splash-screen {
         position: fixed;
         inset: 0;
         width: 100vw;
@@ -52,21 +49,30 @@
         justify-content: space-between;
         padding: max(env(safe-area-inset-top, 2.5rem), 2.5rem) 1.5rem max(env(safe-area-inset-bottom, 2.5rem), 2.5rem) 1.5rem;
         box-sizing: border-box;
-        z-index: 99999;
+        z-index: 999999;
         overflow: hidden;
+        transform: translateZ(0);
+        transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+      }
+
+      #app-splash-screen.splash-fade-out {
+        opacity: 0;
+        transform: scale(1.04);
+        pointer-events: none;
       }
 
       .instant-glow {
         position: absolute;
         width: 340px;
         height: 340px;
-        background: radial-gradient(circle, rgba(5, 150, 105, 0.28) 0%, rgba(5, 150, 105, 0) 70%);
+        background: radial-gradient(circle, rgba(5, 150, 105, 0.3) 0%, rgba(5, 150, 105, 0) 70%);
         top: 40%;
         left: 50%;
         transform: translate(-50%, -50%);
         pointer-events: none;
         filter: blur(40px);
-        animation: instantGlowPulse 2.5s ease-in-out infinite alternate;
+        animation: instantGlowPulse 2.2s ease-in-out infinite alternate;
       }
 
       .instant-center {
@@ -94,8 +100,8 @@
         position: absolute;
         inset: -8px;
         border-radius: 34px;
-        border: 1.5px solid rgba(16, 185, 129, 0.4);
-        animation: instantRingPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        border: 1.5px solid rgba(16, 185, 129, 0.45);
+        animation: instantRingPulse 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
       }
 
       .instant-badge {
@@ -110,8 +116,9 @@
         padding: 10px;
         box-sizing: border-box;
         box-shadow: 0 16px 40px rgba(5, 150, 105, 0.35);
-        animation: instantLogoFloat 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
+        animation: instantLogoFloat 2s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
         z-index: 2;
+        transform: translateZ(0);
       }
 
       .instant-badge img {
@@ -162,6 +169,11 @@
         color: #94a3b8;
       }
 
+      .instant-percent-text {
+        color: #10b981;
+        font-weight: 800;
+      }
+
       .instant-track {
         width: 100%;
         height: 6px;
@@ -178,7 +190,7 @@
         background: linear-gradient(90deg, #059669 0%, #10b981 70%, #34d399 100%);
         border-radius: 9999px;
         box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-        animation: instantProgressFill 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation: instantProgressFill 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         will-change: width;
       }
 
@@ -193,9 +205,9 @@
       }
 
       @keyframes instantProgressFill {
-        0% { width: 4%; }
-        30% { width: 45%; }
-        70% { width: 85%; }
+        0% { width: 5%; }
+        35% { width: 50%; }
+        75% { width: 88%; }
         100% { width: 100%; }
       }
 
@@ -206,7 +218,7 @@
 
       @keyframes instantLogoFloat {
         0% { transform: translateY(0) scale(1); }
-        100% { transform: translateY(-6px) scale(1.03); }
+        100% { transform: translateY(-5px) scale(1.02); }
       }
 
       @keyframes instantRingPulse {
@@ -217,38 +229,58 @@
     </style>
   </head>
   <body class="fintrust-theme" style="background-color: #0f172a; margin: 0; padding: 0;">
-    <div id="root" style="background-color: #0f172a; min-height: 100vh;">
-      <!-- Instant 0ms Paint Splash Screen (Replaced automatically when React mounts) -->
-      <div class="instant-splash">
-        <div class="instant-glow"></div>
-        <div class="instant-center">
-          <div class="instant-logo-box">
-            <div class="instant-ring"></div>
-            <div class="instant-badge">
-              <img src="./logo.png" alt="MoneyMind Logo" />
-            </div>
+    <!-- Main React App Container -->
+    <div id="root" style="background-color: #0f172a; min-height: 100vh;"></div>
+
+    <!-- Instant Hardware-Accelerated Splash Screen (Fades directly into Login Page) -->
+    <div id="app-splash-screen">
+      <div class="instant-glow"></div>
+      <div class="instant-center">
+        <div class="instant-logo-box">
+          <div class="instant-ring"></div>
+          <div class="instant-badge">
+            <img src="./logo.png" alt="MoneyMind Logo" />
           </div>
-          <div class="instant-title">MoneyMind</div>
-          <p class="instant-tagline">Smart Personal Finance & Direct UPI</p>
         </div>
-        <div class="instant-bottom">
-          <div class="instant-status-row">
-            <span class="instant-status-text">Initializing secure wallet...</span>
-            <span style="color: #10b981; font-weight: 800; font-family: monospace;">Loading...</span>
-          </div>
-          <div class="instant-track">
-            <div class="instant-bar"></div>
-          </div>
-          <div class="instant-security">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="m9 12 2 2 4-4"/>
-            </svg>
-            <span>100% Private On-Device Encrypted</span>
-          </div>
+        <div class="instant-title">MoneyMind</div>
+        <p class="instant-tagline">Smart Personal Finance & Direct UPI</p>
+      </div>
+      <div class="instant-bottom">
+        <div class="instant-status-row">
+          <span class="instant-status-text">Securing wallet & ledger...</span>
+          <span class="instant-percent-text">Loading</span>
+        </div>
+        <div class="instant-track">
+          <div class="instant-bar"></div>
+        </div>
+        <div class="instant-security">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          <span>100% Private On-Device Encrypted</span>
         </div>
       </div>
     </div>
+
+    <script>
+      (function() {
+        // Automatically smoothly dismiss splash after 1.8s progress finishes
+        window.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() {
+            var splash = document.getElementById('app-splash-screen');
+            if (splash) {
+              splash.classList.add('splash-fade-out');
+              setTimeout(function() {
+                if (splash && splash.parentNode) {
+                  splash.parentNode.removeChild(splash);
+                }
+              }, 360);
+            }
+          }, 1800);
+        });
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
