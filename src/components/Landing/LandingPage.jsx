@@ -168,6 +168,9 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
     }
   };
 
+  const [heroActiveTab, setHeroActiveTab] = useState('overview'); // 'overview' | 'sms' | 'intent' | 'budget'
+  const [showCreatorWidget, setShowCreatorWidget] = useState(true);
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -177,17 +180,11 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
       overflowX: 'hidden',
       position: 'relative'
     }}>
+      {/* Ambient Glowing Background */}
+      <div className="hero-ambient-glow" />
+
       {/* Top Header / Navigation */}
-      <header style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        padding: '1.25rem 2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'relative',
-        zIndex: 50
-      }}>
+      <header className="landing-header">
         {/* Left: Logo & Brand */}
         <div
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
@@ -217,54 +214,54 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </span>
         </div>
 
+        {/* Center Nav Links (Desktop) */}
+        <nav className="landing-nav-links">
+          <a href="#features">Features</a>
+          <a href="#showcase">Showcase</a>
+          <a href="#services">Services</a>
+          <a href="#about">About</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
         {/* Right Actions: Direct UPI Pay & Download APK */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           {/* Try UPI Direct Pay Button */}
           <button
             onClick={() => setShowUpiPayModal(true)}
             style={{
-              padding: '0.65rem 1.25rem',
+              padding: '0.6rem 1.15rem',
               borderRadius: '9999px',
               backgroundColor: '#ecfdf5',
               color: '#059669',
               border: '1.5px solid #a7f3d0',
-              fontSize: '0.86rem',
+              fontSize: '0.84rem',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.45rem',
+              gap: '0.4rem',
               boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
               transition: 'all 0.16s ease'
             }}
             title="Try Direct UPI Pay (PhonePe / GPay / Paytm)"
           >
-            <Zap size={16} color="#059669" />
-            <span>Pay with UPI</span>
+            <Zap size={15} color="#059669" />
+            <span>Pay UPI</span>
           </button>
 
           {/* Download APK Button */}
           <a
             href={APK_DOWNLOAD_URL}
             download="MoneyMind-v1.0.apk"
+            className="btn-hero-primary"
             style={{
-              padding: '0.65rem 1.45rem',
-              borderRadius: '9999px',
-              backgroundColor: '#0f172a',
-              color: '#ffffff',
-              fontSize: '0.88rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              textDecoration: 'none',
-              transition: 'all 0.16s ease'
+              padding: '0.6rem 1.35rem',
+              fontSize: '0.86rem',
+              borderRadius: '9999px'
             }}
             title="Download Android APK (v1.0)"
           >
-            <Download size={16} />
+            <Download size={15} />
             <span>Download APK</span>
           </a>
         </div>
@@ -272,144 +269,344 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
       {/* Hero Showcase Section */}
       <section style={{
-        maxWidth: '1040px',
+        maxWidth: '1120px',
         margin: '0 auto',
-        padding: '3rem 1.5rem 5rem',
+        padding: '3rem 1.5rem 4rem',
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative',
+        zIndex: 10
       }}>
-        {/* Floating App Icon Badge */}
-        <div style={{
-          width: '68px',
-          height: '68px',
-          borderRadius: '20px',
-          backgroundColor: '#ffffff',
-          display: 'flex',
+        {/* Floating Live Pill */}
+        <div className="animate-float-slow" style={{
+          display: 'inline-flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 12px 30px rgba(5, 150, 105, 0.15)',
+          gap: '0.5rem',
+          padding: '0.4rem 1rem',
+          backgroundColor: '#ecfdf5',
+          borderRadius: '9999px',
           border: '1.5px solid #a7f3d0',
           marginBottom: '1.75rem',
-          padding: '8px'
+          boxShadow: '0 4px 14px rgba(5, 150, 105, 0.1)'
         }}>
-          <img src={logoImg} alt="MoneyMind App" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <span style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#059669',
+            display: 'inline-block',
+            boxShadow: '0 0 0 3px rgba(5, 150, 105, 0.25)'
+          }} />
+          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669' }}>
+            MoneyMind v2.4 • 100% Private Offline Engine & Direct UPI
+          </span>
         </div>
 
         {/* Headline */}
-        <h1 style={{
-          fontSize: 'clamp(2.4rem, 6vw, 4.4rem)',
-          fontWeight: 800,
-          color: '#0f172a',
-          letterSpacing: '-0.035em',
-          lineHeight: 1.08,
-          marginBottom: '1.25rem',
-          fontFamily: 'var(--font-display)'
-        }}>
+        <h1 className="landing-hero-title">
           Expense tracking that works.<br />
-          <span style={{ color: '#059669' }}>No cloud. No limits.</span>
+          <span style={{
+            background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #2563eb 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            display: 'inline-block'
+          }}>
+            No cloud lock-in. No limits.
+          </span>
         </h1>
 
         {/* Subtitle */}
         <p style={{
-          fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-          color: '#526b64',
-          maxWidth: '680px',
+          fontSize: 'clamp(1rem, 2vw, 1.18rem)',
+          color: '#475569',
+          maxWidth: '700px',
           lineHeight: 1.6,
           fontWeight: 500,
           marginBottom: '2.5rem'
         }}>
-          MoneyMind is a 100% private personal finance tracker for Android and Web with automated bank SMS detection, visual cashflow analytics, zero forced cloud lock-in, and radical privacy.
+          Automated banking SMS alerts, visual cashflow analytics, instant UPI payments, and smart group settlements — running privately on your device.
         </p>
 
-        {/* Hero CTA Action Buttons - Download APK Only */}
+        {/* Hero CTA Action Buttons */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '1rem',
           flexWrap: 'wrap',
-          marginBottom: '3.5rem'
+          marginBottom: '3.5rem',
+          width: '100%',
+          maxWidth: '520px'
         }}>
           {/* Download APK Primary Action */}
           <a
             href={APK_DOWNLOAD_URL}
             download="MoneyMind-v1.0.apk"
-            style={{
-              padding: '0.95rem 2.5rem',
-              borderRadius: '9999px',
-              backgroundColor: '#0f172a',
-              color: '#ffffff',
-              fontSize: '1.05rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 8px 26px rgba(15, 23, 42, 0.3)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.65rem',
-              textDecoration: 'none',
-              transition: 'all 0.18s ease'
-            }}
+            className="btn-hero-primary"
+            style={{ flex: '1 1 200px' }}
           >
-            <Download size={20} />
-            <span>Download APK</span>
+            <Download size={19} />
+            <span>Download Android APK</span>
           </a>
+
+          {/* Launch Web App / Live Demo */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onLaunchApp) {
+                onLaunchApp();
+              } else {
+                window.location.href = window.location.pathname + '?app=true';
+              }
+            }}
+            className="btn-hero-secondary"
+            style={{ flex: '1 1 180px' }}
+          >
+            <Smartphone size={18} />
+            <span>Open Web App</span>
+          </button>
+        </div>
+
+        {/* Interactive Live Mini-App Preview Device */}
+        <div id="showcase" className="animate-float-card" style={{
+          width: '100%',
+          maxWidth: '820px',
+          borderRadius: '28px',
+          backgroundColor: '#ffffff',
+          border: '2px solid #e2ede8',
+          boxShadow: '0 28px 60px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04)',
+          overflow: 'hidden',
+          textAlign: 'left'
+        }}>
+          {/* Mock App Header Toolbar */}
+          <div style={{
+            padding: '1rem 1.25rem',
+            backgroundColor: '#f8fafc',
+            borderBottom: '1px solid #e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.75rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
+                <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#f59e0b' }} />
+                <span style={{ width: '11px', height: '11px', borderRadius: '50%', backgroundColor: '#10b981' }} />
+              </div>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', marginLeft: '0.5rem' }}>
+                MoneyMind Live Interactive Preview
+              </span>
+            </div>
+
+            {/* Interactive Preview Tabs */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e2e8f0', padding: '3px', borderRadius: '10px' }}>
+              {[
+                { id: 'overview', label: 'Cashflow' },
+                { id: 'sms', label: 'SMS Auto-Log' },
+                { id: 'intent', label: 'Payment Intent' },
+                { id: 'budget', label: 'Budgets' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setHeroActiveTab(tab.id)}
+                  style={{
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    backgroundColor: heroActiveTab === tab.id ? '#ffffff' : 'transparent',
+                    color: heroActiveTab === tab.id ? '#059669' : '#64748b',
+                    boxShadow: heroActiveTab === tab.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Screen Content */}
+          <div style={{ padding: '1.5rem' }}>
+            {heroActiveTab === 'overview' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                <div style={{ padding: '1.25rem', backgroundColor: '#ecfdf5', borderRadius: '18px', border: '1px solid #a7f3d0' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase' }}>Total Net Balance</span>
+                  <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#065f46', margin: '4px 0' }}>₹48,920.00</div>
+                  <span style={{ fontSize: '0.72rem', color: '#047857', fontWeight: 600 }}>↑ +24.8% this month (72% Saved)</span>
+                </div>
+                <div style={{ padding: '1.25rem', backgroundColor: '#eff6ff', borderRadius: '18px', border: '1px solid #bfdbfe' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase' }}>Monthly Inflow</span>
+                  <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1e40af', margin: '4px 0' }}>₹65,000.00</div>
+                  <span style={{ fontSize: '0.72rem', color: '#3b82f6', fontWeight: 600 }}>Salary & Freelance</span>
+                </div>
+                <div style={{ padding: '1.25rem', backgroundColor: '#fef2f2', borderRadius: '18px', border: '1px solid #fecaca' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase' }}>Total Outflow</span>
+                  <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#991b1b', margin: '4px 0' }}>-₹16,080.00</div>
+                  <span style={{ fontSize: '0.72rem', color: '#ef4444', fontWeight: 600 }}>Within safe monthly budget</span>
+                </div>
+              </div>
+            )}
+
+            {heroActiveTab === 'sms' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div style={{ padding: '0.9rem 1.15rem', backgroundColor: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                      HDFC
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>HDFC Bank SMS Auto-Captured</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b' }}>"Rs. 450.00 debited for Swiggy UPI..."</div>
+                    </div>
+                  </div>
+                  <span style={{ padding: '4px 10px', backgroundColor: '#ecfdf5', color: '#059669', fontSize: '0.75rem', fontWeight: 800, borderRadius: '99px' }}>
+                    ✓ Auto-Logged in 0.1s
+                  </span>
+                </div>
+
+                <div style={{ padding: '0.9rem 1.15rem', backgroundColor: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
+                      SBI
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>SBI Salary Alert</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b' }}>"A/c credited with INR 65,000.00..."</div>
+                    </div>
+                  </div>
+                  <span style={{ padding: '4px 10px', backgroundColor: '#eff6ff', color: '#2563eb', fontSize: '0.75rem', fontWeight: 800, borderRadius: '99px' }}>
+                    + Logged as Income
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {heroActiveTab === 'intent' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                <div style={{ padding: '1.15rem', backgroundColor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700 }}>Payment Intent Breakdown</span>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', margin: '4px 0' }}>18 / 20 Explained</div>
+                  <p style={{ fontSize: '0.72rem', color: '#64748b', margin: 0 }}>Understand reasons behind every UPI payment.</p>
+                </div>
+                <div style={{ padding: '1.15rem', backgroundColor: '#ecfdf5', borderRadius: '16px', border: '1px solid #a7f3d0' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700 }}>Top Intent Category</span>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#065f46', margin: '4px 0' }}>Essential Groceries</div>
+                  <p style={{ fontSize: '0.72rem', color: '#047857', margin: 0 }}>44% of total monthly spending.</p>
+                </div>
+              </div>
+            )}
+
+            {heroActiveTab === 'budget' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>
+                    <span>Food & Dining</span>
+                    <span>₹4,200 / ₹6,000 (70%)</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: '70%', height: '100%', backgroundColor: '#10b981', borderRadius: '99px' }} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', marginBottom: '6px' }}>
+                    <span>Shopping & Gadgets</span>
+                    <span style={{ color: '#ef4444' }}>₹6,800 / ₹7,000 (97% - Near Limit)</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+                    <div style={{ width: '97%', height: '100%', backgroundColor: '#ef4444', borderRadius: '99px' }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Floating Creator Widget (Bottom Right like Screenshot) */}
-      <div style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '0.5rem',
-        zIndex: 100
-      }}>
-        {/* Creator Speech Bubble */}
+      {/* Floating Creator Widget (Bottom Right, Dismissible) */}
+      {showCreatorWidget && (
         <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '16px 16px 4px 16px',
-          padding: '0.75rem 1rem',
-          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)',
-          border: '1.5px solid #0f172a',
-          fontSize: '0.82rem',
-          fontWeight: 600,
-          color: '#0f172a',
-          maxWidth: '220px',
-          lineHeight: 1.35
-        }}>
-          Hi! I'm Rajesh, creator of MoneyMind. Enjoying the app?
-        </div>
-
-        {/* Creator Badge Pill */}
-        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
           display: 'flex',
-          alignItems: 'center',
-          gap: '0.65rem',
-          backgroundColor: '#ffffff',
-          borderRadius: '9999px',
-          padding: '0.45rem 0.9rem',
-          boxShadow: '0 6px 20px rgba(15, 23, 42, 0.12)',
-          border: '1.5px solid #0f172a'
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '0.45rem',
+          zIndex: 100
         }}>
-          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>Rajesh</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
-            <a href="https://github.com" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="GitHub">
-              <GithubIcon size={15} />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="LinkedIn">
-              <LinkedinIcon size={15} />
-            </a>
-            <button onClick={() => alert('Contact: rajesh@moneymind.app')} style={{ color: '#0f172a', padding: 0 }} title="Contact Email">
-              <Mail size={15} />
+          {/* Creator Speech Bubble */}
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px 16px 4px 16px',
+            padding: '0.75rem 0.95rem',
+            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)',
+            border: '1.5px solid #0f172a',
+            fontSize: '0.82rem',
+            fontWeight: 600,
+            color: '#0f172a',
+            maxWidth: '220px',
+            lineHeight: 1.35,
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setShowCreatorWidget(false)}
+              style={{
+                position: 'absolute',
+                top: '-6px',
+                right: '-6px',
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                backgroundColor: '#0f172a',
+                color: '#ffffff',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '10px',
+                padding: 0
+              }}
+              title="Dismiss"
+            >
+              <X size={10} />
             </button>
+            Hi! I'm Rajesh, creator of MoneyMind. Enjoying the app?
+          </div>
+
+          {/* Creator Badge Pill */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            backgroundColor: '#ffffff',
+            borderRadius: '9999px',
+            padding: '0.45rem 0.9rem',
+            boxShadow: '0 6px 20px rgba(15, 23, 42, 0.12)',
+            border: '1.5px solid #0f172a'
+          }}>
+            <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0f172a' }}>Rajesh</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
+              <a href="https://github.com/Rajeshk1920-RK" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="GitHub">
+                <GithubIcon size={15} />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color: '#0f172a' }} title="LinkedIn">
+                <LinkedinIcon size={15} />
+              </a>
+              <button onClick={() => alert('Contact: rajesh@moneymind.app')} style={{ color: '#0f172a', padding: 0 }} title="Contact Email">
+                <Mail size={15} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
 
 
