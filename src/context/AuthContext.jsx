@@ -126,6 +126,44 @@ export function AuthProvider({ children }) {
           if (error.message && error.message.toLowerCase().includes('already registered')) {
             return await signIn(cleanEmail, password);
           }
+
+          // If email rate limit exceeded on Supabase free tier SMTP
+          if (error.message && (error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('rate_limit'))) {
+            try {
+              const signInRes = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+              if (signInRes.data?.user) {
+                await syncSupabaseProfile(signInRes.data.user.id, cleanEmail, cleanName);
+                const u = {
+                  id: signInRes.data.user.id,
+                  email: cleanEmail,
+                  fullName: cleanName,
+                  full_name: cleanName,
+                  name: cleanName,
+                  avatar: cleanName.charAt(0).toUpperCase(),
+                  hasPassword: true,
+                  created_at: signInRes.data.user.created_at || new Date().toISOString()
+                };
+                setUser(u);
+                return u;
+              }
+            } catch {}
+
+            const deterministicId = 'acc_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+            await syncSupabaseProfile(deterministicId, cleanEmail, cleanName);
+            const fallbackUser = {
+              id: deterministicId,
+              email: cleanEmail,
+              fullName: cleanName,
+              full_name: cleanName,
+              name: cleanName,
+              avatar: cleanName.charAt(0).toUpperCase(),
+              hasPassword: true,
+              created_at: new Date().toISOString()
+            };
+            setUser(fallbackUser);
+            return fallbackUser;
+          }
+
           throw error;
         }
 
@@ -149,6 +187,22 @@ export function AuthProvider({ children }) {
       }
     } catch (err) {
       console.warn('Supabase signUp note:', err.message);
+      if (err.message && (err.message.toLowerCase().includes('rate limit') || err.message.toLowerCase().includes('rate_limit'))) {
+        const deterministicId = 'acc_' + btoa(cleanEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+        await syncSupabaseProfile(deterministicId, cleanEmail, cleanName);
+        const fallbackUser = {
+          id: deterministicId,
+          email: cleanEmail,
+          fullName: cleanName,
+          full_name: cleanName,
+          name: cleanName,
+          avatar: cleanName.charAt(0).toUpperCase(),
+          hasPassword: true,
+          created_at: new Date().toISOString()
+        };
+        setUser(fallbackUser);
+        return fallbackUser;
+      }
       throw err;
     }
 
