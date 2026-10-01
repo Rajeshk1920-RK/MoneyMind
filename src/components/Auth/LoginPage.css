@@ -1,4 +1,4 @@
-/* LoginPage.css - Full-screen Modern Mobile & Web Onboarding with Staggered Entrance Animations */
+/* LoginPage.css - Full-screen Modern Mobile & Web Onboarding */
 
 .login-page-fullscreen-wrapper {
   min-height: 100dvh;
@@ -6,8 +6,8 @@
   background: linear-gradient(165deg, #ffffff 0%, #f8fafc 50%, #f0fdf4 100%);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: env(safe-area-inset-top, 1.5rem) 1.5rem env(safe-area-inset-bottom, 1.5rem) 1.5rem;
+  justify-content: center;
+  padding: env(safe-area-inset-top, 1.25rem) 1.25rem env(safe-area-inset-bottom, 1.25rem) 1.25rem;
   box-sizing: border-box;
   position: relative;
   overflow-y: auto;
@@ -25,21 +25,20 @@
 
 .login-page-container {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1rem;
 }
 
 @media (min-width: 640px) {
   .login-page-container {
     background: #ffffff;
     border-radius: 28px;
-    padding: 2.5rem 2rem;
+    padding: 2.25rem 2rem;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
-    flex: initial;
     border: 1px solid #e2e8f0;
   }
 }
@@ -48,30 +47,29 @@
 .welcome-screen-content {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1.25rem;
   padding: 0.5rem 0;
 }
 
 .welcome-brand-section {
   text-align: center;
-  padding-top: 1rem;
 }
 
 /* Staggered Element 1: Logo Badge */
 .welcome-logo-badge {
-  width: 88px;
-  height: 88px;
-  border-radius: 26px;
+  width: 82px;
+  height: 82px;
+  border-radius: 24px;
   background: #ffffff;
   border: 2px solid #a7f3d0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
-  box-shadow: 0 16px 36px rgba(5, 150, 105, 0.22);
-  margin-bottom: 1.15rem;
-  animation: logoPopIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  padding: 8px;
+  box-shadow: 0 14px 32px rgba(5, 150, 105, 0.2);
+  margin-bottom: 0.85rem;
+  animation: logoPopIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
   will-change: transform, opacity;
 }
 
@@ -87,27 +85,27 @@
 
 /* Staggered Element 2: Brand Title */
 .welcome-brand-title {
-  font-size: 2.35rem;
+  font-size: 2.2rem;
   font-weight: 900;
   color: #0f172a;
   font-family: var(--font-display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   letter-spacing: -0.04em;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.3rem 0;
   line-height: 1.15;
   background: linear-gradient(135deg, #0f172a 40%, #059669 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  animation: stagSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
   will-change: transform, opacity;
 }
 
 .welcome-brand-tagline {
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   color: #64748b;
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.4;
   font-weight: 600;
-  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+  animation: stagSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
   will-change: transform, opacity;
 }
 
@@ -115,19 +113,19 @@
 .welcome-features-list {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin: 1.5rem 0;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
 }
 
 .welcome-feature-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.9rem;
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 0.95rem 1.15rem;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  border-radius: 18px;
+  padding: 0.85rem 1.05rem;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   will-change: transform, opacity;
 }
@@ -135,26 +133,25 @@
 .welcome-feature-card:hover {
   transform: translateY(-2px);
   border-color: #a7f3d0;
-  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.12);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.1);
 }
 
-/* Staggered Feature Cards Entrance */
 .welcome-feature-card:nth-child(1) {
-  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+  animation: stagSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
 }
 
 .welcome-feature-card:nth-child(2) {
-  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.44s both;
+  animation: stagSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
 
 .welcome-feature-card:nth-child(3) {
-  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.56s both;
+  animation: stagSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
 }
 
 .feature-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,55 +161,54 @@
 .feature-text-wrap {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
 }
 
 .feature-card-title {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: #0f172a;
   margin: 0;
 }
 
 .feature-card-desc {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #64748b;
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.3;
   font-weight: 500;
 }
 
-/* Action Section (Staggered Entrance 0.68s) */
+/* Action Section */
 .welcome-action-section {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding-bottom: 0.5rem;
-  animation: stagSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.68s both;
+  gap: 0.65rem;
+  animation: stagSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
   will-change: transform, opacity;
 }
 
 .welcome-get-started-btn {
   width: 100%;
-  padding: 1.15rem;
+  padding: 1.05rem;
   border-radius: 9999px;
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   color: #ffffff;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-  box-shadow: 0 12px 30px rgba(5, 150, 105, 0.4);
+  gap: 0.6rem;
+  box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .welcome-get-started-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(5, 150, 105, 0.48);
+  box-shadow: 0 14px 30px rgba(5, 150, 105, 0.42);
 }
 
 .welcome-get-started-btn:active {
@@ -223,10 +219,10 @@
   background: none;
   border: none;
   color: #64748b;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.35rem;
   text-align: center;
   transition: color 0.15s ease;
 }
@@ -235,56 +231,34 @@
   color: #0f172a;
 }
 
-/* Form Screen Content (Step 2) */
+/* Form Screen Content (Step 2 - Compact Centered Layout) */
 .login-form-screen-content {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 1.25rem;
   animation: formFadeIn 0.3s ease forwards;
 }
 
-.form-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.5rem;
-}
-
-.form-back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1.5px solid #e2e8f0;
-  color: #0f172a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.form-back-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+.login-header-section {
+  text-align: center;
+  padding: 0.25rem 0;
 }
 
 .login-form-card {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin: 1rem 0;
+  gap: 1rem;
 }
 
 .login-field-group {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
 }
 
 .login-field-label {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #1e293b;
 }
@@ -304,17 +278,17 @@
 
 .login-text-input {
   width: 100%;
-  padding: 0.95rem 1rem 0.95rem 2.85rem;
-  border-radius: 16px;
+  padding: 0.88rem 1rem 0.88rem 2.75rem;
+  border-radius: 14px;
   border: 1.5px solid #e2e8f0;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #0f172a;
   outline: none;
   background-color: #ffffff;
   box-sizing: border-box;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.02);
 }
 
 .login-text-input:focus {
@@ -323,44 +297,67 @@
 }
 
 .login-submit-btn {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   width: 100%;
-  padding: 1.05rem;
+  padding: 1rem;
   border-radius: 9999px;
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   color: #ffffff;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 800;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  box-shadow: 0 10px 25px rgba(5, 150, 105, 0.35);
+  gap: 0.55rem;
+  box-shadow: 0 10px 24px rgba(5, 150, 105, 0.35);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .login-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(5, 150, 105, 0.4);
+  box-shadow: 0 14px 28px rgba(5, 150, 105, 0.4);
 }
 
 .login-submit-btn:active {
   transform: scale(0.985);
 }
 
+.login-action-links-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+
+.login-back-link {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0;
+  transition: color 0.15s ease;
+}
+
+.login-back-link:hover {
+  color: #0f172a;
+}
+
 .login-guest-btn {
   background: none;
   border: none;
   color: #64748b;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.3rem 0;
   transition: color 0.15s ease;
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
 
 .login-guest-btn:hover {
@@ -371,62 +368,46 @@
   background-color: #fef2f2;
   color: #b91c1c;
   border: 1px solid #fecaca;
-  border-radius: 14px;
-  padding: 0.85rem 1rem;
-  font-size: 0.86rem;
+  border-radius: 12px;
+  padding: 0.75rem 0.95rem;
+  font-size: 0.84rem;
   font-weight: 600;
   text-align: center;
 }
 
 .login-footer-section {
-  padding-top: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .login-privacy-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   background-color: #ecfdf5;
   color: #047857;
   border: 1px solid #a7f3d0;
-  padding: 0.45rem 0.95rem;
+  padding: 0.35rem 0.85rem;
   border-radius: 9999px;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
 }
 
-/* Staggered Animations Keyframes */
+/* Animations */
 @keyframes logoPopIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.65) translateY(-10px);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.06) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  0% { opacity: 0; transform: scale(0.7) translateY(-8px); }
+  70% { opacity: 1; transform: scale(1.05) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes stagSlideUp {
-  0% {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes formFadeIn {
-  from { opacity: 0; transform: translateX(12px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

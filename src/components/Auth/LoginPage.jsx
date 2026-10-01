@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ChevronLeft } from 'lucide-react';
+import { User, Mail, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoImg from '@/assets/logo.png';
 import confetti from 'canvas-confetti';
@@ -120,31 +120,28 @@ export function LoginPage({ onGuestAccess }) {
             </div>
           </div>
         ) : (
-          /* STEP 2: Quick Account Setup Form */
+          /* STEP 2: Compact Login & Account Setup Form (Centered Logo & Balanced Spacing) */
           <div className="login-form-screen-content">
-            <div className="form-header-row">
-              <button
-                type="button"
-                onClick={() => setStep('welcome')}
-                className="form-back-btn"
-                aria-label="Back to welcome"
-              >
-                <ChevronLeft size={22} />
-              </button>
-              <div className="form-mini-logo">
-                <img src={logoImg} alt="MoneyMind" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            
+            {/* Centered Brand Header */}
+            <div className="login-header-section">
+              <div className="welcome-logo-badge">
+                <img
+                  src={logoImg}
+                  alt="MoneyMind Logo"
+                  className="welcome-logo-img"
+                />
               </div>
-            </div>
 
-            <div className="login-header-section" style={{ textAlign: 'left', padding: '0.5rem 0 1.25rem 0' }}>
-              <h2 className="login-title" style={{ fontSize: '1.75rem' }}>
-                Setup Your Profile
-              </h2>
-              <p className="login-subtitle">
-                Create your on-device wallet profile to start tracking cashflow.
+              <h1 className="welcome-brand-title" style={{ fontSize: '1.95rem' }}>
+                Setup Profile
+              </h1>
+              <p className="welcome-brand-tagline">
+                Enter your details to initialize your private wallet
               </p>
             </div>
 
+            {/* Form Fields Card */}
             <div className="login-form-card">
               {error && (
                 <div className="login-error-banner">
@@ -152,7 +149,7 @@ export function LoginPage({ onGuestAccess }) {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {/* Full Name */}
                 <div className="login-field-group">
                   <label className="login-field-label">
@@ -190,7 +187,7 @@ export function LoginPage({ onGuestAccess }) {
                   </div>
                 </div>
 
-                {/* Launch Wallet */}
+                {/* Launch Button */}
                 <button
                   type="submit"
                   className="login-submit-btn"
@@ -200,25 +197,37 @@ export function LoginPage({ onGuestAccess }) {
                 </button>
               </form>
 
-              {onGuestAccess && (
-                <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+              {/* Action Links */}
+              <div className="login-action-links-row">
+                <button
+                  type="button"
+                  onClick={() => setStep('welcome')}
+                  className="login-back-link"
+                >
+                  <ArrowLeft size={16} />
+                  <span>Back to Overview</span>
+                </button>
+
+                {onGuestAccess && (
                   <button
                     type="button"
                     onClick={onGuestAccess}
                     className="login-guest-btn"
                   >
-                    Skip & Continue as Guest
+                    Continue as Guest
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
+            {/* Privacy Badge */}
             <div className="login-footer-section">
               <div className="login-privacy-badge">
                 <ShieldCheck size={16} color="#059669" />
-                <span>100% Private • Encrypted On-Device Storage</span>
+                <span>100% Private • On-Device Encrypted</span>
               </div>
             </div>
+
           </div>
         )}
 
