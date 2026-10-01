@@ -27,7 +27,6 @@ export function MobileFinanceApp() {
   const { addTransaction, addNotification } = useFinance();
   
   const [currentTab, setCurrentTab] = useState('dashboard');
-  const [isGuest, setIsGuest] = useState(false);
 
   // Modals state
   const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
@@ -114,9 +113,9 @@ export function MobileFinanceApp() {
     setIsUpiPayOpen(true);
   };
 
-  // 1. Instant Welcome / Login Screen if not authenticated and not in guest mode
-  if (!isAuthenticated && !isGuest) {
-    return <LoginPage onGuestAccess={() => setIsGuest(true)} />;
+  // 1. Instant Welcome / Login Screen if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage />;
   }
 
   return (
@@ -228,7 +227,6 @@ export function MobileFinanceApp() {
             isOpen={isProfileOpen}
             onClose={() => setIsProfileOpen(false)}
             onLogout={() => {
-              setIsGuest(false);
               setIsProfileOpen(false);
             }}
           />

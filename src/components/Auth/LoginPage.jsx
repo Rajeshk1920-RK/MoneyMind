@@ -9,7 +9,7 @@ import './LoginPage.css';
  * LoginPage Component
  * Full-screen Onboarding & Welcome experience with "Get Started" entry & Password field
  */
-export function LoginPage({ onGuestAccess }) {
+export function LoginPage() {
   const { createAccount, signIn } = useAuth();
   const [step, setStep] = useState('welcome'); // 'welcome' | 'form'
   const [authMode, setAuthMode] = useState('signup'); // 'signin' | 'signup'
@@ -156,15 +156,7 @@ export function LoginPage({ onGuestAccess }) {
                 <ArrowRight size={20} strokeWidth={2.5} />
               </button>
 
-              {onGuestAccess && (
-                <button
-                  type="button"
-                  onClick={onGuestAccess}
-                  className="welcome-guest-btn"
-                >
-                  Continue as Guest
-                </button>
-              )}
+
             </div>
           </div>
         ) : (
@@ -384,15 +376,7 @@ export function LoginPage({ onGuestAccess }) {
                   <span>Back to Overview</span>
                 </button>
 
-                {onGuestAccess && (
-                  <button
-                    type="button"
-                    onClick={onGuestAccess}
-                    className="login-guest-btn"
-                  >
-                    Continue as Guest
-                  </button>
-                )}
+
               </div>
             </div>
 
