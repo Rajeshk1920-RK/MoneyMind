@@ -13,9 +13,9 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         instance = this;
 
-        // Eliminate white flash by matching WebView background with MoneyMind dark theme
+        // Match WebView background with MoneyMind clean theme
         if (getBridge() != null && getBridge().getWebView() != null) {
-            getBridge().getWebView().setBackgroundColor(Color.parseColor("#0f172a"));
+            getBridge().getWebView().setBackgroundColor(Color.parseColor("#ffffff"));
         }
     }
 
