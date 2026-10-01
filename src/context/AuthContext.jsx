@@ -23,7 +23,23 @@ export function AuthProvider({ children }) {
   });
   const [loading, setLoading] = useState(true);
 
-  // Sync Supabase Auth state
+  // Helper to ensure a profile record exists in public.profiles table in Supabase
+  const syncSupabaseProfile = async (uid, email, fullName) => {
+    if (!uid || uid.startsWith('usr_')) return;
+    try {
+      await supabase.from('profiles').upsert([{
+        id: uid,
+        email: email,
+        full_name: fullName,
+        avatar: fullName ? fullName.charAt(0).toUpperCase() : 'U',
+        updated_at: new Date().toISOString()
+      }], { onConflict: 'id' });
+    } catch (err) {
+      console.warn('Supabase profiles table upsert note:', err.message);
+    }
+  };
+
+  // Sync Supabase Auth state on launch and state change
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -42,6 +58,7 @@ export function AuthProvider({ children }) {
           };
           setUser(syncedUser);
           localStorage.setItem('finai_user_name', metaName);
+          await syncSupabaseProfile(u.id, u.email, metaName);
         }
       } catch (err) {
         console.warn('Supabase getSession note:', err.message);
@@ -67,6 +84,7 @@ export function AuthProvider({ children }) {
         };
         setUser(syncedUser);
         localStorage.setItem('finai_user_name', metaName);
+        await syncSupabaseProfile(u.id, u.email, metaName);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       }
@@ -87,7 +105,7 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  // Instant Account Creation / Supabase Sign Up
+  // Account Creation / Supabase Sign Up & Profile sync
   const createAccount = async (fullName, email, password = '') => {
     const cleanName = (fullName || 'User').trim();
     const cleanEmail = (email || 'user@moneymind.app').trim();
@@ -103,7 +121,18 @@ export function AuthProvider({ children }) {
           }
         });
 
+        if (error) {
+          // If already registered, attempt to sign in directly
+          if (error.message && error.message.toLowerCase().includes('already registered')) {
+            return await signIn(cleanEmail, password);
+          }
+          throw error;
+        }
+
         if (data?.user) {
+          // Explicitly register row in public.profiles table
+          await syncSupabaseProfile(data.user.id, cleanEmail, cleanName);
+
           const newUser = {
             id: data.user.id,
             email: cleanEmail,
@@ -119,7 +148,8 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (err) {
-      console.warn('Supabase signUp fallback note:', err.message);
+      console.warn('Supabase signUp note:', err.message);
+      throw err;
     }
 
     // Local / offline instant fallback
@@ -144,7 +174,13 @@ export function AuthProvider({ children }) {
 
     if (user?.id && !user.id.startsWith('usr_')) {
       try {
-        await supabase.from('profiles').update({ full_name: clean }).eq('id', user.id);
+        await supabase.from('profiles').upsert([{
+          id: user.id,
+          email: user.email,
+          full_name: clean,
+          avatar: clean.charAt(0).toUpperCase(),
+          updated_at: new Date().toISOString()
+        }], { onConflict: 'id' });
         await supabase.auth.updateUser({ data: { full_name: clean } });
       } catch (err) {
         console.warn('Supabase updateProfileName note:', err.message);
@@ -171,6 +207,10 @@ export function AuthProvider({ children }) {
         password: password
       });
 
+      if (error) {
+        throw error;
+      }
+
       if (data?.user) {
         const metaName = data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'User';
         const loggedUser = {
@@ -183,10 +223,12 @@ export function AuthProvider({ children }) {
           created_at: data.user.created_at
         };
         setUser(loggedUser);
+        await syncSupabaseProfile(data.user.id, data.user.email, metaName);
         return loggedUser;
       }
     } catch (err) {
       console.warn('Supabase signIn note:', err.message);
+      throw err;
     }
 
     const data = await authApi.login(email, password);
