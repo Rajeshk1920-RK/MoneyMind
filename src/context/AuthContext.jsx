@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  // Instant Account Creation (Name & Email)
-  const createAccount = (fullName, email) => {
+  // Instant Account Creation (Name, Email & Password)
+  const createAccount = (fullName, email, password = '') => {
     const cleanName = (fullName || 'User').trim();
     const cleanEmail = (email || 'user@moneymind.app').trim();
     const newUser = {
@@ -43,6 +43,7 @@ export function AuthProvider({ children }) {
       full_name: cleanName,
       name: cleanName,
       avatar: cleanName.charAt(0).toUpperCase(),
+      hasPassword: Boolean(password),
       created_at: new Date().toISOString()
     };
     setUser(newUser);

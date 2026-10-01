@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, Zap, PieChart, Sparkles, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoImg from '@/assets/logo.png';
 import confetti from 'canvas-confetti';
@@ -7,28 +7,34 @@ import './LoginPage.css';
 
 /**
  * LoginPage Component
- * Full-screen Onboarding & Welcome experience with "Get Started" entry
+ * Full-screen Onboarding & Welcome experience with "Get Started" entry & Password field
  */
 export function LoginPage({ onGuestAccess }) {
   const { createAccount } = useAuth();
   const [step, setStep] = useState('welcome'); // 'welcome' | 'form'
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!fullName.trim()) {
-      setError('Please enter your name.');
+      setError('Please enter your full name.');
       return;
     }
     if (!email.trim() || !email.includes('@')) {
       setError('Please enter a valid email address.');
       return;
     }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
 
     setError('');
-    createAccount(fullName.trim(), email.trim());
+    createAccount(fullName.trim(), email.trim(), password);
 
     // Celebration Confetti
     try {
@@ -120,7 +126,7 @@ export function LoginPage({ onGuestAccess }) {
             </div>
           </div>
         ) : (
-          /* STEP 2: Compact Login & Account Setup Form (Centered Logo & Balanced Spacing) */
+          /* STEP 2: Compact Login & Account Setup Form with Password */
           <div className="login-form-screen-content">
             
             {/* Centered Brand Header */}
@@ -137,7 +143,7 @@ export function LoginPage({ onGuestAccess }) {
                 Setup Profile
               </h1>
               <p className="welcome-brand-tagline">
-                Enter your details to initialize your private wallet
+                Enter your details & password to secure your wallet
               </p>
             </div>
 
@@ -149,14 +155,14 @@ export function LoginPage({ onGuestAccess }) {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {/* Full Name */}
                 <div className="login-field-group">
                   <label className="login-field-label">
                     Your Full Name
                   </label>
                   <div className="login-input-wrap">
-                    <User size={19} className="login-input-icon" />
+                    <User size={18} className="login-input-icon" />
                     <input
                       type="text"
                       placeholder="e.g. Rajesh Kumar"
@@ -175,7 +181,7 @@ export function LoginPage({ onGuestAccess }) {
                     Email Address
                   </label>
                   <div className="login-input-wrap">
-                    <Mail size={19} className="login-input-icon" />
+                    <Mail size={18} className="login-input-icon" />
                     <input
                       type="email"
                       placeholder="e.g. rajesh@example.com"
@@ -184,6 +190,33 @@ export function LoginPage({ onGuestAccess }) {
                       className="login-text-input"
                       required
                     />
+                  </div>
+                </div>
+
+                {/* Password Section */}
+                <div className="login-field-group">
+                  <label className="login-field-label">
+                    Password
+                  </label>
+                  <div className="login-input-wrap">
+                    <Lock size={18} className="login-input-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter a secure password (min. 6 chars)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="login-text-input login-password-input"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="login-password-toggle-btn"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                 </div>
 
