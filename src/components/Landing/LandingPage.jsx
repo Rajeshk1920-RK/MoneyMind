@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -170,6 +170,26 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
   const [heroActiveTab, setHeroActiveTab] = useState('overview'); // 'overview' | 'sms' | 'intent' | 'budget'
   const [showCreatorWidget, setShowCreatorWidget] = useState(true);
+
+  // Typewriter Letter-by-Letter Animation for Creator Speech Bubble
+  const FULL_SPEECH_TEXT = "Hi! I'm Rajesh, creator of MoneyMind. Enjoying the app?";
+  const [typedSpeechText, setTypedSpeechText] = useState('');
+
+  useEffect(() => {
+    let charIndex = 0;
+    setTypedSpeechText('');
+
+    const typingTimer = setInterval(() => {
+      charIndex++;
+      if (charIndex <= FULL_SPEECH_TEXT.length) {
+        setTypedSpeechText(FULL_SPEECH_TEXT.slice(0, charIndex));
+      } else {
+        clearInterval(typingTimer);
+      }
+    }, 45); // 45ms per character for natural typing feel
+
+    return () => clearInterval(typingTimer);
+  }, []);
 
   return (
     <div style={{
@@ -578,7 +598,16 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             >
               <X size={10} />
             </button>
-            Hi! I'm Rajesh, creator of MoneyMind. Enjoying the app?
+            <span>{typedSpeechText}</span>
+            <span style={{
+              display: 'inline-block',
+              width: '2px',
+              height: '12px',
+              backgroundColor: '#059669',
+              marginLeft: '2px',
+              verticalAlign: 'middle',
+              animation: 'pulseGlow 0.8s infinite'
+            }} />
           </div>
 
           {/* Creator Badge Pill */}
