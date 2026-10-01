@@ -76,7 +76,7 @@
 
 body {
   font-family: var(--font-body);
-  background-color: #f8fafc;
+  background-color: #0f172a;
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
