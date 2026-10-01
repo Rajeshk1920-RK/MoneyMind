@@ -17,6 +17,7 @@ import { NotificationsDrawer } from '../components/Modals/NotificationsDrawer';
 import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPopup';
 import { UpiDirectPayModal } from '../components/Modals/UpiDirectPayModal';
 import { QuickActionMenuModal } from '../components/Modals/QuickActionMenuModal';
+import { SplashScreen } from '../components/Splash/SplashScreen';
 
 /**
  * MobileFinanceApp
@@ -26,6 +27,7 @@ export function MobileFinanceApp() {
   const { user, isAuthenticated } = useAuth();
   const { addTransaction, addNotification } = useFinance();
   
+  const [showSplash, setShowSplash] = useState(true);
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [isGuest, setIsGuest] = useState(false);
 
@@ -114,7 +116,17 @@ export function MobileFinanceApp() {
     setIsUpiPayOpen(true);
   };
 
-  // Login Screen if not authenticated and not in guest mode
+  // 1. Initial 2.5s Brand Animated Splash Screen with Loading Bar
+  if (showSplash) {
+    return (
+      <SplashScreen
+        duration={2500}
+        onFinish={() => setShowSplash(false)}
+      />
+    );
+  }
+
+  // 2. Login Screen if not authenticated and not in guest mode
   if (!isAuthenticated && !isGuest) {
     return <LoginPage onGuestAccess={() => setIsGuest(true)} />;
   }

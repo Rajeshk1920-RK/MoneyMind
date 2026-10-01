@@ -1,0 +1,205 @@
+/* SplashScreen.css - High Aesthetic Animated Brand Splash */
+
+.splash-screen-fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: radial-gradient(circle at 50% 40%, #1e293b 0%, #0f172a 65%, #020617 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 2.5rem) 1.5rem env(safe-area-inset-bottom, 2.5rem) 1.5rem;
+  box-sizing: border-box;
+  z-index: 99999;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.splash-screen-fullscreen.splash-fade-out {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* Ambient Radial Glow */
+.splash-ambient-glow {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.28) 0%, rgba(5, 150, 105, 0) 70%);
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: blur(40px);
+  animation: splashGlowPulse 2.5s ease-in-out infinite alternate;
+}
+
+/* Center Content */
+.splash-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  z-index: 2;
+  text-align: center;
+}
+
+/* Logo Container with Breathing Pulse */
+.splash-logo-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.splash-logo-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 34px;
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  animation: splashRingPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.splash-logo-badge {
+  width: 88px;
+  height: 88px;
+  border-radius: 26px;
+  background: #ffffff;
+  border: 2px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  box-shadow: 0 16px 40px rgba(5, 150, 105, 0.35);
+  animation: splashLogoFloat 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
+  z-index: 2;
+}
+
+.splash-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Brand Text */
+.splash-brand-text {
+  animation: splashTextFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-brand-title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.4rem 0;
+  background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.splash-brand-tagline {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Bottom Loading Bar Section */
+.splash-bottom-section {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 2;
+  margin-bottom: 1rem;
+}
+
+.splash-status-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.splash-status-text {
+  color: #94a3b8;
+  letter-spacing: 0.01em;
+}
+
+.splash-percent-text {
+  color: #10b981;
+  font-weight: 800;
+  font-family: monospace;
+}
+
+/* Progress Track & Fill */
+.splash-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.splash-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #059669 0%, #10b981 70%, #34d399 100%);
+  border-radius: 9999px;
+  transition: width 0.05s linear;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+}
+
+/* Security Tag */
+.splash-security-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* Keyframes */
+@keyframes splashGlowPulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.95; }
+}
+
+@keyframes splashLogoFloat {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-6px) scale(1.03); }
+}
+
+@keyframes splashRingPulse {
+  0% { transform: scale(0.95); opacity: 0.2; }
+  50% { transform: scale(1.1); opacity: 0.6; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+@keyframes splashTextFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
