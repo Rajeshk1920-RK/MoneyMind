@@ -50,7 +50,7 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
 
   // Edit Name State
   const [isEditingName, setIsEditingName] = useState(false);
-  const [editedName, setEditedName] = useState(activeProfile?.name || 'Rajesh Kumar');
+  const [editedName, setEditedName] = useState(() => user?.fullName || user?.full_name || user?.name || activeProfile?.name || 'User');
 
   // Sub-view interactive toggles
   const [upiVpa, setUpiVpa] = useState(() => localStorage.getItem('finai_upi_vpa') || 'rajesh@okhdfcbank');
@@ -343,7 +343,7 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
 
                     <button
                       onClick={() => {
-                        setEditedName(activeProfile?.name || 'Rajesh Kumar');
+                        setEditedName(displayName);
                         setIsEditingName(true);
                       }}
                       style={{

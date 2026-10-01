@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
   const createAccount = (fullName, email, password = '') => {
     const cleanName = (fullName || 'User').trim();
     const cleanEmail = (email || 'user@moneymind.app').trim();
+    localStorage.setItem('finai_user_name', cleanName);
     const newUser = {
       id: 'usr_' + Date.now(),
       email: cleanEmail,
@@ -48,6 +49,19 @@ export function AuthProvider({ children }) {
     };
     setUser(newUser);
     return newUser;
+  };
+
+  const updateProfileName = (newName) => {
+    if (!newName || !newName.trim()) return;
+    const clean = newName.trim();
+    localStorage.setItem('finai_user_name', clean);
+    setUser(prev => prev ? {
+      ...prev,
+      fullName: clean,
+      full_name: clean,
+      name: clean,
+      avatar: clean.charAt(0).toUpperCase()
+    } : null);
   };
 
   const signUp = async (email, password, fullName) => {
@@ -84,6 +98,7 @@ export function AuthProvider({ children }) {
     loading,
     isAuthenticated: !!user,
     createAccount,
+    updateProfileName,
     signUp,
     signIn,
     signOut,

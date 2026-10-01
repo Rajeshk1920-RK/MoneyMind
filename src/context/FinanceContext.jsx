@@ -14,20 +14,24 @@ import { financeApi } from '../utils/api';
 const FinanceContext = createContext(null);
 
 export function FinanceProvider({ children }) {
-  const { user } = useAuth();
+  const { user, updateProfileName } = useAuth();
 
   // Theme state: unified permanently with the MoneyMind landing page design
   const [theme, setTheme] = useState('light');
   
   // Profile state
   const [profiles] = useState(INITIAL_PROFILES);
-  const [userName, setUserName] = useState(() => localStorage.getItem('finai_user_name') || 'Rajesh Kumar');
+  const [userName, setUserName] = useState(() => localStorage.getItem('finai_user_name') || 'User');
   const [activeProfileId, setActiveProfileId] = useState(() => localStorage.getItem('finai_profile') || 'user-1');
 
   const updateUserName = (newName) => {
     if (!newName || !newName.trim()) return;
-    setUserName(newName.trim());
-    localStorage.setItem('finai_user_name', newName.trim());
+    const clean = newName.trim();
+    setUserName(clean);
+    localStorage.setItem('finai_user_name', clean);
+    if (updateProfileName) {
+      updateProfileName(clean);
+    }
   };
 
   // Currency state
@@ -129,7 +133,7 @@ export function FinanceProvider({ children }) {
   const rawProfile = profiles.find(p => p.id === activeProfileId) || profiles[0];
   const activeProfile = {
     ...rawProfile,
-    name: userName || rawProfile?.name || 'Rajesh Kumar'
+    name: user?.fullName || user?.full_name || user?.name || userName || 'User'
   };
   const activeCurrency = currencies.find(c => c.code === activeCurrencyCode) || currencies[0];
 
