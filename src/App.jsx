@@ -1,28 +1,27 @@
 import React, { Suspense, lazy } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
+import { SplitProvider } from './context/SplitContext';
 import { MobileFinanceApp } from './mobile/MobileFinanceApp';
 
 const WebLandingApp = lazy(() => import('./web/WebLandingApp').then(m => ({ default: m.WebLandingApp })));
 
-/**
- * MoneyMind Router
- * - Mobile App: Synchronous 0ms immediate render with zero white-screen flash
- * - Web Landing App: Lazy loaded for browser visitors
- */
-export default function App() {
+function MainAppRouter() {
+  const { user } = useAuth();
   const isNative = Capacitor.isNativePlatform();
   const isAppUrl = typeof window !== 'undefined' && (
     window.location.search.includes('app=true') || 
     window.location.hash === '#app'
   );
-
   const isMobileApp = isNative || isAppUrl;
 
+  // Keying FinanceProvider by user.id guarantees fresh, isolated state per account
+  const accountKey = user?.id || 'guest';
+
   return (
-    <AuthProvider>
-      <FinanceProvider>
+    <FinanceProvider key={accountKey}>
+      <SplitProvider key={accountKey}>
         {isMobileApp ? (
           <MobileFinanceApp />
         ) : (
@@ -30,7 +29,15 @@ export default function App() {
             <WebLandingApp />
           </Suspense>
         )}
-      </FinanceProvider>
+      </SplitProvider>
+    </FinanceProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainAppRouter />
     </AuthProvider>
   );
 }

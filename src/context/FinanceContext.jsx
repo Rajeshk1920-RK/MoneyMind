@@ -3,8 +3,7 @@ import {
   INITIAL_PROFILES,
   DEFAULT_CURRENCIES,
   CATEGORIES,
-  INITIAL_BUDGETS,
-  INITIAL_NOTIFICATIONS
+  INITIAL_BUDGETS
 } from '../data/initialData';
 import { useAuth } from './AuthContext';
 import { supabase } from '../utils/supabase';
@@ -15,20 +14,15 @@ const FinanceContext = createContext(null);
 export function FinanceProvider({ children }) {
   const { user, updateProfileName } = useAuth();
   const currentUserId = user?.id || 'guest';
-  const prevUserIdRef = useRef(currentUserId);
+  const isRegisteredUser = Boolean(user?.id && !user.id.startsWith('usr_'));
 
-  // User-scoped storage key helper
-  const getUserStorageKey = useCallback((key, uid = currentUserId) => {
-    return `moneymind_${key}_${uid || 'guest'}`;
-  }, [currentUserId]);
-
-  // Theme state: unified permanently with the MoneyMind landing page design
+  // Theme state
   const [theme, setTheme] = useState('light');
   
   // Profile state
   const [profiles] = useState(INITIAL_PROFILES);
   const [userName, setUserName] = useState(() => {
-    return user?.fullName || user?.full_name || user?.name || localStorage.getItem('finai_user_name') || 'User';
+    return user?.fullName || user?.full_name || user?.name || 'User';
   });
   const [activeProfileId, setActiveProfileId] = useState('user-1');
 
@@ -36,7 +30,6 @@ export function FinanceProvider({ children }) {
     if (!newName || !newName.trim()) return;
     const clean = newName.trim();
     setUserName(clean);
-    localStorage.setItem('finai_user_name', clean);
     if (updateProfileName) {
       updateProfileName(clean);
     }
@@ -48,13 +41,13 @@ export function FinanceProvider({ children }) {
     return localStorage.getItem(`moneymind_currency_${currentUserId}`) || 'INR';
   });
 
-  // Local/cached data states scoped to current user
+  // Local/cached data states strictly isolated to current user ID
   const [transactions, setTransactions] = useState(() => {
     try {
       const saved = localStorage.getItem(`moneymind_transactions_${currentUserId}`);
       if (saved) return JSON.parse(saved);
-      // For guest demo mode only, fallback to initial transactions; for registered accounts start empty
-      return currentUserId === 'guest' ? [] : [];
+      // New account starts with 0 transactions
+      return [];
     } catch {
       return [];
     }
@@ -63,7 +56,8 @@ export function FinanceProvider({ children }) {
   const [budgets, setBudgets] = useState(() => {
     try {
       const saved = localStorage.getItem(`moneymind_budgets_${currentUserId}`);
-      return saved ? JSON.parse(saved) : INITIAL_BUDGETS;
+      if (saved) return JSON.parse(saved);
+      return INITIAL_BUDGETS;
     } catch {
       return INITIAL_BUDGETS;
     }
@@ -72,7 +66,8 @@ export function FinanceProvider({ children }) {
   const [goals, setGoals] = useState(() => {
     try {
       const saved = localStorage.getItem(`moneymind_goals_${currentUserId}`);
-      return saved ? JSON.parse(saved) : [];
+      if (saved) return JSON.parse(saved);
+      return [];
     } catch {
       return [];
     }
@@ -81,11 +76,12 @@ export function FinanceProvider({ children }) {
   const [notifications, setNotifications] = useState(() => {
     try {
       const saved = localStorage.getItem(`moneymind_notifs_${currentUserId}`);
-      return saved ? JSON.parse(saved) : [
+      if (saved) return JSON.parse(saved);
+      return [
         {
           id: `welcome-${Date.now()}`,
-          title: 'Welcome to MoneyMind',
-          message: 'Your personal finance workspace is ready.',
+          title: `Welcome, ${user?.fullName || user?.name || 'User'}!`,
+          message: 'Your personal finance workspace is ready. Start tracking your income & expenses.',
           time: 'Just now',
           read: false,
           type: 'success'
@@ -99,12 +95,12 @@ export function FinanceProvider({ children }) {
   const [categories] = useState(CATEGORIES);
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
 
-  // Sync theme to light permanently
+  // Sync theme
   useEffect(() => {
     document.body.className = 'light-theme';
   }, []);
 
-  // Save current user's state to their specific localStorage keys
+  // Save current user's state to their specific localStorage partition
   useEffect(() => {
     try {
       localStorage.setItem(`moneymind_transactions_${currentUserId}`, JSON.stringify(transactions));
@@ -145,36 +141,7 @@ export function FinanceProvider({ children }) {
     }
   }, [activeCurrencyCode, currentUserId]);
 
-  // Handle User Switch / Login / Logout Isolation
-  useEffect(() => {
-    if (prevUserIdRef.current !== currentUserId) {
-      prevUserIdRef.current = currentUserId;
-
-      // 1. Instant switch to this specific user's local cache
-      const userTx = localStorage.getItem(`moneymind_transactions_${currentUserId}`);
-      const userBudgets = localStorage.getItem(`moneymind_budgets_${currentUserId}`);
-      const userGoals = localStorage.getItem(`moneymind_goals_${currentUserId}`);
-      const userNotifs = localStorage.getItem(`moneymind_notifs_${currentUserId}`);
-      const userCur = localStorage.getItem(`moneymind_currency_${currentUserId}`);
-
-      setTransactions(userTx ? JSON.parse(userTx) : []);
-      setBudgets(userBudgets ? JSON.parse(userBudgets) : INITIAL_BUDGETS);
-      setGoals(userGoals ? JSON.parse(userGoals) : []);
-      setNotifications(userNotifs ? JSON.parse(userNotifs) : [
-        {
-          id: `welcome-${Date.now()}`,
-          title: `Welcome, ${user?.fullName || user?.name || 'User'}!`,
-          message: 'Your personal finance workspace is ready. Start tracking your income & expenses.',
-          time: 'Just now',
-          read: false,
-          type: 'success'
-        }
-      ]);
-      if (userCur) setActiveCurrencyCode(userCur);
-    }
-  }, [currentUserId, user]);
-
-  // Load cloud data strictly scoped to userId
+  // Load cloud data strictly scoped to this user ID
   const loadUserData = useCallback(async (userId) => {
     if (!userId || userId === 'guest') return;
     setIsCloudSyncing(true);
@@ -248,7 +215,7 @@ export function FinanceProvider({ children }) {
         }
       }
 
-      // Query PostgreSQL backend if configured
+      // Query backend if available
       try {
         const data = await financeApi.getFinances(userId);
         if (data) {
@@ -265,9 +232,7 @@ export function FinanceProvider({ children }) {
             localStorage.setItem(`moneymind_goals_${userId}`, JSON.stringify(data.goals));
           }
         }
-      } catch {
-        // Safe backend fallback
-      }
+      } catch {}
     } catch (err) {
       console.warn('Cloud data load note:', err.message);
     } finally {
@@ -302,13 +267,11 @@ export function FinanceProvider({ children }) {
           title: title,
           details: details
         }]);
-      } catch (err) {
-        // Safe silent fallback
-      }
+      } catch (err) {}
     }
   };
 
-  // Transaction Actions
+  // Transaction Actions strictly bound to user.id
   const addTransaction = async (newTx) => {
     const tempId = `tx-${Date.now()}`;
     const txObj = {
@@ -481,7 +444,6 @@ export function FinanceProvider({ children }) {
       }
     }
 
-    // Sync to backend if logged in
     if (user?.id) {
       try {
         const saved = await financeApi.addTransaction({
@@ -574,7 +536,7 @@ export function FinanceProvider({ children }) {
     }));
   };
 
-  // Budget Actions
+  // Budget Actions strictly bound to user.id
   const addBudget = async (newBudget) => {
     const budget = {
       id: `b-${Date.now()}`,
@@ -627,7 +589,7 @@ export function FinanceProvider({ children }) {
     }
   };
 
-  // Goal Actions
+  // Goal Actions strictly bound to user.id
   const addGoal = async (newGoal) => {
     const tempId = `g-${Date.now()}`;
     const goal = {
@@ -721,7 +683,7 @@ export function FinanceProvider({ children }) {
     }
   };
 
-  // Notification Actions
+  // Notification Actions strictly bound to user.id
   const addNotification = (notif) => {
     const newNotif = {
       id: `notif-${Date.now()}`,
@@ -740,7 +702,6 @@ export function FinanceProvider({ children }) {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Transactions for current active account
   const filteredTransactions = transactions;
 
   // Financial summary metrics
