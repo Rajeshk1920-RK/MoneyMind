@@ -12,22 +12,243 @@
     <meta name="apple-mobile-web-app-title" content="MoneyMind" />
     <title>MoneyMind | Smarter Finance Better Future</title>
     <meta name="description" content="MoneyMind - Simplify tracking, saving, and growing your wealth with our all-in-one finance platform." />
+
+    <!-- Non-blocking asynchronous Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <script>
+      window.__app_start_time = Date.now();
+    </script>
+
     <style>
-      html, body, #root {
+      html, body {
         background-color: #0f172a;
         margin: 0;
         padding: 0;
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         overflow-x: hidden;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      #root {
+        background-color: #0f172a;
+        min-height: 100%;
+        width: 100%;
+      }
+
+      /* Instant Zero-Delay Splash Screen Styles */
+      .instant-splash {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100dvh;
+        background: radial-gradient(circle at 50% 40%, #1e293b 0%, #0f172a 65%, #020617 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: max(env(safe-area-inset-top, 2.5rem), 2.5rem) 1.5rem max(env(safe-area-inset-bottom, 2.5rem), 2.5rem) 1.5rem;
+        box-sizing: border-box;
+        z-index: 99999;
+        overflow: hidden;
+      }
+
+      .instant-glow {
+        position: absolute;
+        width: 340px;
+        height: 340px;
+        background: radial-gradient(circle, rgba(5, 150, 105, 0.28) 0%, rgba(5, 150, 105, 0) 70%);
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        filter: blur(40px);
+        animation: instantGlowPulse 2.5s ease-in-out infinite alternate;
+      }
+
+      .instant-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: auto;
+        margin-bottom: auto;
+        z-index: 2;
+        text-align: center;
+      }
+
+      .instant-logo-box {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .instant-ring {
+        position: absolute;
+        inset: -8px;
+        border-radius: 34px;
+        border: 1.5px solid rgba(16, 185, 129, 0.4);
+        animation: instantRingPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+
+      .instant-badge {
+        width: 88px;
+        height: 88px;
+        border-radius: 26px;
+        background: #ffffff;
+        border: 2px solid #a7f3d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        box-sizing: border-box;
+        box-shadow: 0 16px 40px rgba(5, 150, 105, 0.35);
+        animation: instantLogoFloat 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
+        z-index: 2;
+      }
+
+      .instant-badge img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .instant-title {
+        font-size: 2.25rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.4rem 0;
+        background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .instant-tagline {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .instant-bottom {
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        z-index: 2;
+        margin-bottom: 1rem;
+      }
+
+      .instant-status-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .instant-status-text {
+        color: #94a3b8;
+      }
+
+      .instant-track {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 9999px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .instant-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #059669 0%, #10b981 70%, #34d399 100%);
+        border-radius: 9999px;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+        animation: instantProgressFill 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      .instant-security {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #64748b;
+        font-size: 0.72rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+      }
+
+      @keyframes instantProgressFill {
+        0% { width: 4%; }
+        25% { width: 35%; }
+        60% { width: 70%; }
+        90% { width: 92%; }
+        100% { width: 100%; }
+      }
+
+      @keyframes instantGlowPulse {
+        0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+        100% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.95; }
+      }
+
+      @keyframes instantLogoFloat {
+        0% { transform: translateY(0) scale(1); }
+        100% { transform: translateY(-6px) scale(1.03); }
+      }
+
+      @keyframes instantRingPulse {
+        0% { transform: scale(0.95); opacity: 0.2; }
+        50% { transform: scale(1.1); opacity: 0.6; }
+        100% { transform: scale(1.2); opacity: 0; }
       }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
   <body class="fintrust-theme" style="background-color: #0f172a; margin: 0; padding: 0;">
-    <div id="root" style="background-color: #0f172a; min-height: 100vh;"></div>
+    <div id="root" style="background-color: #0f172a; min-height: 100vh;">
+      <!-- Instant 0ms Paint Splash Screen (Replaced automatically when React mounts) -->
+      <div class="instant-splash">
+        <div class="instant-glow"></div>
+        <div class="instant-center">
+          <div class="instant-logo-box">
+            <div class="instant-ring"></div>
+            <div class="instant-badge">
+              <img src="./logo.png" alt="MoneyMind Logo" />
+            </div>
+          </div>
+          <div class="instant-title">MoneyMind</div>
+          <p class="instant-tagline">Smart Personal Finance & Direct UPI</p>
+        </div>
+        <div class="instant-bottom">
+          <div class="instant-status-row">
+            <span class="instant-status-text">Initializing secure wallet...</span>
+            <span style="color: #10b981; font-weight: 800; font-family: monospace;">Loading...</span>
+          </div>
+          <div class="instant-track">
+            <div class="instant-bar"></div>
+          </div>
+          <div class="instant-security">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>100% Private On-Device Encrypted</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

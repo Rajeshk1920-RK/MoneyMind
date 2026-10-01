@@ -9,8 +9,10 @@ export function SplashScreen({ onFinish, duration = 2500 }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    // Start progress animation
-    const startTime = Date.now();
+    // Start progress animation synced with early app start time
+    const startTime = (typeof window !== 'undefined' && window.__app_start_time) 
+      ? window.__app_start_time 
+      : Date.now();
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const pct = Math.min(100, Math.round((elapsed / duration) * 100));
