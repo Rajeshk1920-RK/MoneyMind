@@ -1398,24 +1398,100 @@ button, a {
   margin: 0 !important;
   box-sizing: border-box !important;
   border-top: 1px solid #e3ebe5 !important;
-  padding: 2.25rem clamp(1rem, 2.5vw, 2.5rem) 4.5rem !important;
+  padding: 3rem clamp(1rem, 2.5vw, 2.5rem) 4.5rem !important;
   display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  font-size: 0.88rem !important;
-  color: #657e70 !important;
-  flex-wrap: wrap !important;
-  gap: 1.25rem !important;
+  flex-direction: column !important;
+  gap: 2.25rem !important;
   position: relative !important;
   z-index: 10 !important;
 }
 
-.landing-footer a {
-  transition: color 0.15s ease;
+.landing-footer-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
 }
 
-.landing-footer a:hover {
+.landing-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 240px;
+}
+
+.landing-footer-nav {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.landing-footer-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.landing-footer-group-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #059669;
+}
+
+.landing-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.landing-footer-links a,
+.landing-footer-link-btn {
+  color: #475569;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.landing-footer-links a:hover,
+.landing-footer-link-btn:hover {
   color: #059669 !important;
+}
+
+.landing-footer-nav-divider {
+  width: 1px;
+  height: 60px;
+  background-color: #e2e8f0;
+}
+
+.landing-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: margin-right 0.2s ease;
+}
+
+.landing-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1.5rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 /* Responsive Breakpoints for Landing Header & Footer */
@@ -1645,23 +1721,24 @@ button, a {
    Multi-Phone Infinite Rotating Marquee Showcase
    ======================================================== */
 .phone-showcase-marquee-wrapper {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  overflow: hidden;
-  padding: 1rem 0 2.5rem;
-  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  overflow: hidden !important;
+  padding: 1.25rem 0 3rem !important;
+  box-sizing: border-box !important;
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
 }
 
 .phone-showcase-marquee-track {
   display: flex;
   gap: 2.25rem;
   width: max-content;
-  animation: phoneMarqueeContinuous 38s linear infinite;
+  animation: phoneMarqueeContinuous 50s linear infinite;
   will-change: transform;
   align-items: flex-start;
   padding: 0.5rem 0;

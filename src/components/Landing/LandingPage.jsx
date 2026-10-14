@@ -63,6 +63,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
   const [authSuccess, setAuthSuccess] = useState('');
   const [showUpiPayModal, setShowUpiPayModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [legalModal, setLegalModal] = useState({ isOpen: false, type: 'privacy' });
 
   const APK_DOWNLOAD_URL = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
 
@@ -653,14 +654,21 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
 
 
-      {/* Feature Showcase: "Built for the way you spend" (Exact match with reference image) */}
+      {/* Feature Showcase: "Built for the way you spend" (End-to-End Bleed) */}
       <section id="features" style={{
-        maxWidth: '1360px',
-        margin: '0 auto',
-        padding: '5rem 1.5rem 4.5rem',
-        overflow: 'hidden'
+        width: '100%',
+        maxWidth: '100%',
+        margin: '0',
+        padding: '5rem 0 4.5rem',
+        overflow: 'hidden',
+        boxSizing: 'border-box'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+        <div style={{
+          textAlign: 'center',
+          maxWidth: '850px',
+          margin: '0 auto 3.5rem',
+          padding: '0 1.5rem'
+        }}>
           <span style={{
             fontSize: '0.78rem',
             fontWeight: 800,
@@ -694,10 +702,10 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           </p>
         </div>
 
-        {/* Infinite Rotating Multi-Phone Showcase Marquee */}
+        {/* Infinite Rotating Multi-Phone Showcase Marquee (Full End-to-End Bleed) */}
         <div className="phone-showcase-marquee-wrapper">
           <div className="phone-showcase-marquee-track">
-            {[0, 1].map((setIdx) => (
+            {[0, 1, 2, 3].map((setIdx) => (
               <React.Fragment key={setIdx}>
                 {/* Phone 1: Daily Expenses */}
                 <div className="phone-showcase-item">
@@ -1190,34 +1198,74 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
 
       {/* Footer */}
       <footer className="landing-footer">
-        <div>
-          © 2026 MoneyMind Financial Platform. All rights reserved.
+        <div className="landing-footer-top">
+          {/* Left: Brand info & description */}
+          <div className="landing-footer-brand">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '8px', overflow: 'hidden', border: '1.5px solid #a7f3d0' }}>
+                <img src={logoImg} alt="MoneyMind" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </div>
+              <span style={{ fontWeight: 800, fontSize: '1.15rem', color: '#0f172a' }}>MoneyMind</span>
+            </div>
+            <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0.45rem 0 0', maxWidth: '280px', lineHeight: 1.5 }}>
+              100% On-Device Personal Finance Engine with zero cloud telemetry.
+            </p>
+          </div>
+
+          {/* Center: Full Navigation & Legal Links */}
+          <div className="landing-footer-nav">
+            <div className="landing-footer-nav-group">
+              <span className="landing-footer-group-title">Navigation</span>
+              <div className="landing-footer-links">
+                <a href="#features">Features</a>
+                <a href="#showcase">Showcase</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#faq">FAQ</a>
+              </div>
+            </div>
+
+            <div className="landing-footer-nav-divider" />
+
+            <div className="landing-footer-nav-group">
+              <span className="landing-footer-group-title">Legal & Privacy</span>
+              <div className="landing-footer-links">
+                <button
+                  type="button"
+                  onClick={() => setLegalModal({ isOpen: true, type: 'privacy' })}
+                  className="landing-footer-link-btn"
+                >
+                  Privacy Policy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLegalModal({ isOpen: true, type: 'terms' })}
+                  className="landing-footer-link-btn"
+                >
+                  Terms of Service
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Download APK & Actions */}
+          <div className="landing-footer-actions" style={{ marginRight: showCreatorWidget ? 'clamp(1rem, 15vw, 220px)' : '0' }}>
+            <a
+              href={APK_DOWNLOAD_URL}
+              download="MoneyMind-v1.0.apk"
+              className="btn-header-app"
+              style={{ padding: '0.7rem 1.45rem' }}
+            >
+              <Download size={16} />
+              <span>Download APK (v1.0)</span>
+            </a>
+          </div>
         </div>
-        <div style={{
-          display: 'flex',
-          gap: '1.5rem',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          marginRight: showCreatorWidget ? 'clamp(1rem, 20vw, 260px)' : '0'
-        }}>
-          <a href="#services" style={{ color: '#657e70', textDecoration: 'none' }}>Services</a>
-          <a href="#features" style={{ color: '#657e70', textDecoration: 'none' }}>Features</a>
-          <a
-            href={APK_DOWNLOAD_URL}
-            download="MoneyMind-v1.0.apk"
-            style={{
-              color: '#059669',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              textDecoration: 'none'
-            }}
-          >
-            <Download size={15} />
-            <span>Download APK</span>
-          </a>
+
+        {/* Bottom Sub-Bar: Copyright & Tagline */}
+        <div className="landing-footer-bottom">
+          <span>© 2026 MoneyMind Financial Platform. All rights reserved.</span>
+          <span>Crafted with precision for private offline expense tracking</span>
         </div>
       </footer>
 
@@ -1664,6 +1712,110 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Legal & Privacy Policy Modal */}
+      {legalModal.isOpen && (
+        <div className="modal-overlay" onClick={() => setLegalModal({ isOpen: false, type: 'privacy' })}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: '560px',
+              padding: '2.25rem',
+              backgroundColor: '#ffffff',
+              borderRadius: '24px',
+              border: '1px solid #e3ebe5',
+              boxShadow: '0 24px 60px rgba(15, 23, 42, 0.18)',
+              maxHeight: '85vh',
+              overflowY: 'auto'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  backgroundColor: '#ecfdf5',
+                  border: '1px solid #a7f3d0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#059669'
+                }}>
+                  <ShieldCheck size={18} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                  {legalModal.type === 'privacy' ? 'Privacy Policy' : 'Terms of Service'}
+                </h3>
+              </div>
+              <button
+                onClick={() => setLegalModal({ isOpen: false, type: 'privacy' })}
+                className="btn-icon"
+                style={{ width: '32px', height: '32px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {legalModal.type === 'privacy' ? (
+              <div style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ padding: '0.75rem 1rem', backgroundColor: '#ecfdf5', borderRadius: '12px', border: '1px solid #a7f3d0', color: '#065f46', fontSize: '0.84rem', fontWeight: 600 }}>
+                  🛡️ Local-First Architecture: 100% of your financial data, balances, and SMS transactions stay stored on your physical device. Zero data is uploaded to remote servers.
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>1. Data Sovereignty</h4>
+                  <p>MoneyMind does not require cloud synchronization to operate. All database files and transaction ledger logs are stored strictly inside your phone’s sandboxed encrypted SQLite storage.</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>2. SMS Permissions & Parsing</h4>
+                  <p>When you grant SMS permissions, messages are parsed locally on-device using deterministic regex patterns to detect debit and credit alerts. Raw SMS messages never leave your phone.</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>3. Zero Third-Party Trackers</h4>
+                  <p>We do not include analytics tracking SDKs, tracking pixels, or third-party ad networks. Your spending patterns belong solely to you.</p>
+                </div>
+              </div>
+            ) : (
+              <div style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ padding: '0.75rem 1rem', backgroundColor: '#f0fdf4', borderRadius: '12px', border: '1px solid #bbf7d0', color: '#166534', fontSize: '0.84rem', fontWeight: 600 }}>
+                  ⚖️ Terms for Personal Financial Utility & Direct UPI Payments
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>1. Personal Finance Use</h4>
+                  <p>MoneyMind is designed as a personal utility for expense logging, budget monitoring, and bill splitting among friends. All financial summaries and metrics are for informational purposes.</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>2. Direct UPI Intent Security</h4>
+                  <p>UPI payments trigger the standard Android UPI Intent (`upi://pay`). Transactions are authenticated directly within your licensed UPI provider app (PhonePe, Google Pay, Paytm, BHIM, etc.). MoneyMind does not handle or store UPI PINs or banking credentials.</p>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.25rem' }}>3. Local Data Backups</h4>
+                  <p>Because MoneyMind is local-first, you are responsible for maintaining copies of your exported encrypted backups when transferring to a new device.</p>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: '1.75rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setLegalModal({ isOpen: false, type: 'privacy' })}
+                style={{
+                  padding: '0.65rem 1.4rem',
+                  borderRadius: '10px',
+                  backgroundColor: '#059669',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
