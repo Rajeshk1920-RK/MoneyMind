@@ -484,108 +484,6 @@ export function UnifiedDashboard({
                 })}
               </div>
             </div>
-
-            {/* Financial Health Card (Pristine Light White Theme) */}
-            <div className="mm-card" style={{
-              padding: '1.35rem',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              gap: '0.85rem'
-            }}>
-              {/* Card Header & Score */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
-                  <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>Financial Health & Growth</span>
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '2px 8px',
-                    borderRadius: '9999px',
-                    backgroundColor: '#ecfdf5',
-                    fontSize: '0.68rem',
-                    fontWeight: 700,
-                    color: '#059669',
-                    border: '1px solid #a7f3d0'
-                  }}>
-                    <ShieldCheck size={13} color="#059669" />
-                    <span>Safe</span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <div style={{ fontSize: '2.3rem', fontWeight: 800, lineHeight: 1, letterSpacing: '-0.02em', color: '#059669' }}>
-                    {healthScore}%
-                  </div>
-                  <span style={{ fontSize: '0.76rem', color: '#64748b', fontWeight: 600 }}>
-                    {savingsRate}% savings ratio
-                  </span>
-                </div>
-              </div>
-
-              {/* Smooth Dynamic Bezier Wave Chart */}
-              <div style={{ width: '100%', height: '52px', position: 'relative', margin: '0.15rem 0' }}>
-                <svg width="100%" height="100%" viewBox="0 0 280 55" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
-                  {/* Filled Area below wave */}
-                  <path
-                    d="M 10 42 Q 75 48, 140 28 T 270 10 L 270 55 L 10 55 Z"
-                    fill="rgba(5, 150, 105, 0.1)"
-                  />
-                  {/* Wave Line */}
-                  <path
-                    d="M 10 42 Q 75 48, 140 28 T 270 10"
-                    stroke="#059669"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                  {/* Peak Indicator Dot */}
-                  <circle cx="270" cy="10" r="4.5" fill="#059669" stroke="#ffffff" strokeWidth="2.5" />
-                </svg>
-              </div>
-
-              {/* Responsive Clean Bottom Tags */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '0.5rem',
-                flexWrap: 'wrap',
-                paddingTop: '0.45rem',
-                borderTop: '1px solid #f1f5f9'
-              }}>
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '0.74rem',
-                  fontWeight: 700,
-                  color: '#dc2626',
-                  backgroundColor: '#fef2f2',
-                  padding: '2px 8px',
-                  borderRadius: '6px'
-                }}>
-                  <span style={{ opacity: 0.8, fontSize: '0.68rem', fontWeight: 600 }}>Outflow</span>
-                  <span>-{formatCurrency(totalExpense, 'INR', 1)}</span>
-                </div>
-
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '0.74rem',
-                  fontWeight: 700,
-                  color: '#059669',
-                  backgroundColor: '#f0fdf4',
-                  padding: '2px 8px',
-                  borderRadius: '6px'
-                }}>
-                  <span style={{ opacity: 0.8, fontSize: '0.68rem', fontWeight: 600 }}>Inflow</span>
-                  <span>+{formatCurrency(totalIncome, 'INR', 1)}</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* 3. ACTIVE BUDGETS & UPCOMING CARD */}
@@ -678,7 +576,7 @@ export function UnifiedDashboard({
                 How to optimize monthly savings by 20%?
               </div>
               <div style={{ fontSize: '0.76rem', color: '#748296', marginTop: '2px' }}>
-                Set category alert limits and track payment intents regularly. <span onClick={() => onNavigateTab('ai-assistant')} style={{ textDecoration: 'underline', color: '#2563eb', fontWeight: 700, cursor: 'pointer' }}>Ask FinAI</span>
+                Set category alert limits and track payment intents regularly. <span onClick={() => onNavigateTab('intelligence')} style={{ textDecoration: 'underline', color: '#059669', fontWeight: 700, cursor: 'pointer' }}>View Money Intelligence</span>
               </div>
             </div>
           </div>
@@ -883,94 +781,6 @@ export function UnifiedDashboard({
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ================= RIGHT SIDEBAR COLUMN ================= */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          {/* 1. TRANSACTIONS CARD (Real Latest transfers) */}
-          <div className="mm-card" style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-              <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#131826' }}>Transactions</h3>
-                <span style={{ fontSize: '0.76rem', color: '#748296' }}>Latest transfers</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button
-                  onClick={() => onNavigateTab('transactions')}
-                  style={{
-                    padding: '0.35rem 0.85rem',
-                    borderRadius: '9999px',
-                    backgroundColor: '#ffffff',
-                    color: '#059669',
-                    border: '1px solid #a7f3d0',
-                    boxShadow: '0 2px 8px rgba(5, 150, 105, 0.08)',
-                    fontSize: '0.74rem',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  View All
-                </button>
-              </div>
-            </div>
-
-            {/* List of Real Latest Transfers */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              {latestTransactions.length === 0 ? (
-                <div style={{ padding: '1.5rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.84rem' }}>
-                  No transactions recorded yet.
-                </div>
-              ) : (
-                latestTransactions.map(tx => {
-                  const isIncome = tx.type === 'income';
-
-                  return (
-                    <div key={tx.id} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.35rem 0',
-                      borderBottom: '1px solid #f8fafc'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '50%',
-                          backgroundColor: isIncome ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: isIncome ? '#10b981' : '#ef4444'
-                        }}>
-                          {isIncome ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#131826' }}>
-                            {tx.merchant || tx.title}
-                          </div>
-                          <div style={{ fontSize: '0.72rem', color: '#9aa8bc' }}>
-                            {formatDate(tx.date)} • {tx.paymentMethod || 'UPI'}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ textAlign: 'right' }}>
-                        <span style={{
-                          fontSize: '0.88rem',
-                          fontWeight: 800,
-                          color: isIncome ? '#10b981' : '#131826'
-                        }}>
-                          {isIncome ? '+' : '-'}{formatCurrency(tx.amount, 'INR', 1)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })
               )}
             </div>
           </div>

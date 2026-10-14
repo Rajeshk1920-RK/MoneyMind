@@ -20,7 +20,7 @@ export function Sidebar({ currentTab, setCurrentTab }) {
     { id: 'splitwise', label: 'Split Groups', icon: Users, badge: `${groups.length} trips`, highlight: true },
     { id: 'budgets', label: 'Budgets & Alerts', icon: PieChart, badge: 'Active' },
     { id: 'goals', label: 'Savings Goals', icon: Target, badge: null },
-    { id: 'ai-assistant', label: 'AI Advisor', icon: Sparkles, badge: 'Smart' },
+    { id: 'intelligence', label: 'Money Intelligence', icon: Sparkles, badge: 'Score' },
     { id: 'reports', label: 'Reports & Export', icon: FileText, badge: 'PDF' }
   ];
 

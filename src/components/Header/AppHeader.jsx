@@ -40,7 +40,7 @@ export function AppHeader({ currentTab, setCurrentTab, onOpenAddTx, onBackToLand
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
     { id: 'budgets', label: 'Budgets', icon: PieChart },
     { id: 'goals', label: 'Savings Goals', icon: Target },
-    { id: 'ai-assistant', label: 'AI Advisor', icon: Sparkles },
+    { id: 'intelligence', label: 'Money Intelligence', icon: Sparkles },
     { id: 'reports', label: 'Reports', icon: FileText }
   ];
 

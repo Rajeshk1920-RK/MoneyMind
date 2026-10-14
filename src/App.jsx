@@ -10,18 +10,16 @@ const WebLandingApp = lazy(() => import('./web/WebLandingApp').then(m => ({ defa
 function MainAppRouter() {
   const { user } = useAuth();
   const isNative = Capacitor.isNativePlatform();
-  const isAppUrl = typeof window !== 'undefined' && (
-    window.location.search.includes('app=true') || 
-    window.location.hash === '#app'
+  const isMobileApp = isNative || (
+    typeof window !== 'undefined' && (
+      window.location.search.includes('platform=mobile') ||
+      window.location.search.includes('mobile=true')
+    )
   );
-  const isMobileApp = isNative || isAppUrl;
-
-  // Keying FinanceProvider by user.id guarantees fresh, isolated state per account
-  const accountKey = user?.id || 'guest';
 
   return (
-    <FinanceProvider key={accountKey}>
-      <SplitProvider key={accountKey}>
+    <FinanceProvider>
+      <SplitProvider>
         {isMobileApp ? (
           <MobileFinanceApp />
         ) : (

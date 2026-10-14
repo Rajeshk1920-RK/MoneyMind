@@ -159,7 +159,7 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
   const gPayUrl = useMemo(() => bankUpiUrl.replace('upi://pay', 'gpay://upi/pay'), [bankUpiUrl]);
   const paytmUrl = useMemo(() => bankUpiUrl.replace('upi://pay', 'paytmmp://pay'), [bankUpiUrl]);
 
-  const handleLaunchApp = (url, platformName) => {
+  const handleLaunchApp = async (url, platformName) => {
     if (!beneficiaryName.trim()) {
       setFormError('Please enter the Beneficiary Name.');
       return;
@@ -203,7 +203,12 @@ export function UpiDirectPayModal({ isOpen, onClose }) {
       note: note.trim() || `Transferred via ${platformName} to ${accountMask} (${ifscCode.toUpperCase()})`
     };
 
-    addTransaction(newTx);
+    const res = await addTransaction(newTx);
+    if (res?.blocked) {
+      setFormError(`🔒 Payment Blocked! You have exceeded the budget limit for ${res.lockCheck?.budgetName || category}.`);
+      return;
+    }
+
     setRecordedTx(newTx);
     setActiveView('success');
 

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatCurrency } from '../../utils/formatters';
-import { predictMonthEndExpense } from '../../utils/aiEngine';
+import { predictMonthEndExpense } from '../../utils/moneyIntelligence';
 
 export function MetricCards() {
   const {
@@ -51,7 +51,7 @@ export function MetricCards() {
       trendPositive: false
     },
     {
-      title: 'AI Predicted Month-End Spend',
+      title: 'Forecasted Month-End Spend',
       amount: prediction.projectedTotal,
       icon: Sparkles,
       gradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',

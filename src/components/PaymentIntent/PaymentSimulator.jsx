@@ -48,22 +48,30 @@ export function PaymentSimulator({ onClose, onPaymentComplete }) {
 
     try {
       // Simulate realistic network delay
-      await new Promise(r => setTimeout(r, 450));
+      await new Promise(r => setTimeout(r, 400));
 
-      // Trigger confetti celebration
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
-
-      // Create transaction via FinanceContext
+      // Create transaction via FinanceContext with budget lock check
       const txObj = await simulateUPIPayment({
         amount: numAmount,
         merchant: merchant.trim(),
         reference: reference.trim(),
         date: new Date().toISOString().split('T')[0]
       });
+
+      if (txObj?.blocked) {
+        setIsProcessing(false);
+        setError(`🔒 Payment Blocked! You have reached the limit for ${txObj.lockCheck?.budgetName || 'this category'}.`);
+        return;
+      }
+
+      // Trigger confetti celebration only on successful non-blocked payments
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch {}
 
       setIsProcessing(false);
       onPaymentComplete(txObj);

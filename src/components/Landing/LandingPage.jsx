@@ -27,7 +27,8 @@ import {
   Download,
   Smartphone,
   ExternalLink,
-  QrCode
+  QrCode,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UpiDirectPayModal } from '../Modals/UpiDirectPayModal';
@@ -61,6 +62,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
   const [showUpiPayModal, setShowUpiPayModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const APK_DOWNLOAD_URL = 'https://github.com/Rajeshk1920-RK/MoneyMind/releases/download/v1.0-latest/MoneyMind-v1.0.apk';
 
@@ -126,7 +128,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
     try {
       await verifyOtp(authEmail.trim(), authOtp.trim(), authFullName.trim());
       closeAuth();
-      onLaunchApp();
+      if (onLaunchApp) onLaunchApp();
     } catch (err) {
       setAuthError(err.message || 'Invalid or expired verification code.');
     } finally {
@@ -153,7 +155,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
         await signIn(authEmail.trim(), authPassword);
       }
       closeAuth();
-      onLaunchApp();
+      if (onLaunchApp) onLaunchApp();
     } catch (err) {
       console.error('PostgreSQL Auth error:', err);
       setAuthError(err.message || 'Authentication failed. Please check your credentials.');
@@ -203,89 +205,108 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
       {/* Ambient Glowing Background */}
       <div className="hero-ambient-glow" />
 
-      {/* Top Header / Navigation */}
-      <header className="landing-header">
-        {/* Left: Logo & Brand */}
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
-          <div style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '14px',
-            backgroundColor: '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            boxShadow: '0 4px 16px rgba(5, 150, 105, 0.2), 0 1px 3px rgba(0, 0, 0, 0.08)',
-            border: '2px solid #a7f3d0',
-            padding: '3px'
-          }}>
-            <img
-              src={logoImg}
-              alt="MoneyMind"
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            />
+      {/* Top Header / Navigation (Sticky, Responsive on All Screens) */}
+      <div className="landing-header-sticky-wrap">
+        <header className="landing-header">
+          {/* Left: Logo & Brand */}
+          <div
+            className="landing-brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="landing-brand-logo-wrap">
+              <img
+                src={logoImg}
+                alt="MoneyMind"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            </div>
+            <span className="landing-brand-title">
+              MoneyMind
+            </span>
           </div>
-          <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', fontFamily: 'var(--font-display)', letterSpacing: '-0.025em' }}>
-            MoneyMind
-          </span>
-        </div>
 
-        {/* Center Nav Links (Desktop) */}
-        <nav className="landing-nav-links">
-          <a href="#features">Features</a>
-          <a href="#showcase">Showcase</a>
-          <a href="#services">Services</a>
-          <a href="#about">About</a>
-          <a href="#faq">FAQ</a>
-        </nav>
+          {/* Center Nav Links (Visible on Desktop >= 980px) */}
+          <nav className="landing-nav-links">
+            <a href="#features">Features</a>
+            <a href="#showcase">Showcase</a>
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+            <a href="#faq">FAQ</a>
+          </nav>
 
-        {/* Right Actions: Direct UPI Pay & Download APK */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
-          {/* Try UPI Direct Pay Button */}
-          <button
-            onClick={() => setShowUpiPayModal(true)}
-            style={{
-              padding: '0.6rem 1.15rem',
-              borderRadius: '9999px',
-              backgroundColor: '#ecfdf5',
-              color: '#059669',
-              border: '1.5px solid #a7f3d0',
-              fontSize: '0.84rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 2px 8px rgba(5, 150, 105, 0.12)',
-              transition: 'all 0.16s ease'
-            }}
-            title="Try Direct UPI Pay (PhonePe / GPay / Paytm)"
-          >
-            <Zap size={15} color="#059669" />
-            <span>Pay UPI</span>
-          </button>
+          {/* Right Actions: Direct UPI Pay, Download APK & Mobile Toggle */}
+          <div className="landing-header-actions">
+            {/* Static Pay UPI Feature Badge */}
+            <div
+              className="landing-badge-upi"
+              title="Direct UPI Payment Feature"
+            >
+              <Zap size={14} color="#059669" />
+              <span>Pay UPI</span>
+            </div>
 
-          {/* Download APK Button */}
-          <a
-            href={APK_DOWNLOAD_URL}
-            download="MoneyMind-v1.0.apk"
-            className="btn-hero-primary"
-            style={{
-              padding: '0.6rem 1.35rem',
-              fontSize: '0.86rem',
-              borderRadius: '9999px'
-            }}
-            title="Download Android APK (v1.0)"
-          >
-            <Download size={15} />
-            <span>Download APK</span>
-          </a>
-        </div>
-      </header>
+            {/* Download APK Button */}
+            <a
+              href={APK_DOWNLOAD_URL}
+              download="MoneyMind-v1.0.apk"
+              className="btn-header-app"
+              title="Download Android APK (v1.0)"
+            >
+              <Download size={15} />
+              <span className="apk-full-text">Download APK</span>
+              <span className="apk-short-text" style={{ display: 'none' }}>APK</span>
+            </a>
+
+            {/* Mobile Hamburger Menu Toggle (Visible <= 980px) */}
+            <button
+              className="btn-header-mobile-toggle"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+              title="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </header>
+
+        {/* Mobile Dropdown Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="landing-mobile-drawer">
+            <div className="landing-mobile-nav-list">
+              {[
+                { href: '#features', label: 'Features' },
+                { href: '#showcase', label: 'Showcase' },
+                { href: '#services', label: 'Services' },
+                { href: '#about', label: 'About Creator' },
+                { href: '#faq', label: 'FAQ' }
+              ].map(item => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="landing-mobile-nav-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight size={15} color="#94a3b8" />
+                </a>
+              ))}
+            </div>
+
+            <div className="landing-mobile-actions">
+              <a
+                href={APK_DOWNLOAD_URL}
+                download="MoneyMind-v1.0.apk"
+                className="btn-header-app"
+                style={{ width: '100%', justifyContent: 'center', padding: '0.85rem' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Download size={16} />
+                <span>Download Android APK (v1.0)</span>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Hero Showcase Section */}
       <section style={{
@@ -320,7 +341,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             boxShadow: '0 0 0 3px rgba(5, 150, 105, 0.25)'
           }} />
           <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669' }}>
-            MoneyMind v2.4 • 100% Private Offline Engine & Direct UPI
+            MoneyMind  • 100% Private Offline Engine & Direct UPI
           </span>
         </div>
 
@@ -354,39 +375,30 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '1rem',
+          gap: '1.25rem',
           flexWrap: 'wrap',
-          marginBottom: '3.5rem',
-          width: '100%',
-          maxWidth: '520px'
+          marginBottom: '3.5rem'
         }}>
           {/* Download APK Primary Action */}
           <a
             href={APK_DOWNLOAD_URL}
             download="MoneyMind-v1.0.apk"
             className="btn-hero-primary"
-            style={{ flex: '1 1 200px' }}
+            style={{
+              padding: '1rem 2.75rem',
+              fontSize: '1.08rem',
+              borderRadius: '9999px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              textDecoration: 'none',
+              fontWeight: 800,
+              boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)'
+            }}
           >
-            <Download size={19} />
+            <Download size={22} />
             <span>Download Android APK</span>
           </a>
-
-          {/* Launch Web App / Live Demo */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onLaunchApp) {
-                onLaunchApp();
-              } else {
-                window.location.href = window.location.pathname + '?app=true';
-              }
-            }}
-            className="btn-hero-secondary"
-            style={{ flex: '1 1 180px' }}
-          >
-            <Smartphone size={18} />
-            <span>Open Web App</span>
-          </button>
         </div>
 
         {/* Interactive Live Mini-App Preview Device */}
@@ -423,32 +435,34 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
             </div>
 
             {/* Interactive Preview Tabs */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e2e8f0', padding: '3px', borderRadius: '10px' }}>
-              {[
-                { id: 'overview', label: 'Cashflow' },
-                { id: 'sms', label: 'SMS Auto-Log' },
-                { id: 'intent', label: 'Payment Intent' },
-                { id: 'budget', label: 'Budgets' }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setHeroActiveTab(tab.id)}
-                  style={{
-                    padding: '0.35rem 0.75rem',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontSize: '0.74rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    backgroundColor: heroActiveTab === tab.id ? '#ffffff' : 'transparent',
-                    color: heroActiveTab === tab.id ? '#059669' : '#64748b',
-                    boxShadow: heroActiveTab === tab.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', backgroundColor: '#e2e8f0', padding: '3px', borderRadius: '10px' }}>
+                {[
+                  { id: 'overview', label: 'Cashflow' },
+                  { id: 'sms', label: 'SMS Auto-Log' },
+                  { id: 'intent', label: 'Payment Intent' },
+                  { id: 'budget', label: 'Budgets' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setHeroActiveTab(tab.id)}
+                    style={{
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '8px',
+                      border: 'none',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      backgroundColor: heroActiveTab === tab.id ? '#ffffff' : 'transparent',
+                      color: heroActiveTab === tab.id ? '#059669' : '#64748b',
+                      boxShadow: heroActiveTab === tab.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -697,7 +711,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', marginBottom: '0.35rem' }}>
                       Good Morning,
                     </span>
-                    
+
                     {/* Today's Expense Card */}
                     <div style={{ backgroundColor: '#f5f2eb', borderRadius: '18px', padding: '0.85rem 1rem', marginBottom: '0.85rem' }}>
                       <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Today's Expense</span>
@@ -861,7 +875,7 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                     </div>
 
                     <div style={{ backgroundColor: '#ecfdf5', borderRadius: '12px', padding: '0.65rem', border: '1px solid #a7f3d0', marginTop: 'auto' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#059669', display: 'block' }}>💡 AI Budget Alert</span>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#059669', display: 'block' }}>💡 Smart Budget Alert</span>
                       <span style={{ fontSize: '0.68rem', color: '#065f46', lineHeight: 1.3 }}>₹200 safe velocity left today.</span>
                     </div>
                   </div>
@@ -1116,8 +1130,8 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                   <Sparkles size={18} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#16382b' }}>Continuous Innovation</div>
-                  <div style={{ fontSize: '0.84rem', color: '#52695c' }}>Always-evolving AI advisor models tailored to your recurring billing cycles.</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#16382b' }}>Deterministic Intelligence</div>
+                  <div style={{ fontSize: '0.84rem', color: '#52695c' }}>Local financial health calculations and insights tailored privately to your recurring cycles.</div>
                 </div>
               </div>
             </div>
@@ -1147,49 +1161,45 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
           <p style={{ fontSize: '1.1rem', color: '#a3c2b1', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
             Join thousands of smart spenders using MoneyMind for personal budgeting and seamless friend group bill splitting.
           </p>
-          <a
-            href={APK_DOWNLOAD_URL}
-            download="MoneyMind-v1.0.apk"
-            style={{
-              padding: '1rem 2.75rem',
-              borderRadius: '9999px',
-              backgroundColor: '#ffffff',
-              color: '#1b4332',
-              fontSize: '1.05rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              textDecoration: 'none',
-              transition: 'transform 0.15s ease'
-            }}
-          >
-            <Download size={18} />
-            <span>Download APK (v1.0)</span>
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <a
+              href={APK_DOWNLOAD_URL}
+              download="MoneyMind-v1.0.apk"
+              style={{
+                padding: '1rem 2.75rem',
+                borderRadius: '9999px',
+                backgroundColor: '#ffffff',
+                color: '#1b4332',
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                textDecoration: 'none',
+                transition: 'transform 0.15s ease'
+              }}
+            >
+              <Download size={20} color="#059669" />
+              <span>Download APK (v1.0)</span>
+            </a>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer style={{
-        borderTop: '1px solid #e3ebe5',
-        padding: '2.5rem 2rem 5.5rem',
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.88rem',
-        color: '#657e70',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
+      <footer className="landing-footer">
         <div>
           © 2026 MoneyMind Financial Platform. All rights reserved.
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        <div style={{
+          display: 'flex',
+          gap: '1.5rem',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          marginRight: showCreatorWidget ? 'clamp(1rem, 20vw, 260px)' : '0'
+        }}>
           <a href="#services" style={{ color: '#657e70', textDecoration: 'none' }}>Services</a>
           <a href="#features" style={{ color: '#657e70', textDecoration: 'none' }}>Features</a>
           <a
@@ -1630,8 +1640,8 @@ export function LandingPage({ onLaunchApp, onOpenAuth }) {
                     {authLoading
                       ? 'Authenticating...'
                       : authModal.mode === 'login'
-                      ? 'Sign In to MoneyMind'
-                      : 'Create Free Account'}
+                        ? 'Sign In to MoneyMind'
+                        : 'Create Free Account'}
                   </span>
                 </button>
 

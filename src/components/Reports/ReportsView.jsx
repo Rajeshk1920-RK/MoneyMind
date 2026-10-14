@@ -96,7 +96,7 @@ export function ReportsView() {
         }}>
           <div>
             <h1 style={{ fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
-              FinAI Statement of Account
+              Money Mind Statement of Account
             </h1>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
               Period: September 2026 • Account: {activeProfile.name} ({activeProfile.role})
@@ -111,7 +111,7 @@ export function ReportsView() {
               {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
             <span className="badge badge-split" style={{ marginTop: '0.25rem' }}>
-              AUDITED BY FINAI
+              VERIFIED BY MONEY INTELLIGENCE
             </span>
           </div>
         </div>

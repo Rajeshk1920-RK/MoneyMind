@@ -10,13 +10,14 @@ import { TransactionList } from '../components/Transactions/TransactionList';
 import { AddTransactionModal } from '../components/Transactions/AddTransactionModal';
 import { BudgetManager } from '../components/Budgets/BudgetManager';
 import { SavingsGoals } from '../components/Goals/SavingsGoals';
-import { AIChatBot } from '../components/AIAssistant/AIChatBot';
+import { MoneyIntelligenceView } from '../components/Intelligence/MoneyIntelligenceView';
 import { ReportsView } from '../components/Reports/ReportsView';
 import { ProfileModal } from '../components/Modals/ProfileModal';
 import { NotificationsDrawer } from '../components/Modals/NotificationsDrawer';
 import { PaymentIntentPopup } from '../components/PaymentIntent/PaymentIntentPopup';
 import { UpiDirectPayModal } from '../components/Modals/UpiDirectPayModal';
 import { QuickActionMenuModal } from '../components/Modals/QuickActionMenuModal';
+import { BudgetLockModal } from '../components/Modals/BudgetLockModal';
 
 /**
  * MobileFinanceApp
@@ -24,7 +25,7 @@ import { QuickActionMenuModal } from '../components/Modals/QuickActionMenuModal'
  */
 export function MobileFinanceApp() {
   const { user, isAuthenticated } = useAuth();
-  const { addTransaction, addNotification } = useFinance();
+  const { addTransaction, addNotification, budgetLockAlert, closeBudgetLock } = useFinance();
   
   const [currentTab, setCurrentTab] = useState('dashboard');
 
@@ -165,9 +166,9 @@ export function MobileFinanceApp() {
               </div>
             )}
 
-            {currentTab === 'ai-assistant' && (
-              <div className="page-content-wrapper page-content-wrapper-ai">
-                <AIChatBot />
+            {currentTab === 'intelligence' && (
+              <div className="page-content-wrapper">
+                <MoneyIntelligenceView onOpenAddTx={handleOpenAddTx} />
               </div>
             )}
 
@@ -228,6 +229,19 @@ export function MobileFinanceApp() {
             onClose={() => setIsProfileOpen(false)}
             onLogout={() => {
               setIsProfileOpen(false);
+            }}
+          />
+        )}
+
+        {/* Global Strict Budget Limit Lock Alert Modal */}
+        {budgetLockAlert && (
+          <BudgetLockModal
+            isOpen={Boolean(budgetLockAlert)}
+            lockDetails={budgetLockAlert}
+            onClose={closeBudgetLock}
+            onNavigateToBudgets={() => {
+              closeBudgetLock();
+              setCurrentTab('budgets');
             }}
           />
         )}

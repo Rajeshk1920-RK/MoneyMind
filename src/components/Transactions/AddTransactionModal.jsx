@@ -51,7 +51,7 @@ const PAYMENT_METHODS = [
 ];
 
 export function AddTransactionModal({ isOpen = true, onClose, initialType = 'expense' }) {
-  const { categories, addTransaction, activeCurrencyCode } = useFinance();
+  const { categories, addTransaction, checkBudgetLock, activeCurrencyCode } = useFinance();
 
   const [type, setType] = useState(initialType);
   const [title, setTitle] = useState('');
@@ -69,6 +69,11 @@ export function AddTransactionModal({ isOpen = true, onClose, initialType = 'exp
   const categoryRef = useRef(null);
   const paymentRef = useRef(null);
 
+  // Live Budget Lock Checker
+  const liveLockCheck = type === 'expense'
+    ? checkBudgetLock({ category, amount, merchant: title, type })
+    : { blocked: false };
+
   // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -85,14 +90,14 @@ export function AddTransactionModal({ isOpen = true, onClose, initialType = 'exp
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !amount) {
       alert('Please provide a title and amount!');
       return;
     }
 
-    addTransaction({
+    const res = await addTransaction({
       type,
       title,
       amount: parseFloat(amount),
@@ -102,6 +107,11 @@ export function AddTransactionModal({ isOpen = true, onClose, initialType = 'exp
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
       note
     });
+
+    if (res?.blocked) {
+      // Payment blocked by budget lock! BudgetLockModal will be shown.
+      return;
+    }
 
     // Reset form & close
     setTitle('');
@@ -280,11 +290,34 @@ export function AddTransactionModal({ isOpen = true, onClose, initialType = 'exp
                   fontSize: '1.35rem',
                   fontWeight: 800,
                   color: '#0f172a',
-                  height: '50px'
+                  height: '50px',
+                  borderColor: liveLockCheck.blocked ? '#f87171' : undefined
                 }}
                 autoFocus
               />
             </div>
+
+            {/* Live Budget Lock Notice */}
+            {liveLockCheck.blocked && (
+              <div style={{
+                marginTop: '0.45rem',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '10px',
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                fontSize: '0.74rem',
+                color: '#991b1b',
+                fontWeight: 700
+              }}>
+                <span style={{ fontSize: '0.9rem' }}>🔒</span>
+                <span>
+                  <strong>Budget Lock:</strong> Limit of ₹{liveLockCheck.limit.toLocaleString('en-IN')} for {liveLockCheck.budgetName} reached (exceeds by ₹{liveLockCheck.excessAmount.toLocaleString('en-IN')}). Payment will be blocked!
+                </span>
+              </div>
+            )}
           </div>
 
           {/* 3. Title / Merchant Field */}

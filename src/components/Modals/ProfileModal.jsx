@@ -407,16 +407,16 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
                     <ChevronRight size={17} color="#94a3b8" />
                   </div>
 
-                  {/* FinAI Settings */}
+                  {/* Money Intelligence Settings */}
                   <div
-                    onClick={() => setActiveSubView('finai')}
+                    onClick={() => setActiveSubView('intelligence')}
                     style={menuItemStyle}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <div style={iconBadgeStyle('#2563eb', '#eff6ff')}>
-                        <Bot size={17} />
+                      <div style={iconBadgeStyle('#059669', '#ecfdf5')}>
+                        <Sparkles size={17} />
                       </div>
-                      <span style={menuTitleStyle}>FinAI Settings</span>
+                      <span style={menuTitleStyle}>Money Intelligence</span>
                     </div>
                     <ChevronRight size={17} color="#94a3b8" />
                   </div>
@@ -641,17 +641,17 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
             </div>
           )}
 
-          {/* FINAI SETTINGS SUB-VIEW */}
-          {activeSubView === 'finai' && (
+          {/* MONEY INTELLIGENCE SETTINGS SUB-VIEW */}
+          {activeSubView === 'intelligence' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                🤖 FinAI Assistant Settings
+                ⚡ Money Intelligence Engine (Local)
               </h4>
 
               <div style={toggleRowStyle}>
                 <div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>Autonomous Spending Tips</div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Proactively notify when food or travel expenses peak</div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>Local Health Score Calculation</div>
+                  <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Calculate savings, spending, and consistency score on-device</div>
                 </div>
                 <input
                   type="checkbox"
@@ -663,8 +663,8 @@ export function ProfileModal({ isOpen = true, onClose, onLogout, onNavigateLandi
 
               <div style={toggleRowStyle}>
                 <div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>Month-End Cashflow Forecast</div>
-                  <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Project remaining balance based on recurring bills</div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>Deterministic Spending Insights</div>
+                  <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Detect anomalies and budget thresholds privately without cloud AI</div>
                 </div>
                 <input
                   type="checkbox"

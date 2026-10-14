@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
-export function Navbar({ onOpenAI, onOpenNotifications, onOpenProfile, onBackToLanding }) {
+export function Navbar({ onOpenIntelligence, onOpenAI, onOpenNotifications, onOpenProfile, onBackToLanding }) {
   const {
     theme,
     toggleTheme,
@@ -144,14 +144,14 @@ export function Navbar({ onOpenAI, onOpenNotifications, onOpenProfile, onBackToL
           )}
         </div>
 
-        {/* AI Copilot Quick Summon */}
+        {/* Money Intelligence Quick Summon */}
         <button
           className="btn btn-primary"
-          onClick={onOpenAI}
+          onClick={onOpenIntelligence || onOpenAI}
           style={{ padding: '0.45rem 1rem', fontSize: '0.82rem', borderRadius: '10px' }}
         >
           <Sparkles size={16} />
-          <span>Ask FinAI</span>
+          <span>Intelligence</span>
         </button>
 
         {/* Notification Bell */}

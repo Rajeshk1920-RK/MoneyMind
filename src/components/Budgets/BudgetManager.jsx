@@ -6,7 +6,10 @@ import {
   AlertCircle,
   Trash2,
   PieChart,
-  ShieldCheck
+  ShieldCheck,
+  Lock,
+  Unlock,
+  ShieldAlert
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatCurrency } from '../../utils/formatters';
@@ -16,6 +19,7 @@ export function BudgetManager() {
   const {
     budgets,
     deleteBudget,
+    toggleBudgetLock,
     transactions,
     activeCurrency,
     activeCurrencyCode
@@ -25,17 +29,22 @@ export function BudgetManager() {
 
   // Compute spent for each budget category
   const budgetStats = budgets.map(budget => {
+    const isLocked = budget.isLocked !== false;
     const spent = transactions
-      .filter(t => t.type === 'expense' && t.category === budget.category)
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+      .filter(t => t.type === 'expense' && (
+        t.category?.toLowerCase() === budget.category?.toLowerCase() ||
+        (budget.category === 'Food & Dining' && (t.category?.toLowerCase().includes('food') || t.category?.toLowerCase().includes('dining')))
+      ))
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-    const percentage = Math.round((spent / (budget.monthlyLimit || 1)) * 100);
-    const remaining = Math.max(0, budget.monthlyLimit - spent);
-    const isOverspent = spent > budget.monthlyLimit;
+    const percentage = Math.round((spent / (Number(budget.monthlyLimit) || 1)) * 100);
+    const remaining = Math.max(0, Number(budget.monthlyLimit) - spent);
+    const isOverspent = spent >= Number(budget.monthlyLimit);
     const isWarning = percentage >= (budget.alertThreshold || 80) && !isOverspent;
 
     return {
       ...budget,
+      isLocked,
       spent,
       remaining,
       percentage,
@@ -44,7 +53,7 @@ export function BudgetManager() {
     };
   });
 
-  const totalBudgeted = budgets.reduce((s, b) => s + b.monthlyLimit, 0);
+  const totalBudgeted = budgets.reduce((s, b) => s + Number(b.monthlyLimit || 0), 0);
   const totalSpentAcrossBudgets = budgetStats.reduce((s, b) => s + b.spent, 0);
 
   return (
@@ -53,10 +62,10 @@ export function BudgetManager() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
         <div>
           <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-            Budgets & Limits
+            Budgets & Spending Limits
           </h2>
           <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
-            {budgets.length} active limits
+            {budgets.length} active categories • Lock protects against overspending
           </span>
         </div>
 
@@ -104,7 +113,7 @@ export function BudgetManager() {
 
         <div>
           <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, display: 'block' }}>Total Spent</span>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ef4444', fontFamily: 'var(--font-display)', marginTop: '2px' }}>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: totalSpentAcrossBudgets > totalBudgeted && totalBudgeted > 0 ? '#ef4444' : '#059669', fontFamily: 'var(--font-display)', marginTop: '2px' }}>
             {formatCurrency(totalSpentAcrossBudgets, activeCurrencyCode, activeCurrency.rate)}
           </div>
         </div>
@@ -130,7 +139,7 @@ export function BudgetManager() {
               No Budgets Configured
             </h4>
             <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
-              Tap "+ New Budget" above to set category spending limits.
+              Tap "+ New Budget" above to set category spending limits with automatic payment lock.
             </p>
           </div>
         ) : (
@@ -141,7 +150,7 @@ export function BudgetManager() {
 
             if (budget.isOverspent) {
               statusColor = '#ef4444';
-              statusText = 'Overspent';
+              statusText = budget.isLocked ? 'Locked / Limit Reached' : 'Overspent';
               statusBg = '#fef2f2';
             } else if (budget.isWarning) {
               statusColor = '#f59e0b';
@@ -156,43 +165,92 @@ export function BudgetManager() {
                   backgroundColor: '#ffffff',
                   borderRadius: '16px',
                   padding: '1rem',
-                  border: budget.isOverspent ? '1.5px solid #fecaca' : '1px solid #e2ede8',
-                  boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
+                  border: budget.isOverspent ? '1.5px solid #fca5a5' : '1px solid #e2ede8',
+                  boxShadow: budget.isOverspent ? '0 4px 14px rgba(239, 68, 68, 0.08)' : '0 2px 6px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.75rem',
                   boxSizing: 'border-box'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   <div>
-                    <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem 0' }}>
-                      {budget.category}
-                    </h4>
-                    <span style={{
-                      fontSize: '0.68rem',
-                      fontWeight: 700,
-                      backgroundColor: statusBg,
-                      color: statusColor,
-                      padding: '2px 8px',
-                      borderRadius: '6px'
-                    }}>
-                      {statusText} • {budget.percentage}%
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        {budget.category}
+                      </h4>
+                      {budget.isLocked && (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.2rem',
+                          backgroundColor: '#fef2f2',
+                          color: '#dc2626',
+                          border: '1px solid #fecaca',
+                          fontSize: '0.65rem',
+                          fontWeight: 800,
+                          padding: '1px 6px',
+                          borderRadius: '6px'
+                        }}>
+                          <Lock size={10} />
+                          <span>Lock ON</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.3rem' }}>
+                      <span style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        backgroundColor: statusBg,
+                        color: statusColor,
+                        padding: '2px 8px',
+                        borderRadius: '6px'
+                      }}>
+                        {statusText} • {budget.percentage}%
+                      </span>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => deleteBudget(budget.id)}
-                    style={{
-                      color: '#cbd5e1',
-                      padding: '4px',
-                      cursor: 'pointer',
-                      borderRadius: '6px'
-                    }}
-                    title="Delete budget"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    {/* Toggle Lock Button */}
+                    <button
+                      type="button"
+                      onClick={() => toggleBudgetLock(budget.id)}
+                      style={{
+                        backgroundColor: budget.isLocked ? '#fef2f2' : '#f1f5f9',
+                        color: budget.isLocked ? '#dc2626' : '#64748b',
+                        border: `1px solid ${budget.isLocked ? '#fecaca' : '#e2e8f0'}`,
+                        borderRadius: '8px',
+                        padding: '4px 8px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        cursor: 'pointer'
+                      }}
+                      title={budget.isLocked ? 'Strict Lock Enabled (Blocks payments exceeding limit)' : 'Lock Disabled (Warning only)'}
+                    >
+                      {budget.isLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                      <span>{budget.isLocked ? 'Strict Lock' : 'No Lock'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => deleteBudget(budget.id)}
+                      style={{
+                        color: '#94a3b8',
+                        background: 'transparent',
+                        border: 'none',
+                        padding: '4px',
+                        cursor: 'pointer',
+                        borderRadius: '6px'
+                      }}
+                      title="Delete budget"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Progress bar */}
@@ -224,6 +282,25 @@ export function BudgetManager() {
                     />
                   </div>
                 </div>
+
+                {/* Overspent / Lock Warning Box */}
+                {budget.isOverspent && budget.isLocked && (
+                  <div style={{
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '10px',
+                    padding: '0.5rem 0.75rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    fontSize: '0.72rem',
+                    color: '#991b1b',
+                    fontWeight: 700
+                  }}>
+                    <ShieldAlert size={14} color="#dc2626" style={{ flexShrink: 0 }} />
+                    <span>Limit reached! Further payments for {budget.category} are locked.</span>
+                  </div>
+                )}
 
                 <div style={{
                   display: 'flex',

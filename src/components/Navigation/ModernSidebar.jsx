@@ -11,7 +11,8 @@ import {
   Sparkles,
   PieChart,
   Target,
-  Zap
+  Zap,
+  TrendingUp
 } from 'lucide-react';
 
 export function ModernSidebar({
@@ -116,17 +117,17 @@ export function ModernSidebar({
             <span className="mobile-nav-label">Budgets</span>
           </button>
 
-          {/* 5. AI Advisor / Goals */}
+          {/* 5. Money Intelligence */}
           <button
-            onClick={() => onSelectTab('ai-assistant')}
-            className={`nav-dock-btn ${currentTab === 'ai-assistant' ? 'active' : ''}`}
-            title="FinAI Assistant"
-            aria-label="AI Advisor"
+            onClick={() => onSelectTab('intelligence')}
+            className={`nav-dock-btn ${currentTab === 'intelligence' ? 'active' : ''}`}
+            title="Money Intelligence"
+            aria-label="Money Intelligence"
           >
             <div className="nav-icon-wrap">
-              <Sparkles size={20} />
+              <TrendingUp size={20} />
             </div>
-            <span className="mobile-nav-label">FinAI</span>
+            <span className="mobile-nav-label">Insights</span>
           </button>
         </div>
       </div>

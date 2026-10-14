@@ -100,8 +100,26 @@ def setup_jdk_and_install():
     if not os.path.exists(adb_path):
         adb_path = 'adb.exe'
         
+    print("\n--- Connecting to Mobile Device ---")
+    import time
+    is_online = False
+    for attempt in range(1, 15):
+        devices_res = subprocess.run([adb_path, 'devices'], capture_output=True, text=True, env=env)
+        lines = [l.strip() for l in devices_res.stdout.splitlines() if l.strip()]
+        connected = [l for l in lines[1:] if '\tdevice' in l]
+        if connected:
+            print(f"Device connected and authorized: {connected[0].split()[0]}")
+            is_online = True
+            break
+        elif any('offline' in l for l in lines[1:]):
+            print(f"[{attempt}/15] Device is offline. Please unlock your phone and tap 'Allow USB Debugging' if prompted...")
+            subprocess.run([adb_path, 'reconnect', 'offline'], capture_output=True, text=True, env=env)
+        else:
+            print(f"[{attempt}/15] Waiting for USB device connection...")
+        time.sleep(2)
+
     print("\n--- Installing MoneyMind APK onto connected mobile device via USB ---")
-    install_res = subprocess.run([adb_path, 'install', '-r', apk_path], capture_output=True, text=True, env=env)
+    install_res = subprocess.run([adb_path, 'install', '-r', '-d', apk_path], capture_output=True, text=True, env=env)
     print("ADB Output:", install_res.stdout)
     if install_res.stderr:
         print("ADB Stderr:", install_res.stderr)
@@ -112,7 +130,7 @@ def setup_jdk_and_install():
         print("App launched successfully on your mobile phone!")
         return True
     else:
-        print("Failed to install APK directly to device.")
+        print("Failed to install APK directly to device. Ensure your phone screen is unlocked with USB Debugging enabled.")
         return False
 
 if __name__ == '__main__':

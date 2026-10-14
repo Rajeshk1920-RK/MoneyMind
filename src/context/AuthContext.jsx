@@ -8,7 +8,19 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem('moneymind_user');
-      return saved ? JSON.parse(saved) : null;
+      if (saved) return JSON.parse(saved);
+      // Instant default local account for mobile
+      const initialUser = {
+        id: 'usr_local_primary',
+        email: 'rajesh@moneymind.app',
+        fullName: 'Rajesh K',
+        full_name: 'Rajesh K',
+        name: 'Rajesh K',
+        avatar: 'R',
+        created_at: new Date().toISOString()
+      };
+      localStorage.setItem('moneymind_user', JSON.stringify(initialUser));
+      return initialUser;
     } catch {
       return null;
     }
@@ -16,12 +28,20 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(() => {
     try {
       const saved = localStorage.getItem('moneymind_user');
-      return saved ? JSON.parse(saved) : null;
+      if (saved) return JSON.parse(saved);
+      return {
+        id: 'usr_local_primary',
+        email: 'rajesh@moneymind.app',
+        fullName: 'Rajesh K',
+        full_name: 'Rajesh K',
+        name: 'Rajesh K',
+        avatar: 'R'
+      };
     } catch {
       return null;
     }
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Helper to ensure a profile record exists in public.profiles table in Supabase
   const syncSupabaseProfile = async (uid, email, fullName) => {
@@ -57,8 +77,9 @@ export function AuthProvider({ children }) {
             created_at: u.created_at
           };
           setUser(syncedUser);
-          localStorage.setItem('finai_user_name', metaName);
-          await syncSupabaseProfile(u.id, u.email, metaName);
+          localStorage.setItem('moneymind_user_name', metaName);
+          // Sync profile in background without blocking initial paint
+          syncSupabaseProfile(u.id, u.email, metaName).catch(() => {});
         }
       } catch (err) {
         console.warn('Supabase getSession note:', err.message);
@@ -83,7 +104,7 @@ export function AuthProvider({ children }) {
           created_at: u.created_at
         };
         setUser(syncedUser);
-        localStorage.setItem('finai_user_name', metaName);
+        localStorage.setItem('moneymind_user_name', metaName);
         await syncSupabaseProfile(u.id, u.email, metaName);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
@@ -109,7 +130,7 @@ export function AuthProvider({ children }) {
   const createAccount = async (fullName, email, password = '') => {
     const cleanName = (fullName || 'User').trim();
     const cleanEmail = (email || 'user@moneymind.app').trim();
-    localStorage.setItem('finai_user_name', cleanName);
+    localStorage.setItem('moneymind_user_name', cleanName);
 
     try {
       if (password && password.length >= 6) {
@@ -224,7 +245,7 @@ export function AuthProvider({ children }) {
   const updateProfileName = async (newName) => {
     if (!newName || !newName.trim()) return;
     const clean = newName.trim();
-    localStorage.setItem('finai_user_name', clean);
+    localStorage.setItem('moneymind_user_name', clean);
 
     if (user?.id && !user.id.startsWith('usr_')) {
       try {
